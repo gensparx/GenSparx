@@ -1,5 +1,5 @@
 ---
-summary: "VPS hosting hub for OpenClaw (Oracle/Fly/Hetzner/GCP/exe.dev)"
+summary: "VPS hosting hub for GenSparx (Oracle/Fly/Hetzner/GCP/exe.dev)"
 read_when:
   - You want to run the Gateway in the cloud
   - You need a quick map of VPS/hosting guides
@@ -41,3 +41,5 @@ You can keep the Gateway in the cloud and pair **nodes** on your local devices
 capabilities while the Gateway stays in the cloud.
 
 Docs: [Nodes](/nodes), [Nodes CLI](/cli/nodes)
+
+

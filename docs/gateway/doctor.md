@@ -8,44 +8,44 @@ title: "Doctor"
 
 # Doctor
 
-`openclaw doctor` is the repair + migration tool for OpenClaw. It fixes stale
+`gensparx doctor` is the repair + migration tool for GenSparx. It fixes stale
 config/state, checks health, and provides actionable repair steps.
 
 ## Quick start
 
 ```bash
-openclaw doctor
+gensparx doctor
 ```
 
 ### Headless / automation
 
 ```bash
-openclaw doctor --yes
+gensparx doctor --yes
 ```
 
 Accept defaults without prompting (including restart/service/sandbox repair steps when applicable).
 
 ```bash
-openclaw doctor --repair
+gensparx doctor --repair
 ```
 
 Apply recommended repairs without prompting (repairs + restarts where safe).
 
 ```bash
-openclaw doctor --repair --force
+gensparx doctor --repair --force
 ```
 
 Apply aggressive repairs too (overwrites custom supervisor configs).
 
 ```bash
-openclaw doctor --non-interactive
+gensparx doctor --non-interactive
 ```
 
 Run without prompts and only apply safe migrations (config normalization + on-disk state moves). Skips restart/service/sandbox actions that require human confirmation.
 Legacy state migrations run automatically when detected.
 
 ```bash
-openclaw doctor --deep
+gensparx doctor --deep
 ```
 
 Scan system services for extra gateway installs (launchd/systemd/schtasks).
@@ -68,7 +68,7 @@ cat ~/.openclaw/openclaw.json
 - State integrity and permissions checks (sessions, transcripts, state dir).
 - Config file permission checks (chmod 600) when running locally.
 - Model auth health: checks OAuth expiry, can refresh expiring tokens, and reports auth-profile cooldown/disabled states.
-- Extra workspace dir detection (`~/openclaw`).
+- Extra workspace dir detection (`~/GenSparx`).
 - Sandbox image repair when sandboxing is enabled.
 - Legacy service migration and extra gateway detection.
 - Gateway runtime checks (service installed but not running; cached launchd label).
@@ -98,7 +98,7 @@ schema.
 ### 2) Legacy config key migrations
 
 When the config contains deprecated keys, other commands refuse to run and ask
-you to run `openclaw doctor`.
+you to run `gensparx doctor`.
 
 Doctor will:
 
@@ -149,7 +149,7 @@ These migrations are best-effort and idempotent; doctor will emit warnings when
 it leaves any legacy folders behind as backups. The Gateway/CLI also auto-migrates
 the legacy sessions + agent dir on startup so history/auth/models land in the
 per-agent path without a manual doctor run. WhatsApp auth is intentionally only
-migrated via `openclaw doctor`.
+migrated via `gensparx doctor`.
 
 ### 4) State integrity checks (session persistence, routing, and safety)
 
@@ -202,9 +202,9 @@ switch to legacy names if the current image is missing.
 ### 8) Gateway service migrations and cleanup hints
 
 Doctor detects legacy gateway services (launchd/systemd/schtasks) and
-offers to remove them and install the OpenClaw service using the current gateway
+offers to remove them and install the GenSparx service using the current gateway
 port. It can also scan for extra gateway-like services and print cleanup hints.
-Profile-named OpenClaw gateway services are considered first-class and are not
+Profile-named GenSparx gateway services are considered first-class and are not
 flagged as "extra."
 
 ### 9) Security warnings
@@ -225,7 +225,7 @@ workspace.
 ### 12) Gateway auth checks (local token)
 
 Doctor warns when `gateway.auth` is missing on a local gateway and offers to
-generate a token. Use `openclaw doctor --generate-gateway-token` to force token
+generate a token. Use `gensparx doctor --generate-gateway-token` to force token
 creation in automation.
 
 ### 13) Gateway health check + restart
@@ -247,11 +247,11 @@ rewrite the service file/task to the current defaults.
 
 Notes:
 
-- `openclaw doctor` prompts before rewriting supervisor config.
-- `openclaw doctor --yes` accepts the default repair prompts.
-- `openclaw doctor --repair` applies recommended fixes without prompts.
-- `openclaw doctor --repair --force` overwrites custom supervisor configs.
-- You can always force a full rewrite via `openclaw gateway install --force`.
+- `gensparx doctor` prompts before rewriting supervisor config.
+- `gensparx doctor --yes` accepts the default repair prompts.
+- `gensparx doctor --repair` applies recommended fixes without prompts.
+- `gensparx doctor --repair --force` overwrites custom supervisor configs.
+- You can always force a full rewrite via `gensparx gateway install --force`.
 
 ### 16) Gateway runtime + port diagnostics
 
@@ -280,3 +280,7 @@ if the workspace is not already under git.
 
 See [/concepts/agent-workspace](/concepts/agent-workspace) for a full guide to
 workspace structure and git backup (recommended private GitHub or GitLab).
+
+
+
+

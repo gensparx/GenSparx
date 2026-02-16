@@ -82,10 +82,12 @@ Or tail while reproducing:
 tail -f /tmp/openclaw/openclaw-$(date +%F).log | rg "telegram http error"
 ```
 
-For remote gateways, you can also use `openclaw logs --follow` (see [/cli/logs](/cli/logs)).
+For remote gateways, you can also use `gensparx logs --follow` (see [/cli/logs](/cli/logs)).
 
 ## Notes
 
 - If `logging.level` is set higher than `warn`, these logs may be suppressed. Default `info` is fine.
 - Flags are safe to leave enabled; they only affect log volume for the specific subsystem.
 - Use [/logging](/logging) to change log destinations, levels, and redaction.
+
+

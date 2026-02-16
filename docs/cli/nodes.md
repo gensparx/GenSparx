@@ -1,12 +1,12 @@
 ---
-summary: "CLI reference for `openclaw nodes` (list/status/approve/invoke, camera/canvas/screen)"
+summary: "CLI reference for `gensparx nodes` (list/status/approve/invoke, camera/canvas/screen)"
 read_when:
   - You’re managing paired nodes (cameras, screen, canvas)
   - You need to approve requests or invoke node commands
 title: "nodes"
 ---
 
-# `openclaw nodes`
+# `gensparx nodes`
 
 Manage paired nodes (devices) and invoke node capabilities.
 
@@ -23,14 +23,14 @@ Common options:
 ## Common commands
 
 ```bash
-openclaw nodes list
-openclaw nodes list --connected
-openclaw nodes list --last-connected 24h
-openclaw nodes pending
-openclaw nodes approve <requestId>
-openclaw nodes status
-openclaw nodes status --connected
-openclaw nodes status --last-connected 24h
+gensparx nodes list
+gensparx nodes list --connected
+gensparx nodes list --last-connected 24h
+gensparx nodes pending
+gensparx nodes approve <requestId>
+gensparx nodes status
+gensparx nodes status --connected
+gensparx nodes status --last-connected 24h
 ```
 
 `nodes list` prints pending/paired tables. Paired rows include the most recent connect age (Last Connect).
@@ -40,10 +40,10 @@ filter to nodes that connected within a duration (e.g. `24h`, `7d`).
 ## Invoke / run
 
 ```bash
-openclaw nodes invoke --node <id|name|ip> --command <command> --params <json>
-openclaw nodes run --node <id|name|ip> <command...>
-openclaw nodes run --raw "git status"
-openclaw nodes run --agent main --node <id|name|ip> --raw "git status"
+gensparx nodes invoke --node <id|name|ip> --command <command> --params <json>
+gensparx nodes run --node <id|name|ip> <command...>
+gensparx nodes run --raw "git status"
+gensparx nodes run --agent main --node <id|name|ip> --raw "git status"
 ```
 
 Invoke flags:
@@ -71,3 +71,5 @@ Flags:
 - `--raw <command>`: run a shell string (`/bin/sh -lc` or `cmd.exe /c`).
 - `--agent <id>`: agent-scoped approvals/allowlists (defaults to configured agent).
 - `--ask <off|on-miss|always>`, `--security <deny|allowlist|full>`: overrides.
+
+

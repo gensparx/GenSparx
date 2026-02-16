@@ -8,7 +8,7 @@ title: "Brave Search"
 
 # Brave Search API
 
-OpenClaw uses Brave Search as the default provider for `web_search`.
+GenSparx uses Brave Search as the default provider for `web_search`.
 
 ## Get an API key
 
@@ -39,3 +39,5 @@ OpenClaw uses Brave Search as the default provider for `web_search`.
 - Brave provides a free tier plus paid plans; check the Brave API portal for current limits.
 
 See [Web tools](/tools/web) for the full web_search configuration.
+
+

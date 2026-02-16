@@ -36,10 +36,10 @@ This is ideal when your laptop sleeps often but you want the agent always-on.
 
 The laptop does **not** run the agent. It connects remotely:
 
-- Use the macOS app’s **Remote over SSH** mode (Settings → General → “OpenClaw runs”).
+- Use the macOS app’s **Remote over SSH** mode (Settings → General → “GenSparx runs”).
 - The app opens and manages the tunnel, so WebChat + health checks “just work.”
 
-Runbook: [macOS remote access](/platforms/mac/remote).
+Runbook: [macOS remote access](/platforms/macos).
 
 ### 3) Laptop runs the Gateway, remote access from other machines
 
@@ -76,8 +76,8 @@ ssh -N -L 18789:127.0.0.1:18789 user@host
 
 With the tunnel up:
 
-- `openclaw health` and `openclaw status --deep` now reach the remote gateway via `ws://127.0.0.1:18789`.
-- `openclaw gateway {status,health,send,agent,call}` can also target the forwarded URL via `--url` when needed.
+- `gensparx health` and `gensparx status --deep` now reach the remote gateway via `ws://127.0.0.1:18789`.
+- `gensparx gateway {status,health,send,agent,call}` can also target the forwarded URL via `--url` when needed.
 
 Note: replace `18789` with your configured `gateway.port` (or `--port`/`OPENCLAW_GATEWAY_PORT`).
 Note: when you pass `--url`, the CLI does not fall back to config or environment credentials.
@@ -112,7 +112,7 @@ WebChat no longer uses a separate HTTP port. The SwiftUI chat UI connects direct
 
 The macOS menu bar app can drive the same setup end-to-end (remote status checks, WebChat, and Voice Wake forwarding).
 
-Runbook: [macOS remote access](/platforms/mac/remote).
+Runbook: [macOS remote access](/platforms/macos).
 
 ## Security rules (remote/VPN)
 
@@ -127,3 +127,7 @@ Short version: **keep the Gateway loopback-only** unless you’re sure you need 
 - Treat browser control like operator access: tailnet-only + deliberate node pairing.
 
 Deep dive: [Security](/gateway/security).
+
+
+
+

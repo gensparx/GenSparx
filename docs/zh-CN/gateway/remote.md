@@ -46,7 +46,7 @@ x-i18n:
 - 使用 macOS 应用的 **Remote over SSH** 模式（设置 → 通用 → "OpenClaw runs"）。
 - 应用打开并管理隧道，因此 WebChat + 健康检查"直接工作"。
 
-操作手册：[macOS 远程访问](/platforms/mac/remote)。
+操作手册：[macOS 远程访问](/platforms/macos)。
 
 ### 3) 笔记本电脑运行 Gateway 网关，从其他机器远程访问
 
@@ -117,7 +117,7 @@ WebChat 不再使用单独的 HTTP 端口。SwiftUI 聊天 UI 直接连接到 Ga
 
 macOS 菜单栏应用可以端到端驱动相同的设置（远程状态检查、WebChat 和语音唤醒转发）。
 
-操作手册：[macOS 远程访问](/platforms/mac/remote)。
+操作手册：[macOS 远程访问](/platforms/macos)。
 
 ## 安全规则（远程/VPN）
 

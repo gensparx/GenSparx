@@ -30,7 +30,7 @@ x-i18n:
 - [OpenClaw 助手设置](/start/openclaw)
 - [Skills](/tools/skills)
 - [Skills 配置](/tools/skills-config)
-- [工作区模板](/reference/templates/AGENTS)
+- [工作区模板](/reference/AGENTS.default)
 - [RPC 适配器](/reference/rpc)
 - [Gateway 网关运维手册](/gateway)
 - [节点（iOS 和 Android）](/nodes)

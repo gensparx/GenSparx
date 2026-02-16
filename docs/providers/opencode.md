@@ -1,5 +1,5 @@
 ---
-summary: "Use OpenCode Zen (curated models) with OpenClaw"
+summary: "Use OpenCode Zen (curated models) with GenSparx"
 read_when:
   - You want OpenCode Zen for model access
   - You want a curated list of coding-friendly models
@@ -15,9 +15,9 @@ Zen is currently in beta.
 ## CLI setup
 
 ```bash
-openclaw onboard --auth-choice opencode-zen
+gensparx onboard --auth-choice opencode-zen
 # or non-interactive
-openclaw onboard --opencode-zen-api-key "$OPENCODE_API_KEY"
+gensparx onboard --opencode-zen-api-key "$OPENCODE_API_KEY"
 ```
 
 ## Config snippet
@@ -34,3 +34,5 @@ openclaw onboard --opencode-zen-api-key "$OPENCODE_API_KEY"
 - `OPENCODE_ZEN_API_KEY` is also supported.
 - You sign in to Zen, add billing details, and copy your API key.
 - OpenCode Zen bills per request; check the OpenCode dashboard for details.
+
+

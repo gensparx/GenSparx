@@ -10,7 +10,7 @@ title: "Gateway Lifecycle"
 The macOS app **manages the Gateway via launchd** by default and does not spawn
 the Gateway as a child process. It first tries to attach to an already‑running
 Gateway on the configured port; if none is reachable, it enables the launchd
-service via the external `openclaw` CLI (no embedded runtime). This gives you
+service via the external `gensparx` CLI (no embedded runtime). This gives you
 reliable auto‑start at login and restart on crashes.
 
 Child‑process mode (Gateway spawned directly by the app) is **not in use** today.
@@ -67,3 +67,5 @@ remote host and connects over that tunnel.
 
 If a true child‑process mode is ever needed again, it should be documented as a
 separate, explicit dev‑only mode.
+
+

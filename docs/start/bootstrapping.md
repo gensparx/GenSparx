@@ -16,7 +16,7 @@ for the first time.
 
 ## What bootstrapping does
 
-On the first agent run, OpenClaw bootstraps the workspace (default
+On the first agent run, GenSparx bootstraps the workspace (default
 `~/.openclaw/workspace`):
 
 - Seeds `AGENTS.md`, `BOOTSTRAP.md`, `IDENTITY.md`, `USER.md`.
@@ -39,3 +39,7 @@ host (for example, `user@gateway-host:~/.openclaw/workspace`).
 
 - macOS app onboarding: [Onboarding](/start/onboarding)
 - Workspace layout: [Agent workspace](/concepts/agent-workspace)
+
+
+
+

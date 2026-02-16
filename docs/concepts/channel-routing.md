@@ -7,7 +7,7 @@ title: "Channel Routing"
 
 # Channels & routing
 
-OpenClaw routes replies **back to the channel where a message came from**. The
+GenSparx routes replies **back to the channel where a message came from**. The
 model does not choose a channel; routing is deterministic and controlled by the
 host configuration.
 
@@ -54,7 +54,7 @@ The matched agent determines which workspace and session store are used.
 
 ## Broadcast groups (run multiple agents)
 
-Broadcast groups let you run **multiple agents** for the same peer **when OpenClaw would normally reply** (for example: in WhatsApp groups, after mention/activation gating).
+Broadcast groups let you run **multiple agents** for the same peer **when GenSparx would normally reply** (for example: in WhatsApp groups, after mention/activation gating).
 
 Config:
 
@@ -112,3 +112,5 @@ Inbound replies include:
 - Quoted context is appended to `Body` as a `[Replying to ...]` block.
 
 This is consistent across channels.
+
+

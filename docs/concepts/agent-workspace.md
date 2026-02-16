@@ -36,7 +36,7 @@ inside a sandbox workspace under `~/.openclaw/sandboxes`, not your host workspac
 }
 ```
 
-`openclaw onboard`, `openclaw configure`, or `openclaw setup` will create the
+`gensparx onboard`, `gensparx configure`, or `gensparx setup` will create the
 workspace and seed the bootstrap files if they are missing.
 
 If you already manage the workspace files yourself, you can disable bootstrap
@@ -57,11 +57,11 @@ extra folders, archive or move them to Trash (for example `trash ~/openclaw`).
 If you intentionally keep multiple workspaces, make sure
 `agents.defaults.workspace` points to the active one.
 
-`openclaw doctor` warns when it detects extra workspace directories.
+`gensparx doctor` warns when it detects extra workspace directories.
 
 ## Workspace file map (what each file means)
 
-These are the standard files OpenClaw expects inside the workspace:
+These are the standard files GenSparx expects inside the workspace:
 
 - `AGENTS.md`
   - Operating instructions for the agent and how it should use memory.
@@ -114,10 +114,10 @@ See [Memory](/concepts/memory) for the workflow and automatic memory flush.
 - `canvas/` (optional)
   - Canvas UI files for node displays (for example `canvas/index.html`).
 
-If any bootstrap file is missing, OpenClaw injects a "missing file" marker into
+If any bootstrap file is missing, GenSparx injects a "missing file" marker into
 the session and continues. Large bootstrap files are truncated when injected;
 adjust the limit with `agents.defaults.bootstrapMaxChars` (default: 20000).
-`openclaw setup` can recreate missing defaults without overwriting existing
+`gensparx setup` can recreate missing defaults without overwriting existing
 files.
 
 ## What is NOT in the workspace
@@ -221,7 +221,7 @@ Suggested `.gitignore` starter:
 
 1. Clone the repo to the desired path (default `~/.openclaw/workspace`).
 2. Set `agents.defaults.workspace` to that path in `~/.openclaw/openclaw.json`.
-3. Run `openclaw setup --workspace <path>` to seed any missing files.
+3. Run `gensparx setup --workspace <path>` to seed any missing files.
 4. If you need sessions, copy `~/.openclaw/agents/<agentId>/sessions/` from the
    old machine separately.
 
@@ -231,3 +231,5 @@ Suggested `.gitignore` starter:
   [Channel routing](/concepts/channel-routing) for routing configuration.
 - If `agents.defaults.sandbox` is enabled, non-main sessions can use per-session sandbox
   workspaces under `agents.defaults.sandbox.workspaceRoot`.
+
+

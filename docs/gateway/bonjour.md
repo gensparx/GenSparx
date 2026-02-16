@@ -8,7 +8,7 @@ title: "Bonjour Discovery"
 
 # Bonjour / mDNS discovery
 
-OpenClaw uses Bonjour (mDNS / DNS‑SD) as a **LAN‑only convenience** to discover
+GenSparx uses Bonjour (mDNS / DNS‑SD) as a **LAN‑only convenience** to discover
 an active Gateway (WebSocket endpoint). It is best‑effort and does **not** replace SSH or
 Tailnet-based connectivity.
 
@@ -22,11 +22,11 @@ High‑level steps:
 
 1. Run a DNS server on the gateway host (reachable over Tailnet).
 2. Publish DNS‑SD records for `_openclaw-gw._tcp` under a dedicated zone
-   (example: `openclaw.internal.`).
+   (example: `GenSparx.internal.`).
 3. Configure Tailscale **split DNS** so your chosen domain resolves via that
    DNS server for clients (including iOS).
 
-OpenClaw supports any discovery domain; `openclaw.internal.` is just an example.
+GenSparx supports any discovery domain; `GenSparx.internal.` is just an example.
 iOS/Android nodes browse both `local.` and your configured wide‑area domain.
 
 ### Gateway config (recommended)
@@ -41,19 +41,19 @@ iOS/Android nodes browse both `local.` and your configured wide‑area domain.
 ### One‑time DNS server setup (gateway host)
 
 ```bash
-openclaw dns setup --apply
+gensparx dns setup --apply
 ```
 
 This installs CoreDNS and configures it to:
 
 - listen on port 53 only on the gateway’s Tailscale interfaces
-- serve your chosen domain (example: `openclaw.internal.`) from `~/.openclaw/dns/<domain>.db`
+- serve your chosen domain (example: `GenSparx.internal.`) from `~/.openclaw/dns/<domain>.db`
 
 Validate from a tailnet‑connected machine:
 
 ```bash
-dns-sd -B _openclaw-gw._tcp openclaw.internal.
-dig @<TAILNET_IPV4> -p 53 _openclaw-gw._tcp.openclaw.internal PTR +short
+dns-sd -B _openclaw-gw._tcp GenSparx.internal.
+dig @<TAILNET_IPV4> -p 53 _openclaw-gw._tcp.GenSparx.internal PTR +short
 ```
 
 ### Tailscale DNS settings
@@ -97,7 +97,7 @@ The Gateway advertises small non‑secret hints to make UI flows convenient:
 - `canvasPort=<port>` (only when the canvas host is enabled; default `18793`)
 - `sshPort=<port>` (defaults to 22 when not overridden)
 - `transport=gateway`
-- `cliPath=<path>` (optional; absolute path to a runnable `openclaw` entrypoint)
+- `cliPath=<path>` (optional; absolute path to a runnable `gensparx` entrypoint)
 - `tailnetDns=<magicdns>` (optional hint when Tailnet is available)
 
 ## Debugging on macOS
@@ -165,3 +165,7 @@ sequences (e.g. spaces become `\032`).
 
 - Discovery policy and transport selection: [Discovery](/gateway/discovery)
 - Node pairing + approvals: [Gateway pairing](/gateway/pairing)
+
+
+
+

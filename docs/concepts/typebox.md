@@ -60,7 +60,7 @@ Authoritative list lives in `src/gateway/server.ts` (`METHODS`, `EVENTS`).
 - Server handshake + method dispatch: `src/gateway/server.ts`
 - Node client: `src/gateway/client.ts`
 - Generated JSON Schema: `dist/protocol.schema.json`
-- Generated Swift models: `apps/macos/Sources/OpenClawProtocol/GatewayModels.swift`
+- Generated Swift models: `apps/macos/Sources/GenSparxProtocol/GatewayModels.swift`
 
 ## Current pipeline
 
@@ -287,3 +287,5 @@ published raw file is typically available at:
 1. Update the TypeBox schemas.
 2. Run `pnpm protocol:check`.
 3. Commit the regenerated schema + Swift models.
+
+

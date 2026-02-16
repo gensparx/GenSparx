@@ -55,3 +55,5 @@ title: "Elevated Mode"
 
 - Elevated exec calls are logged at info level.
 - Session status includes elevated mode (e.g. `elevated=ask`, `elevated=full`).
+
+

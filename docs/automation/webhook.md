@@ -2,7 +2,7 @@
 summary: "Webhook ingress for wake and isolated agent runs"
 read_when:
   - Adding or changing webhook endpoints
-  - Wiring external systems into OpenClaw
+  - Wiring external systems into GenSparx
 title: "Webhooks"
 ---
 
@@ -106,7 +106,7 @@ Mapping options (summary):
   (`channel` defaults to `last` and falls back to WhatsApp).
 - `allowUnsafeExternalContent: true` disables the external content safety wrapper for that hook
   (dangerous; only for trusted internal sources).
-- `openclaw webhooks gmail setup` writes `hooks.gmail` config for `openclaw webhooks gmail run`.
+- `gensparx webhooks gmail setup` writes `hooks.gmail` config for `gensparx webhooks gmail run`.
   See [Gmail Pub/Sub](/automation/gmail-pubsub) for the full Gmail watch flow.
 
 ## Responses
@@ -161,3 +161,5 @@ curl -X POST http://127.0.0.1:18789/hooks/gmail \
 - Hook payloads are treated as untrusted and wrapped with safety boundaries by default.
   If you must disable this for a specific hook, set `allowUnsafeExternalContent: true`
   in that hook's mapping (dangerous).
+
+

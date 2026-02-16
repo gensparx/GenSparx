@@ -22,7 +22,7 @@ resolved by the **ask fallback** (default: deny).
 
 Exec approvals are enforced locally on the execution host:
 
-- **gateway host** → `openclaw` process on the gateway machine
+- **gateway host** → `gensparx` process on the gateway machine
 - **node host** → node runner (macOS companion app or headless node host)
 
 macOS split:
@@ -145,7 +145,7 @@ must advertise `system.execApprovals.get/set` (macOS app or headless node host).
 If a node does not advertise exec approvals yet, edit its local
 `~/.openclaw/exec-approvals.json` directly.
 
-CLI: `openclaw approvals` supports gateway or node editing (see [Approvals CLI](/cli/approvals)).
+CLI: `gensparx approvals` supports gateway or node editing (see [Approvals CLI](/cli/approvals)).
 
 ## Approval flow
 
@@ -244,3 +244,5 @@ Related:
 - [Exec tool](/tools/exec)
 - [Elevated mode](/tools/elevated)
 - [Skills](/tools/skills)
+
+

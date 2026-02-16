@@ -12,17 +12,17 @@ Last updated: 2025-12-09
 ## What it is
 
 - The always-on process that owns the single Baileys/Telegram connection and the control/event plane.
-- Replaces the legacy `gateway` command. CLI entry point: `openclaw gateway`.
+- Replaces the legacy `gateway` command. CLI entry point: `gensparx gateway`.
 - Runs until stopped; exits non-zero on fatal errors so the supervisor restarts it.
 
 ## How to run (local)
 
 ```bash
-openclaw gateway --port 18789
+gensparx gateway --port 18789
 # for full debug/trace logs in stdio:
-openclaw gateway --port 18789 --verbose
+gensparx gateway --port 18789 --verbose
 # if the port is busy, terminate listeners then start:
-openclaw gateway --force
+gensparx gateway --force
 # dev loop (auto-reload on TS changes):
 pnpm gateway:watch
 ```
@@ -63,13 +63,13 @@ Supported if you isolate state + config and use unique ports. Full guide: [Multi
 
 Service names are profile-aware:
 
-- macOS: `bot.molt.<profile>` (legacy `com.openclaw.*` may still exist)
-- Linux: `openclaw-gateway-<profile>.service`
-- Windows: `OpenClaw Gateway (<profile>)`
+- macOS: `bot.molt.<profile>` (legacy `com.GenSparx.*` may still exist)
+- Linux: `GenSparx-gateway-<profile>.service`
+- Windows: `GenSparx Gateway (<profile>)`
 
 Install metadata is embedded in the service config:
 
-- `OPENCLAW_SERVICE_MARKER=openclaw`
+- `OPENCLAW_SERVICE_MARKER=gensparx`
 - `OPENCLAW_SERVICE_KIND=gateway`
 - `OPENCLAW_SERVICE_VERSION=<version>`
 
@@ -80,11 +80,11 @@ Rescue-Bot Pattern: keep a second Gateway isolated with its own profile, state d
 Fast path: run a fully-isolated dev instance (config/state/workspace) without touching your primary setup.
 
 ```bash
-openclaw --dev setup
-openclaw --dev gateway --allow-unconfigured
+gensparx --dev setup
+gensparx --dev gateway --allow-unconfigured
 # then target the dev instance:
-openclaw --dev status
-openclaw --dev health
+gensparx --dev status
+gensparx --dev health
 ```
 
 Defaults (can be overridden via env/flags/config):
@@ -114,15 +114,15 @@ Checklist per instance:
 Service install per profile:
 
 ```bash
-openclaw --profile main gateway install
-openclaw --profile rescue gateway install
+gensparx --profile main gateway install
+gensparx --profile rescue gateway install
 ```
 
 Example:
 
 ```bash
-OPENCLAW_CONFIG_PATH=~/.openclaw/a.json OPENCLAW_STATE_DIR=~/.openclaw-a openclaw gateway --port 19001
-OPENCLAW_CONFIG_PATH=~/.openclaw/b.json OPENCLAW_STATE_DIR=~/.openclaw-b openclaw gateway --port 19002
+OPENCLAW_CONFIG_PATH=~/.openclaw/a.json OPENCLAW_STATE_DIR=~/.openclaw-a gensparx gateway --port 19001
+OPENCLAW_CONFIG_PATH=~/.openclaw/b.json OPENCLAW_STATE_DIR=~/.openclaw-b gensparx gateway --port 19002
 ```
 
 ## Protocol (operator view)
@@ -138,7 +138,7 @@ OPENCLAW_CONFIG_PATH=~/.openclaw/b.json OPENCLAW_STATE_DIR=~/.openclaw-b opencla
 
 ## Methods (initial set)
 
-- `health` — full health snapshot (same shape as `openclaw health --json`).
+- `health` — full health snapshot (same shape as `gensparx health --json`).
 - `status` — short summary.
 - `system-presence` — current presence list.
 - `system-event` — post a presence/system note (structured).
@@ -198,26 +198,26 @@ See also: [Presence](/concepts/presence) for how presence is produced/deduped an
 ## Supervision (macOS example)
 
 - Use launchd to keep the service alive:
-  - Program: path to `openclaw`
+  - Program: path to `gensparx`
   - Arguments: `gateway`
   - KeepAlive: true
   - StandardOut/Err: file paths or `syslog`
 - On failure, launchd restarts; fatal misconfig should keep exiting so the operator notices.
 - LaunchAgents are per-user and require a logged-in session; for headless setups use a custom LaunchDaemon (not shipped).
-  - `openclaw gateway install` writes `~/Library/LaunchAgents/bot.molt.gateway.plist`
-    (or `bot.molt.<profile>.plist`; legacy `com.openclaw.*` is cleaned up).
-  - `openclaw doctor` audits the LaunchAgent config and can update it to current defaults.
+  - `gensparx gateway install` writes `~/Library/LaunchAgents/bot.molt.gateway.plist`
+    (or `bot.molt.<profile>.plist`; legacy `com.GenSparx.*` is cleaned up).
+  - `gensparx doctor` audits the LaunchAgent config and can update it to current defaults.
 
 ## Gateway service management (CLI)
 
 Use the Gateway CLI for install/start/stop/restart/status:
 
 ```bash
-openclaw gateway status
-openclaw gateway install
-openclaw gateway stop
-openclaw gateway restart
-openclaw logs --follow
+gensparx gateway status
+gensparx gateway install
+gensparx gateway stop
+gensparx gateway restart
+gensparx logs --follow
 ```
 
 Notes:
@@ -230,40 +230,40 @@ Notes:
 - `gateway status` prints config path + probe target to avoid “localhost vs LAN bind” confusion and profile mismatches.
 - `gateway status` includes the last gateway error line when the service looks running but the port is closed.
 - `logs` tails the Gateway file log via RPC (no manual `tail`/`grep` needed).
-- If other gateway-like services are detected, the CLI warns unless they are OpenClaw profile services.
+- If other gateway-like services are detected, the CLI warns unless they are GenSparx profile services.
   We still recommend **one gateway per machine** for most setups; use isolated profiles/ports for redundancy or a rescue bot. See [Multiple gateways](/gateway/multiple-gateways).
-  - Cleanup: `openclaw gateway uninstall` (current service) and `openclaw doctor` (legacy migrations).
-- `gateway install` is a no-op when already installed; use `openclaw gateway install --force` to reinstall (profile/env/path changes).
+  - Cleanup: `gensparx gateway uninstall` (current service) and `gensparx doctor` (legacy migrations).
+- `gateway install` is a no-op when already installed; use `gensparx gateway install --force` to reinstall (profile/env/path changes).
 
 Bundled mac app:
 
-- OpenClaw.app can bundle a Node-based gateway relay and install a per-user LaunchAgent labeled
-  `bot.molt.gateway` (or `bot.molt.<profile>`; legacy `com.openclaw.*` labels still unload cleanly).
-- To stop it cleanly, use `openclaw gateway stop` (or `launchctl bootout gui/$UID/bot.molt.gateway`).
-- To restart, use `openclaw gateway restart` (or `launchctl kickstart -k gui/$UID/bot.molt.gateway`).
-  - `launchctl` only works if the LaunchAgent is installed; otherwise use `openclaw gateway install` first.
+- GenSparx.app can bundle a Node-based gateway relay and install a per-user LaunchAgent labeled
+  `bot.molt.gateway` (or `bot.molt.<profile>`; legacy `com.GenSparx.*` labels still unload cleanly).
+- To stop it cleanly, use `gensparx gateway stop` (or `launchctl bootout gui/$UID/bot.molt.gateway`).
+- To restart, use `gensparx gateway restart` (or `launchctl kickstart -k gui/$UID/bot.molt.gateway`).
+  - `launchctl` only works if the LaunchAgent is installed; otherwise use `gensparx gateway install` first.
   - Replace the label with `bot.molt.<profile>` when running a named profile.
 
 ## Supervision (systemd user unit)
 
-OpenClaw installs a **systemd user service** by default on Linux/WSL2. We
+GenSparx installs a **systemd user service** by default on Linux/WSL2. We
 recommend user services for single-user machines (simpler env, per-user config).
 Use a **system service** for multi-user or always-on servers (no lingering
 required, shared supervision).
 
-`openclaw gateway install` writes the user unit. `openclaw doctor` audits the
+`gensparx gateway install` writes the user unit. `gensparx doctor` audits the
 unit and can update it to match the current recommended defaults.
 
-Create `~/.config/systemd/user/openclaw-gateway[-<profile>].service`:
+Create `~/.config/systemd/user/GenSparx-gateway[-<profile>].service`:
 
 ```
 [Unit]
-Description=OpenClaw Gateway (profile: <profile>, v<version>)
+Description=GenSparx Gateway (profile: <profile>, v<version>)
 After=network-online.target
 Wants=network-online.target
 
 [Service]
-ExecStart=/usr/local/bin/openclaw gateway --port 18789
+ExecStart=/usr/local/bin/GenSparx gateway --port 18789
 Restart=always
 RestartSec=5
 Environment=OPENCLAW_GATEWAY_TOKEN=
@@ -283,17 +283,17 @@ Onboarding runs this on Linux/WSL2 (may prompt for sudo; writes `/var/lib/system
 Then enable the service:
 
 ```
-systemctl --user enable --now openclaw-gateway[-<profile>].service
+systemctl --user enable --now GenSparx-gateway[-<profile>].service
 ```
 
 **Alternative (system service)** - for always-on or multi-user servers, you can
 install a systemd **system** unit instead of a user unit (no lingering needed).
-Create `/etc/systemd/system/openclaw-gateway[-<profile>].service` (copy the unit above,
+Create `/etc/systemd/system/GenSparx-gateway[-<profile>].service` (copy the unit above,
 switch `WantedBy=multi-user.target`, set `User=` + `WorkingDirectory=`), then:
 
 ```
 sudo systemctl daemon-reload
-sudo systemctl enable --now openclaw-gateway[-<profile>].service
+sudo systemctl enable --now GenSparx-gateway[-<profile>].service
 ```
 
 ## Windows (WSL2)
@@ -315,14 +315,18 @@ Windows installs should use **WSL2** and follow the Linux systemd section above.
 
 ## CLI helpers
 
-- `openclaw gateway health|status` — request health/status over the Gateway WS.
-- `openclaw message send --target <num> --message "hi" [--media ...]` — send via Gateway (idempotent for WhatsApp).
-- `openclaw agent --message "hi" --to <num>` — run an agent turn (waits for final by default).
-- `openclaw gateway call <method> --params '{"k":"v"}'` — raw method invoker for debugging.
-- `openclaw gateway stop|restart` — stop/restart the supervised gateway service (launchd/systemd).
+- `gensparx gateway health|status` — request health/status over the Gateway WS.
+- `gensparx message send --target <num> --message "hi" [--media ...]` — send via Gateway (idempotent for WhatsApp).
+- `gensparx agent --message "hi" --to <num>` — run an agent turn (waits for final by default).
+- `gensparx gateway call <method> --params '{"k":"v"}'` — raw method invoker for debugging.
+- `gensparx gateway stop|restart` — stop/restart the supervised gateway service (launchd/systemd).
 - Gateway helper subcommands assume a running gateway on `--url`; they no longer auto-spawn one.
 
 ## Migration guidance
 
-- Retire uses of `openclaw gateway` and the legacy TCP control port.
+- Retire uses of `gensparx gateway` and the legacy TCP control port.
 - Update clients to speak the WS protocol with mandatory connect and structured presence.
+
+
+
+

@@ -1,5 +1,5 @@
 ---
-summary: "Curated links to the most used OpenClaw docs."
+summary: "Curated links to the most used GenSparx docs."
 read_when:
   - You want quick access to key docs pages
 title: "Docs directory"
@@ -21,10 +21,10 @@ For a complete map of the docs, see [Docs hubs](/start/hubs).
 - [Updating and rollback](/install/updating)
 - [Pairing (DM and nodes)](/start/pairing)
 - [Nix mode](/install/nix)
-- [OpenClaw assistant setup](/start/openclaw)
+- [GenSparx assistant setup](/start/GenSparx)
 - [Skills](/tools/skills)
 - [Skills config](/tools/skills-config)
-- [Workspace templates](/reference/templates/AGENTS)
+- [Workspace templates](/reference/AGENTS.default)
 - [RPC adapters](/reference/rpc)
 - [Gateway runbook](/gateway)
 - [Nodes (iOS and Android)](/nodes)
@@ -62,3 +62,7 @@ For a complete map of the docs, see [Docs hubs](/start/hubs).
 - [Gmail hooks (Pub/Sub)](/automation/gmail-pubsub)
 - [Security](/gateway/security)
 - [Troubleshooting](/gateway/troubleshooting)
+
+
+
+

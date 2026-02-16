@@ -1,11 +1,11 @@
 ---
-summary: "macOS IPC architecture for OpenClaw app, gateway node transport, and PeekabooBridge"
+summary: "macOS IPC architecture for GenSparx app, gateway node transport, and PeekabooBridge"
 read_when:
   - Editing IPC contracts or menu bar app IPC
 title: "macOS IPC"
 ---
 
-# OpenClaw macOS IPC architecture
+# GenSparx macOS IPC architecture
 
 **Current model:** a local Unix socket connects the **node host service** to the **macOS app** for exec approvals + `system.run`. A `openclaw-mac` debug CLI exists for discovery/connect checks; agent actions still flow through the Gateway WebSocket and `node.invoke`. UI automation uses PeekabooBridge.
 
@@ -40,9 +40,9 @@ Agent -> Gateway -> Node Service (WS)
 ### PeekabooBridge (UI automation)
 
 - UI automation uses a separate UNIX socket named `bridge.sock` and the PeekabooBridge JSON protocol.
-- Host preference order (client-side): Peekaboo.app → Claude.app → OpenClaw.app → local execution.
+- Host preference order (client-side): Peekaboo.app → Claude.app → GenSparx.app → local execution.
 - Security: bridge hosts require an allowed TeamID; DEBUG-only same-UID escape hatch is guarded by `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1` (Peekaboo convention).
-- See: [PeekabooBridge usage](/platforms/mac/peekaboo) for details.
+- See: [PeekabooBridge usage](/platforms/macos) for details.
 
 ## Operational flows
 
@@ -59,3 +59,5 @@ Agent -> Gateway -> Node Service (WS)
 - All communication remains local-only; no network sockets are exposed.
 - TCC prompts originate only from the GUI app bundle; keep the signed bundle ID stable across rebuilds.
 - IPC hardening: socket mode `0600`, token, peer-UID checks, HMAC challenge/response, short TTL.
+
+

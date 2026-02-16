@@ -25,13 +25,13 @@ Current Kimi K2 model IDs:
   {/_ moonshot-kimi-k2-ids:end _/ && null}
 
 ```bash
-openclaw onboard --auth-choice moonshot-api-key
+gensparx onboard --auth-choice moonshot-api-key
 ```
 
 Kimi Coding:
 
 ```bash
-openclaw onboard --auth-choice kimi-code-api-key
+gensparx onboard --auth-choice kimi-code-api-key
 ```
 
 Note: Moonshot and Kimi Coding are separate providers. Keys are not interchangeable, endpoints differ, and model refs differ (Moonshot uses `moonshot/...`, Kimi Coding uses `kimi-coding/...`).
@@ -140,3 +140,5 @@ Note: Moonshot and Kimi Coding are separate providers. Keys are not interchangea
 - If Moonshot publishes different context limits for a model, adjust
   `contextWindow` accordingly.
 - Use `https://api.moonshot.ai/v1` for the international endpoint, and `https://api.moonshot.cn/v1` for the China endpoint.
+
+

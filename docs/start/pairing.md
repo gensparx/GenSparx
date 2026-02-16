@@ -3,13 +3,13 @@ summary: "Pairing overview: approve who can DM you + which nodes can join"
 read_when:
   - Setting up DM access control
   - Pairing a new iOS/Android node
-  - Reviewing OpenClaw security posture
+  - Reviewing GenSparx security posture
 title: "Pairing"
 ---
 
 # Pairing
 
-“Pairing” is OpenClaw’s explicit **owner approval** step.
+“Pairing” is GenSparx’s explicit **owner approval** step.
 It is used in two places:
 
 1. **DM pairing** (who is allowed to talk to the bot)
@@ -32,8 +32,8 @@ Pairing codes:
 ### Approve a sender
 
 ```bash
-openclaw pairing list telegram
-openclaw pairing approve telegram <CODE>
+gensparx pairing list telegram
+gensparx pairing approve telegram <CODE>
 ```
 
 Supported channels: `telegram`, `whatsapp`, `signal`, `imessage`, `discord`, `slack`.
@@ -55,9 +55,9 @@ creates a device pairing request that must be approved.
 ### Approve a node device
 
 ```bash
-openclaw devices list
-openclaw devices approve <requestId>
-openclaw devices reject <requestId>
+gensparx devices list
+gensparx devices approve <requestId>
+gensparx devices reject <requestId>
 ```
 
 ### Where the state lives
@@ -69,7 +69,7 @@ Stored under `~/.openclaw/devices/`:
 
 ### Notes
 
-- The legacy `node.pair.*` API (CLI: `openclaw nodes pending/approve`) is a
+- The legacy `node.pair.*` API (CLI: `gensparx nodes pending/approve`) is a
   separate gateway-owned pairing store. WS nodes still require device pairing.
 
 ## Related docs
@@ -84,3 +84,7 @@ Stored under `~/.openclaw/devices/`:
   - iMessage (legacy): [iMessage](/channels/imessage)
   - Discord: [Discord](/channels/discord)
   - Slack: [Slack](/channels/slack)
+
+
+
+

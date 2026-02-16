@@ -1,22 +1,22 @@
 ---
-summary: "OpenClaw is a multi-channel gateway for AI agents that runs on any OS."
+summary: "GenSparx is a multi-channel gateway for AI agents that runs on any OS."
 read_when:
-  - Introducing OpenClaw to newcomers
-title: "OpenClaw"
+  - Introducing GenSparx to newcomers
+title: "GenSparx"
 ---
 
-# OpenClaw 🦞
+# GenSparx 🦞
 
 <p align="center">
     <img
         src="/assets/openclaw-logo-text-dark.png"
-        alt="OpenClaw"
+        alt="GenSparx"
         width="500"
         class="dark:hidden"
     />
     <img
         src="/assets/openclaw-logo-text.png"
-        alt="OpenClaw"
+        alt="GenSparx"
         width="500"
         class="hidden dark:block"
     />
@@ -31,17 +31,17 @@ title: "OpenClaw"
 
 <Columns>
   <Card title="Get Started" href="/start/getting-started" icon="rocket">
-    Install OpenClaw and bring up the Gateway in minutes.
+    Install GenSparx and bring up the Gateway in minutes.
   </Card>
   <Card title="Run the Wizard" href="/start/wizard" icon="sparkles">
-    Guided setup with `openclaw onboard` and pairing flows.
+    Guided setup with `gensparx onboard` and pairing flows.
   </Card>
   <Card title="Open the Control UI" href="/web/control-ui" icon="layout-dashboard">
     Launch the browser dashboard for chat, config, and sessions.
   </Card>
 </Columns>
 
-OpenClaw connects chat apps to coding agents like Pi through a single Gateway process. It powers the OpenClaw assistant and supports local or remote setups.
+GenSparx connects chat apps to coding agents like Pi through a single Gateway process. It powers the GenSparx assistant and supports local or remote setups.
 
 ## How it works
 
@@ -83,20 +83,20 @@ The Gateway is the single source of truth for sessions, routing, and channel con
 ## Quick start
 
 <Steps>
-  <Step title="Install OpenClaw">
+  <Step title="Install GenSparx">
     ```bash
-    npm install -g openclaw@latest
+    npm install -g gensparx@latest
     ```
   </Step>
   <Step title="Onboard and install the service">
     ```bash
-    openclaw onboard --install-daemon
+    gensparx onboard --install-daemon
     ```
   </Step>
   <Step title="Pair WhatsApp and start the Gateway">
     ```bash
-    openclaw channels login
-    openclaw gateway --port 18789
+    gensparx channels login
+    gensparx gateway --port 18789
     ```
   </Step>
 </Steps>
@@ -111,14 +111,14 @@ Open the browser Control UI after the Gateway starts.
 - Remote access: [Web surfaces](/web) and [Tailscale](/gateway/tailscale)
 
 <p align="center">
-  <img src="whatsapp-openclaw.jpg" alt="OpenClaw" width="420" />
+  <img src="whatsapp-openclaw.jpg" alt="GenSparx" width="420" />
 </p>
 
 ## Configuration (optional)
 
 Config lives at `~/.openclaw/openclaw.json`.
 
-- If you **do nothing**, OpenClaw uses the bundled Pi binary in RPC mode with per-sender sessions.
+- If you **do nothing**, GenSparx uses the bundled Pi binary in RPC mode with per-sender sessions.
 - If you want to lock it down, start with `channels.whatsapp.allowFrom` and (for groups) mention rules.
 
 Example:
@@ -131,7 +131,7 @@ Example:
       groups: { "*": { requireMention: true } },
     },
   },
-  messages: { groupChat: { mentionPatterns: ["@openclaw"] } },
+  messages: { groupChat: { mentionPatterns: ["@gensparx"] } },
 }
 ```
 
@@ -177,3 +177,5 @@ Example:
     Project origins, contributors, and license.
   </Card>
 </Columns>
+
+

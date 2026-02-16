@@ -2,7 +2,7 @@
 summary: "Research notes: offline memory system for Clawd workspaces (Markdown source-of-truth + derived index)"
 read_when:
   - Designing workspace memory (~/.openclaw/workspace) beyond daily Markdown logs
-  - Deciding: standalone CLI vs deep OpenClaw integration
+  - Deciding: standalone CLI vs deep GenSparx integration
   - Adding offline recall + reflection (retain/recall/reflect)
 title: "Workspace Memory Research"
 ---
@@ -168,17 +168,17 @@ Opinion evolution (simple, explainable):
 
 ## CLI integration: standalone vs deep integration
 
-Recommendation: **deep integration in OpenClaw**, but keep a separable core library.
+Recommendation: **deep integration in GenSparx**, but keep a separable core library.
 
-### Why integrate into OpenClaw?
+### Why integrate into GenSparx?
 
-- OpenClaw already knows:
+- GenSparx already knows:
   - the workspace path (`agents.defaults.workspace`)
   - the session model + heartbeats
   - logging + troubleshooting patterns
 - You want the agent itself to call the tools:
-  - `openclaw memory recall "…" --k 25 --since 30d`
-  - `openclaw memory reflect --since 7d`
+  - `gensparx memory recall "…" --k 25 --since 30d`
+  - `gensparx memory reflect --since 7d`
 
 ### Why still split a library?
 
@@ -226,3 +226,5 @@ If you want a minimal, still-useful version:
 - Letta / MemGPT concepts: “core memory blocks” + “archival memory” + tool-driven self-editing memory.
 - Hindsight Technical Report: “retain / recall / reflect”, four-network memory, narrative fact extraction, opinion confidence evolution.
 - SuCo: arXiv 2411.14754 (2024): “Subspace Collision” approximate nearest neighbor retrieval.
+
+

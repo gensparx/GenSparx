@@ -47,7 +47,7 @@ reach other host locations unless sandboxing is enabled. See
 
 ### Single-agent mode (default)
 
-If you do nothing, OpenClaw runs a single agent:
+If you do nothing, GenSparx runs a single agent:
 
 - `agentId` defaults to **`main`**.
 - Sessions are keyed as `agent:main:<mainKey>`.
@@ -59,7 +59,7 @@ If you do nothing, OpenClaw runs a single agent:
 Use the agent wizard to add a new isolated agent:
 
 ```bash
-openclaw agents add work
+gensparx agents add work
 ```
 
 Then add `bindings` (or let the wizard do it) to route inbound messages.
@@ -67,7 +67,7 @@ Then add `bindings` (or let the wizard do it) to route inbound messages.
 Verify with:
 
 ```bash
-openclaw agents list --bindings
+gensparx agents list --bindings
 ```
 
 ## Multiple agents = multiple people, multiple personalities
@@ -374,3 +374,5 @@ If you need per-agent boundaries, use `agents.list[].tools` to deny `exec`.
 For group targeting, use `agents.list[].groupChat.mentionPatterns` so @mentions map cleanly to the intended agent.
 
 See [Multi-Agent Sandbox & Tools](/multi-agent-sandbox-tools) for detailed examples.
+
+

@@ -1,5 +1,5 @@
 ---
-summary: "Mattermost bot setup and OpenClaw config"
+summary: "Mattermost bot setup and GenSparx config"
 read_when:
   - Setting up Mattermost
   - Debugging Mattermost routing
@@ -19,17 +19,17 @@ Mattermost ships as a plugin and is not bundled with the core install.
 Install via CLI (npm registry):
 
 ```bash
-openclaw plugins install @openclaw/mattermost
+gensparx plugins install @openclaw/mattermost
 ```
 
 Local checkout (when running from a git repo):
 
 ```bash
-openclaw plugins install ./extensions/mattermost
+gensparx plugins install ./extensions/mattermost
 ```
 
 If you choose Mattermost during configure/onboarding and a git checkout is detected,
-OpenClaw will offer the local install path automatically.
+GenSparx will offer the local install path automatically.
 
 Details: [Plugins](/plugin)
 
@@ -38,7 +38,7 @@ Details: [Plugins](/plugin)
 1. Install the Mattermost plugin.
 2. Create a Mattermost bot account and copy the **bot token**.
 3. Copy the Mattermost **base URL** (e.g., `https://chat.example.com`).
-4. Configure OpenClaw and start the gateway.
+4. Configure GenSparx and start the gateway.
 
 Minimal config:
 
@@ -94,8 +94,8 @@ Notes:
 
 - Default: `channels.mattermost.dmPolicy = "pairing"` (unknown senders get a pairing code).
 - Approve via:
-  - `openclaw pairing list mattermost`
-  - `openclaw pairing approve mattermost <CODE>`
+  - `gensparx pairing list mattermost`
+  - `gensparx pairing approve mattermost <CODE>`
 - Public DMs: `channels.mattermost.dmPolicy="open"` plus `channels.mattermost.allowFrom=["*"]`.
 
 ## Channels (groups)
@@ -106,7 +106,7 @@ Notes:
 
 ## Targets for outbound delivery
 
-Use these target formats with `openclaw message send` or cron/webhooks:
+Use these target formats with `gensparx message send` or cron/webhooks:
 
 - `channel:<id>` for a channel
 - `user:<id>` for a DM
@@ -136,3 +136,5 @@ Mattermost supports multiple accounts under `channels.mattermost.accounts`:
 - No replies in channels: ensure the bot is in the channel and mention it (oncall), use a trigger prefix (onchar), or set `chatmode: "onmessage"`.
 - Auth errors: check the bot token, base URL, and whether the account is enabled.
 - Multi-account issues: env vars only apply to the `default` account.
+
+

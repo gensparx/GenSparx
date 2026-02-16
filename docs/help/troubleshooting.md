@@ -13,22 +13,22 @@ title: "Troubleshooting"
 Run these in order:
 
 ```bash
-openclaw status
-openclaw status --all
-openclaw gateway probe
-openclaw logs --follow
-openclaw doctor
+gensparx status
+gensparx status --all
+gensparx gateway probe
+gensparx logs --follow
+gensparx doctor
 ```
 
 If the gateway is reachable, deep probes:
 
 ```bash
-openclaw status --deep
+gensparx status --deep
 ```
 
 ## Common “it broke” cases
 
-### `openclaw: command not found`
+### `gensparx: command not found`
 
 Almost always a Node/npm PATH issue. Start here:
 
@@ -39,13 +39,13 @@ Almost always a Node/npm PATH issue. Start here:
 Re-run the installer in verbose mode to see the full trace and npm output:
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash -s -- --verbose
+curl -fsSL https://gensparx.com/install.sh | bash -s -- --verbose
 ```
 
 For beta installs:
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash -s -- --beta --verbose
+curl -fsSL https://gensparx.com/install.sh | bash -s -- --beta --verbose
 ```
 
 You can also set `OPENCLAW_VERBOSE=1` instead of the flag.
@@ -60,10 +60,10 @@ You can also set `OPENCLAW_VERBOSE=1` instead of the flag.
 - [Gateway troubleshooting](/gateway/troubleshooting)
 - [Control UI](/web/control-ui#insecure-http)
 
-### `docs.openclaw.ai` shows an SSL error (Comcast/Xfinity)
+### `docs.gensparx.com` shows an SSL error (Comcast/Xfinity)
 
-Some Comcast/Xfinity connections block `docs.openclaw.ai` via Xfinity Advanced Security.
-Disable Advanced Security or add `docs.openclaw.ai` to the allowlist, then retry.
+Some Comcast/Xfinity connections block `docs.gensparx.com` via Xfinity Advanced Security.
+Disable Advanced Security or add `docs.gensparx.com` to the allowlist, then retry.
 
 - Xfinity Advanced Security help: https://www.xfinity.com/support/articles/using-xfinity-xfi-advanced-security
 - Quick sanity checks: try a mobile hotspot or VPN to confirm it’s ISP-level filtering
@@ -83,7 +83,7 @@ Disable Advanced Security or add `docs.openclaw.ai` to the allowlist, then retry
 This usually means `agents.defaults.models` is configured as an allowlist. When it’s non-empty,
 only those provider/model keys can be selected.
 
-- Check the allowlist: `openclaw config get agents.defaults.models`
+- Check the allowlist: `gensparx config get agents.defaults.models`
 - Add the model you want (or clear the allowlist) and retry `/model`
 - Use `/models` to browse the allowed providers/models
 
@@ -92,7 +92,11 @@ only those provider/model keys can be selected.
 Paste a safe report:
 
 ```bash
-openclaw status --all
+gensparx status --all
 ```
 
-If you can, include the relevant log tail from `openclaw logs --follow`.
+If you can, include the relevant log tail from `gensparx logs --follow`.
+
+
+
+

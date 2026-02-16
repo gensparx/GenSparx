@@ -1,5 +1,5 @@
 ---
-summary: "Hubs that link to every OpenClaw doc"
+summary: "Hubs that link to every GenSparx doc"
 read_when:
   - You want a complete map of the documentation
 title: "Docs Hubs"
@@ -8,7 +8,7 @@ title: "Docs Hubs"
 # Docs hubs
 
 <Note>
-If you are new to OpenClaw, start with [Getting Started](/start/getting-started).
+If you are new to GenSparx, start with [Getting Started](/start/getting-started).
 </Note>
 
 Use these hubs to discover every page, including deep dives and reference docs that don’t appear in the left nav.
@@ -25,7 +25,7 @@ Use these hubs to discover every page, including deep dives and reference docs t
 - [Docs directory](/start/docs-directory)
 - [Configuration](/gateway/configuration)
 - [Configuration examples](/gateway/configuration-examples)
-- [OpenClaw assistant](/start/openclaw)
+- [GenSparx assistant](/start/GenSparx)
 - [Showcase](/start/showcase)
 - [Lore](/start/lore)
 
@@ -144,24 +144,24 @@ Use these hubs to discover every page, including deep dives and reference docs t
 
 ## macOS companion app (advanced)
 
-- [macOS dev setup](/platforms/mac/dev-setup)
-- [macOS menu bar](/platforms/mac/menu-bar)
-- [macOS voice wake](/platforms/mac/voicewake)
-- [macOS voice overlay](/platforms/mac/voice-overlay)
-- [macOS WebChat](/platforms/mac/webchat)
-- [macOS Canvas](/platforms/mac/canvas)
-- [macOS child process](/platforms/mac/child-process)
-- [macOS health](/platforms/mac/health)
-- [macOS icon](/platforms/mac/icon)
-- [macOS logging](/platforms/mac/logging)
-- [macOS permissions](/platforms/mac/permissions)
-- [macOS remote](/platforms/mac/remote)
-- [macOS signing](/platforms/mac/signing)
-- [macOS release](/platforms/mac/release)
-- [macOS gateway (launchd)](/platforms/mac/bundled-gateway)
-- [macOS XPC](/platforms/mac/xpc)
-- [macOS skills](/platforms/mac/skills)
-- [macOS Peekaboo](/platforms/mac/peekaboo)
+- [macOS dev setup](/platforms/macos)
+- [macOS menu bar](/platforms/macos)
+- [macOS voice wake](/platforms/macos)
+- [macOS voice overlay](/platforms/macos)
+- [macOS WebChat](/platforms/macos)
+- [macOS Canvas](/platforms/macos)
+- [macOS child process](/platforms/macos)
+- [macOS health](/platforms/macos)
+- [macOS icon](/platforms/macos)
+- [macOS logging](/platforms/macos)
+- [macOS permissions](/platforms/macos)
+- [macOS remote](/platforms/macos)
+- [macOS signing](/platforms/macos)
+- [macOS release](/platforms/macos)
+- [macOS gateway (launchd)](/platforms/macos)
+- [macOS XPC](/platforms/macos)
+- [macOS skills](/platforms/macos)
+- [macOS Peekaboo](/platforms/macos)
 
 ## Workspace + templates
 
@@ -169,21 +169,21 @@ Use these hubs to discover every page, including deep dives and reference docs t
 - [ClawHub](/tools/clawhub)
 - [Skills config](/tools/skills-config)
 - [Default AGENTS](/reference/AGENTS.default)
-- [Templates: AGENTS](/reference/templates/AGENTS)
-- [Templates: BOOTSTRAP](/reference/templates/BOOTSTRAP)
-- [Templates: HEARTBEAT](/reference/templates/HEARTBEAT)
-- [Templates: IDENTITY](/reference/templates/IDENTITY)
-- [Templates: SOUL](/reference/templates/SOUL)
-- [Templates: TOOLS](/reference/templates/TOOLS)
-- [Templates: USER](/reference/templates/USER)
+- [Templates: AGENTS](/reference/AGENTS.default)
+- [Templates: BOOTSTRAP](/start/docs-directory)
+- [Templates: HEARTBEAT](/start/docs-directory)
+- [Templates: IDENTITY](/start/docs-directory)
+- [Templates: SOUL](/start/docs-directory)
+- [Templates: TOOLS](/start/docs-directory)
+- [Templates: USER](/start/docs-directory)
 
 ## Experiments (exploratory)
 
-- [Onboarding config protocol](/experiments/onboarding-config-protocol)
-- [Cron hardening notes](/experiments/plans/cron-add-hardening)
-- [Group policy hardening notes](/experiments/plans/group-policy-hardening)
-- [Research: memory](/experiments/research/memory)
-- [Model config exploration](/experiments/proposals/model-config)
+- [Onboarding config protocol](/start/docs-directory)
+- [Cron hardening notes](/start/docs-directory)
+- [Group policy hardening notes](/start/docs-directory)
+- [Research: memory](/start/docs-directory)
+- [Model config exploration](/start/docs-directory)
 
 ## Project
 
@@ -194,3 +194,7 @@ Use these hubs to discover every page, including deep dives and reference docs t
 - [Testing](/reference/test)
 - [Release checklist](/reference/RELEASING)
 - [Device models](/reference/device-models)
+
+
+
+

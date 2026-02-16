@@ -1,12 +1,12 @@
 ---
-summary: "OpenClaw macOS release checklist (Sparkle feed, packaging, signing)"
+summary: "GenSparx macOS release checklist (Sparkle feed, packaging, signing)"
 read_when:
-  - Cutting or validating a OpenClaw macOS release
+  - Cutting or validating a GenSparx macOS release
   - Updating the Sparkle appcast or feed assets
 title: "macOS Release"
 ---
 
-# OpenClaw macOS release (Sparkle)
+# GenSparx macOS release (Sparkle)
 
 This app now ships Sparkle auto-updates. Release builds must be Developer ID–signed, zipped, and published with a signed appcast entry.
 
@@ -41,10 +41,10 @@ SIGN_IDENTITY="Developer ID Application: <Developer Name> (<TEAMID>)" \
 scripts/package-mac-app.sh
 
 # Zip for distribution (includes resource forks for Sparkle delta support)
-ditto -c -k --sequesterRsrc --keepParent dist/OpenClaw.app dist/OpenClaw-2026.2.4.zip
+ditto -c -k --sequesterRsrc --keepParent dist/GenSparx.app dist/GenSparx-2026.2.4.zip
 
 # Optional: also build a styled DMG for humans (drag to /Applications)
-scripts/create-dmg.sh dist/OpenClaw.app dist/OpenClaw-2026.2.4.dmg
+scripts/create-dmg.sh dist/GenSparx.app dist/GenSparx-2026.2.4.dmg
 
 # Recommended: build + notarize/staple zip + DMG
 # First, create a keychain profile once:
@@ -59,7 +59,7 @@ SIGN_IDENTITY="Developer ID Application: <Developer Name> (<TEAMID>)" \
 scripts/package-mac-dist.sh
 
 # Optional: ship dSYM alongside the release
-ditto -c -k --keepParent apps/macos/.build/release/OpenClaw.app.dSYM dist/OpenClaw-2026.2.4.dSYM.zip
+ditto -c -k --keepParent apps/macos/.build/release/GenSparx.app.dSYM dist/GenSparx-2026.2.4.dSYM.zip
 ```
 
 ## Appcast entry
@@ -67,7 +67,7 @@ ditto -c -k --keepParent apps/macos/.build/release/OpenClaw.app.dSYM dist/OpenCl
 Use the release note generator so Sparkle renders formatted HTML notes:
 
 ```bash
-SPARKLE_PRIVATE_KEY_FILE=/path/to/ed25519-private-key scripts/make_appcast.sh dist/OpenClaw-2026.2.4.zip https://raw.githubusercontent.com/openclaw/openclaw/main/appcast.xml
+SPARKLE_PRIVATE_KEY_FILE=/path/to/ed25519-private-key scripts/make_appcast.sh dist/GenSparx-2026.2.4.zip https://raw.githubusercontent.com/openclaw/openclaw/main/appcast.xml
 ```
 
 Generates HTML release notes from `CHANGELOG.md` (via [`scripts/changelog-to-html.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/changelog-to-html.sh)) and embeds them in the appcast entry.
@@ -75,7 +75,7 @@ Commit the updated `appcast.xml` alongside the release assets (zip + dSYM) when 
 
 ## Publish & verify
 
-- Upload `OpenClaw-2026.2.4.zip` (and `OpenClaw-2026.2.4.dSYM.zip`) to the GitHub release for tag `v2026.2.4`.
+- Upload `GenSparx-2026.2.4.zip` (and `GenSparx-2026.2.4.dSYM.zip`) to the GitHub release for tag `v2026.2.4`.
 - Ensure the raw appcast URL matches the baked feed: `https://raw.githubusercontent.com/openclaw/openclaw/main/appcast.xml`.
 - Sanity checks:
   - `curl -I https://raw.githubusercontent.com/openclaw/openclaw/main/appcast.xml` returns 200.
@@ -83,3 +83,5 @@ Commit the updated `appcast.xml` alongside the release assets (zip + dSYM) when 
   - On a previous public build, run “Check for Updates…” from the About tab and verify Sparkle installs the new build cleanly.
 
 Definition of done: signed app + appcast are published, update flow works from an older installed version, and release assets are attached to the GitHub release.
+
+

@@ -1,5 +1,5 @@
 ---
-summary: "Where OpenClaw loads environment variables and the precedence order"
+summary: "Where GenSparx loads environment variables and the precedence order"
 read_when:
   - You need to know which env vars are loaded, and in what order
   - You are debugging missing API keys in the Gateway
@@ -9,7 +9,7 @@ title: "Environment Variables"
 
 # Environment variables
 
-OpenClaw pulls environment variables from multiple sources. The rule is **never override existing values**.
+GenSparx pulls environment variables from multiple sources. The rule is **never override existing values**.
 
 ## Precedence (highest → lowest)
 
@@ -79,3 +79,5 @@ See [Configuration: Env var substitution](/gateway/configuration#env-var-substit
 - [Gateway configuration](/gateway/configuration)
 - [FAQ: env vars and .env loading](/help/faq#env-vars-and-env-loading)
 - [Models overview](/concepts/models)
+
+

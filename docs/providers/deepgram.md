@@ -8,10 +8,10 @@ title: "Deepgram"
 
 # Deepgram (Audio Transcription)
 
-Deepgram is a speech-to-text API. In OpenClaw it is used for **inbound audio/voice note
+Deepgram is a speech-to-text API. In GenSparx it is used for **inbound audio/voice note
 transcription** via `tools.media.audio`.
 
-When enabled, OpenClaw uploads the audio file to Deepgram and injects the transcript
+When enabled, GenSparx uploads the audio file to Deepgram and injects the transcript
 into the reply pipeline (`{{Transcript}}` + `[Audio]` block). This is **not streaming**;
 it uses the pre-recorded transcription endpoint.
 
@@ -91,3 +91,5 @@ Example with Deepgram options:
 - Authentication follows the standard provider auth order; `DEEPGRAM_API_KEY` is the simplest path.
 - Override endpoints or headers with `tools.media.audio.baseUrl` and `tools.media.audio.headers` when using a proxy.
 - Output follows the same audio rules as other providers (size caps, timeouts, transcript injection).
+
+

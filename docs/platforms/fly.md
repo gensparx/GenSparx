@@ -1,11 +1,11 @@
 ---
 title: Fly.io
-description: Deploy OpenClaw on Fly.io
+description: Deploy GenSparx on Fly.io
 ---
 
 # Fly.io Deployment
 
-**Goal:** OpenClaw Gateway running on a [Fly.io](https://fly.io) machine with persistent storage, automatic HTTPS, and Discord/channel access.
+**Goal:** GenSparx Gateway running on a [Fly.io](https://fly.io) machine with persistent storage, automatic HTTPS, and Discord/channel access.
 
 ## What you need
 
@@ -26,7 +26,7 @@ description: Deploy OpenClaw on Fly.io
 ```bash
 # Clone the repo
 git clone https://github.com/openclaw/openclaw.git
-cd openclaw
+cd gensparx
 
 # Create a new Fly app (pick your own name)
 fly apps create my-openclaw
@@ -484,3 +484,5 @@ With the recommended config (`shared-cpu-2x`, 2GB RAM):
 - Free tier includes some allowance
 
 See [Fly.io pricing](https://fly.io/docs/about/pricing/) for details.
+
+

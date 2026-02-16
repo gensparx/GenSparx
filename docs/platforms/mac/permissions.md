@@ -15,7 +15,7 @@ macOS treats the app as new and may drop or hide prompts.
 
 ## Requirements for stable permissions
 
-- Same path: run the app from a fixed location (for OpenClaw, `dist/OpenClaw.app`).
+- Same path: run the app from a fixed location (for GenSparx, `dist/GenSparx.app`).
 - Same bundle identifier: changing the bundle ID creates a new permission identity.
 - Signed app: unsigned or ad-hoc signed builds do not persist permissions.
 - Consistent signature: use a real Apple Development or Developer ID certificate
@@ -42,3 +42,5 @@ sudo tccutil reset AppleEvents
 
 If you are testing permissions, always sign with a real certificate. Ad-hoc
 builds are only acceptable for quick local runs where permissions do not matter.
+
+

@@ -20,7 +20,7 @@ agent (with a session switcher for other sessions).
 - Manual: Lobster menu → “Open Chat”.
 - Auto‑open for testing:
   ```bash
-  dist/OpenClaw.app/Contents/MacOS/OpenClaw --webchat
+  dist/GenSparx.app/Contents/MacOS/GenSparx --webchat
   ```
 - Logs: `./scripts/clawlog.sh` (subsystem `bot.molt`, category `WebChatSwiftUI`).
 
@@ -39,3 +39,5 @@ agent (with a session switcher for other sessions).
 ## Known limitations
 
 - The UI is optimized for chat sessions (not a full browser sandbox).
+
+

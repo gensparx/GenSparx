@@ -1,5 +1,5 @@
 ---
-summary: "Run multiple OpenClaw Gateways on one host (isolation, ports, and profiles)"
+summary: "Run multiple GenSparx Gateways on one host (isolation, ports, and profiles)"
 read_when:
   - Running more than one Gateway on the same machine
   - You need isolated config/state/ports per Gateway
@@ -26,19 +26,19 @@ Profiles auto-scope `OPENCLAW_STATE_DIR` + `OPENCLAW_CONFIG_PATH` and suffix ser
 
 ```bash
 # main
-openclaw --profile main setup
-openclaw --profile main gateway --port 18789
+gensparx --profile main setup
+gensparx --profile main gateway --port 18789
 
 # rescue
-openclaw --profile rescue setup
-openclaw --profile rescue gateway --port 19001
+gensparx --profile rescue setup
+gensparx --profile rescue gateway --port 19001
 ```
 
 Per-profile services:
 
 ```bash
-openclaw --profile main gateway install
-openclaw --profile rescue gateway install
+gensparx --profile main gateway install
+gensparx --profile rescue gateway install
 ```
 
 ## Rescue-bot guide
@@ -59,11 +59,11 @@ Port spacing: leave at least 20 ports between base ports so the derived browser/
 ```bash
 # Main bot (existing or fresh, without --profile param)
 # Runs on port 18789 + Chrome CDC/Canvas/... Ports
-openclaw onboard
-openclaw gateway install
+gensparx onboard
+gensparx gateway install
 
 # Rescue bot (isolated profile + ports)
-openclaw --profile rescue onboard
+gensparx --profile rescue onboard
 # Notes:
 # - workspace name will be postfixed with -rescue per default
 # - Port should be at least 18789 + 20 Ports,
@@ -71,7 +71,7 @@ openclaw --profile rescue onboard
 # - rest of the onboarding is the same as normal
 
 # To install the service (if not happened automatically during onboarding)
-openclaw --profile rescue gateway install
+gensparx --profile rescue gateway install
 ```
 
 ## Port mapping (derived)
@@ -96,17 +96,21 @@ If you override any of these in config or env, you must keep them unique per ins
 ```bash
 OPENCLAW_CONFIG_PATH=~/.openclaw/main.json \
 OPENCLAW_STATE_DIR=~/.openclaw-main \
-openclaw gateway --port 18789
+gensparx gateway --port 18789
 
 OPENCLAW_CONFIG_PATH=~/.openclaw/rescue.json \
 OPENCLAW_STATE_DIR=~/.openclaw-rescue \
-openclaw gateway --port 19001
+gensparx gateway --port 19001
 ```
 
 ## Quick checks
 
 ```bash
-openclaw --profile main status
-openclaw --profile rescue status
-openclaw --profile rescue browser status
+gensparx --profile main status
+gensparx --profile rescue status
+gensparx --profile rescue browser status
 ```
+
+
+
+

@@ -18,7 +18,7 @@ Broadcast Groups enable multiple agents to process and respond to the same messa
 
 Current scope: **WhatsApp only** (web channel).
 
-Broadcast groups are evaluated after channel allowlists and group activation rules. In WhatsApp groups, this means broadcasts happen when OpenClaw would normally reply (for example: on mention, depending on your group settings).
+Broadcast groups are evaluated after channel allowlists and group activation rules. In WhatsApp groups, this means broadcasts happen when GenSparx would normally reply (for example: on mention, depending on your group settings).
 
 ## Use Cases
 
@@ -83,7 +83,7 @@ Add a top-level `broadcast` section (next to `bindings`). Keys are WhatsApp peer
 }
 ```
 
-**Result:** When OpenClaw would reply in this chat, it will run all three agents.
+**Result:** When GenSparx would reply in this chat, it will run all three agents.
 
 ### Processing Strategy
 
@@ -403,7 +403,7 @@ tail -f ~/.openclaw/logs/gateway.log | grep broadcast
 ### Config Schema
 
 ```typescript
-interface OpenClawConfig {
+interface GenSparxConfig {
   broadcast?: {
     strategy?: "parallel" | "sequential";
     [peerId: string]: string[];
@@ -440,3 +440,5 @@ Planned features:
 - [Multi-Agent Configuration](/multi-agent-sandbox-tools)
 - [Routing Configuration](/concepts/channel-routing)
 - [Session Management](/concepts/sessions)
+
+

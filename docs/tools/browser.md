@@ -2,31 +2,31 @@
 summary: "Integrated browser control service + action commands"
 read_when:
   - Adding agent-controlled browser automation
-  - Debugging why openclaw is interfering with your own Chrome
+  - Debugging why gensparx is interfering with your own Chrome
   - Implementing browser settings + lifecycle in the macOS app
-title: "Browser (OpenClaw-managed)"
+title: "Browser (GenSparx-managed)"
 ---
 
 # Browser (openclaw-managed)
 
-OpenClaw can run a **dedicated Chrome/Brave/Edge/Chromium profile** that the agent controls.
+GenSparx can run a **dedicated Chrome/Brave/Edge/Chromium profile** that the agent controls.
 It is isolated from your personal browser and is managed through a small local
 control service inside the Gateway (loopback only).
 
 Beginner view:
 
 - Think of it as a **separate, agent-only browser**.
-- The `openclaw` profile does **not** touch your personal browser profile.
+- The `gensparx` profile does **not** touch your personal browser profile.
 - The agent can **open tabs, read pages, click, and type** in a safe lane.
 - The default `chrome` profile uses the **system default Chromium browser** via the
-  extension relay; switch to `openclaw` for the isolated managed browser.
+  extension relay; switch to `gensparx` for the isolated managed browser.
 
 ## What you get
 
-- A separate browser profile named **openclaw** (orange accent by default).
+- A separate browser profile named **gensparx** (orange accent by default).
 - Deterministic tab control (list/open/focus/close).
 - Agent actions (click/type/drag/select), snapshots, screenshots, PDFs.
-- Optional multi-profile support (`openclaw`, `work`, `remote`, ...).
+- Optional multi-profile support (`gensparx`, `work`, `remote`, ...).
 
 This browser is **not** your daily driver. It is a safe, isolated surface for
 agent automation and verification.
@@ -34,22 +34,22 @@ agent automation and verification.
 ## Quick start
 
 ```bash
-openclaw browser --browser-profile openclaw status
-openclaw browser --browser-profile openclaw start
-openclaw browser --browser-profile openclaw open https://example.com
-openclaw browser --browser-profile openclaw snapshot
+gensparx browser --browser-profile gensparx status
+gensparx browser --browser-profile gensparx start
+gensparx browser --browser-profile gensparx open https://example.com
+gensparx browser --browser-profile gensparx snapshot
 ```
 
 If you get “Browser disabled”, enable it in config (see below) and restart the
 Gateway.
 
-## Profiles: `openclaw` vs `chrome`
+## Profiles: `gensparx` vs `chrome`
 
-- `openclaw`: managed, isolated browser (no extension required).
-- `chrome`: extension relay to your **system browser** (requires the OpenClaw
+- `gensparx`: managed, isolated browser (no extension required).
+- `chrome`: extension relay to your **system browser** (requires the GenSparx
   extension to be attached to a tab).
 
-Set `browser.defaultProfile: "openclaw"` if you want managed mode by default.
+Set `browser.defaultProfile: "gensparx"` if you want managed mode by default.
 
 ## Configuration
 
@@ -69,7 +69,7 @@ Browser settings live in `~/.openclaw/openclaw.json`.
     attachOnly: false,
     executablePath: "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
     profiles: {
-      openclaw: { cdpPort: 18800, color: "#FF4500" },
+      gensparx: { cdpPort: 18800, color: "#FF4500" },
       work: { cdpPort: 18801, color: "#0066CC" },
       remote: { cdpUrl: "http://10.0.0.42:9222", color: "#00AA00" },
     },
@@ -88,20 +88,20 @@ Notes:
 - `remoteCdpHandshakeTimeoutMs` applies to remote CDP WebSocket reachability checks.
 - `attachOnly: true` means “never launch a local browser; only attach if it is already running.”
 - `color` + per-profile `color` tint the browser UI so you can see which profile is active.
-- Default profile is `chrome` (extension relay). Use `defaultProfile: "openclaw"` for the managed browser.
+- Default profile is `chrome` (extension relay). Use `defaultProfile: "gensparx"` for the managed browser.
 - Auto-detect order: system default browser if Chromium-based; otherwise Chrome → Brave → Edge → Chromium → Chrome Canary.
-- Local `openclaw` profiles auto-assign `cdpPort`/`cdpUrl` — set those only for remote CDP.
+- Local `gensparx` profiles auto-assign `cdpPort`/`cdpUrl` — set those only for remote CDP.
 
 ## Use Brave (or another Chromium-based browser)
 
 If your **system default** browser is Chromium-based (Chrome/Brave/Edge/etc),
-OpenClaw uses it automatically. Set `browser.executablePath` to override
+GenSparx uses it automatically. Set `browser.executablePath` to override
 auto-detection:
 
 CLI example:
 
 ```bash
-openclaw config set browser.executablePath "/usr/bin/google-chrome"
+gensparx config set browser.executablePath "/usr/bin/google-chrome"
 ```
 
 ```json5
@@ -132,20 +132,20 @@ openclaw config set browser.executablePath "/usr/bin/google-chrome"
 - **Local control (default):** the Gateway starts the loopback control service and can launch a local browser.
 - **Remote control (node host):** run a node host on the machine that has the browser; the Gateway proxies browser actions to it.
 - **Remote CDP:** set `browser.profiles.<name>.cdpUrl` (or `browser.cdpUrl`) to
-  attach to a remote Chromium-based browser. In this case, OpenClaw will not launch a local browser.
+  attach to a remote Chromium-based browser. In this case, GenSparx will not launch a local browser.
 
 Remote CDP URLs can include auth:
 
 - Query tokens (e.g., `https://provider.example?token=<token>`)
 - HTTP Basic auth (e.g., `https://user:pass@provider.example`)
 
-OpenClaw preserves the auth when calling `/json/*` endpoints and when connecting
+GenSparx preserves the auth when calling `/json/*` endpoints and when connecting
 to the CDP WebSocket. Prefer environment variables or secrets managers for
 tokens instead of committing them to config files.
 
 ## Node browser proxy (zero-config default)
 
-If you run a **node host** on the machine that has your browser, OpenClaw can
+If you run a **node host** on the machine that has your browser, GenSparx can
 auto-route browser tool calls to that node without any extra browser config.
 This is the default path for remote gateways.
 
@@ -160,7 +160,7 @@ Notes:
 ## Browserless (hosted remote CDP)
 
 [Browserless](https://browserless.io) is a hosted Chromium service that exposes
-CDP endpoints over HTTPS. You can point a OpenClaw browser profile at a
+CDP endpoints over HTTPS. You can point a GenSparx browser profile at a
 Browserless region endpoint and authenticate with your API key.
 
 Example:
@@ -202,7 +202,7 @@ Remote CDP tips:
 
 ## Profiles (multi-browser)
 
-OpenClaw supports multiple named profiles (routing configs). Profiles can be:
+GenSparx supports multiple named profiles (routing configs). Profiles can be:
 
 - **openclaw-managed**: a dedicated Chromium-based browser instance with its own user data directory + CDP port
 - **remote**: an explicit CDP URL (Chromium-based browser running elsewhere)
@@ -210,7 +210,7 @@ OpenClaw supports multiple named profiles (routing configs). Profiles can be:
 
 Defaults:
 
-- The `openclaw` profile is auto-created if missing.
+- The `gensparx` profile is auto-created if missing.
 - The `chrome` profile is built-in for the Chrome extension relay (points at `http://127.0.0.1:18792` by default).
 - Local CDP ports allocate from **18800–18899** by default.
 - Deleting a profile moves its local data directory to Trash.
@@ -219,7 +219,7 @@ All control endpoints accept `?profile=<name>`; the CLI uses `--browser-profile`
 
 ## Chrome extension relay (use your existing Chrome)
 
-OpenClaw can also drive **your existing Chrome tabs** (no separate “openclaw” Chrome instance) via a local CDP relay + a Chrome extension.
+GenSparx can also drive **your existing Chrome tabs** (no separate “gensparx” Chrome instance) via a local CDP relay + a Chrome extension.
 
 Full guide: [Chrome extension](/tools/chrome-extension)
 
@@ -227,7 +227,7 @@ Flow:
 
 - The Gateway runs locally (same machine) or a node host runs on the browser machine.
 - A local **relay server** listens at a loopback `cdpUrl` (default: `http://127.0.0.1:18792`).
-- You click the **OpenClaw Browser Relay** extension icon on a tab to attach (it does not auto-attach).
+- You click the **GenSparx Browser Relay** extension icon on a tab to attach (it does not auto-attach).
 - The agent controls that tab via the normal `browser` tool, by selecting the right profile.
 
 If the Gateway runs elsewhere, run a node host on the browser machine so the Gateway can proxy browser actions.
@@ -245,22 +245,22 @@ Chrome extension relay takeover requires host browser control, so either:
 1. Load the extension (dev/unpacked):
 
 ```bash
-openclaw browser extension install
+gensparx browser extension install
 ```
 
 - Chrome → `chrome://extensions` → enable “Developer mode”
-- “Load unpacked” → select the directory printed by `openclaw browser extension path`
+- “Load unpacked” → select the directory printed by `gensparx browser extension path`
 - Pin the extension, then click it on the tab you want to control (badge shows `ON`).
 
 2. Use it:
 
-- CLI: `openclaw browser --browser-profile chrome tabs`
+- CLI: `gensparx browser --browser-profile chrome tabs`
 - Agent tool: `browser` with `profile="chrome"`
 
 Optional: if you want a different name or relay port, create your own profile:
 
 ```bash
-openclaw browser create-profile \
+gensparx browser create-profile \
   --name my-chrome \
   --driver extension \
   --cdp-url http://127.0.0.1:18792 \
@@ -280,7 +280,7 @@ Notes:
 
 ## Browser selection
 
-When launching locally, OpenClaw picks the first available:
+When launching locally, GenSparx picks the first available:
 
 1. Chrome
 2. Brave
@@ -324,7 +324,7 @@ For the Chrome extension relay driver, ARIA snapshots and screenshots require Pl
 
 If you see `Playwright is not available in this gateway build`, install the full
 Playwright package (not `playwright-core`) and restart the gateway, or reinstall
-OpenClaw with browser support.
+GenSparx with browser support.
 
 #### Docker Playwright install
 
@@ -360,79 +360,79 @@ All commands also accept `--json` for machine-readable output (stable payloads).
 
 Basics:
 
-- `openclaw browser status`
-- `openclaw browser start`
-- `openclaw browser stop`
-- `openclaw browser tabs`
-- `openclaw browser tab`
-- `openclaw browser tab new`
-- `openclaw browser tab select 2`
-- `openclaw browser tab close 2`
-- `openclaw browser open https://example.com`
-- `openclaw browser focus abcd1234`
-- `openclaw browser close abcd1234`
+- `gensparx browser status`
+- `gensparx browser start`
+- `gensparx browser stop`
+- `gensparx browser tabs`
+- `gensparx browser tab`
+- `gensparx browser tab new`
+- `gensparx browser tab select 2`
+- `gensparx browser tab close 2`
+- `gensparx browser open https://example.com`
+- `gensparx browser focus abcd1234`
+- `gensparx browser close abcd1234`
 
 Inspection:
 
-- `openclaw browser screenshot`
-- `openclaw browser screenshot --full-page`
-- `openclaw browser screenshot --ref 12`
-- `openclaw browser screenshot --ref e12`
-- `openclaw browser snapshot`
-- `openclaw browser snapshot --format aria --limit 200`
-- `openclaw browser snapshot --interactive --compact --depth 6`
-- `openclaw browser snapshot --efficient`
-- `openclaw browser snapshot --labels`
-- `openclaw browser snapshot --selector "#main" --interactive`
-- `openclaw browser snapshot --frame "iframe#main" --interactive`
-- `openclaw browser console --level error`
-- `openclaw browser errors --clear`
-- `openclaw browser requests --filter api --clear`
-- `openclaw browser pdf`
-- `openclaw browser responsebody "**/api" --max-chars 5000`
+- `gensparx browser screenshot`
+- `gensparx browser screenshot --full-page`
+- `gensparx browser screenshot --ref 12`
+- `gensparx browser screenshot --ref e12`
+- `gensparx browser snapshot`
+- `gensparx browser snapshot --format aria --limit 200`
+- `gensparx browser snapshot --interactive --compact --depth 6`
+- `gensparx browser snapshot --efficient`
+- `gensparx browser snapshot --labels`
+- `gensparx browser snapshot --selector "#main" --interactive`
+- `gensparx browser snapshot --frame "iframe#main" --interactive`
+- `gensparx browser console --level error`
+- `gensparx browser errors --clear`
+- `gensparx browser requests --filter api --clear`
+- `gensparx browser pdf`
+- `gensparx browser responsebody "**/api" --max-chars 5000`
 
 Actions:
 
-- `openclaw browser navigate https://example.com`
-- `openclaw browser resize 1280 720`
-- `openclaw browser click 12 --double`
-- `openclaw browser click e12 --double`
-- `openclaw browser type 23 "hello" --submit`
-- `openclaw browser press Enter`
-- `openclaw browser hover 44`
-- `openclaw browser scrollintoview e12`
-- `openclaw browser drag 10 11`
-- `openclaw browser select 9 OptionA OptionB`
-- `openclaw browser download e12 /tmp/report.pdf`
-- `openclaw browser waitfordownload /tmp/report.pdf`
-- `openclaw browser upload /tmp/file.pdf`
-- `openclaw browser fill --fields '[{"ref":"1","type":"text","value":"Ada"}]'`
-- `openclaw browser dialog --accept`
-- `openclaw browser wait --text "Done"`
-- `openclaw browser wait "#main" --url "**/dash" --load networkidle --fn "window.ready===true"`
-- `openclaw browser evaluate --fn '(el) => el.textContent' --ref 7`
-- `openclaw browser highlight e12`
-- `openclaw browser trace start`
-- `openclaw browser trace stop`
+- `gensparx browser navigate https://example.com`
+- `gensparx browser resize 1280 720`
+- `gensparx browser click 12 --double`
+- `gensparx browser click e12 --double`
+- `gensparx browser type 23 "hello" --submit`
+- `gensparx browser press Enter`
+- `gensparx browser hover 44`
+- `gensparx browser scrollintoview e12`
+- `gensparx browser drag 10 11`
+- `gensparx browser select 9 OptionA OptionB`
+- `gensparx browser download e12 /tmp/report.pdf`
+- `gensparx browser waitfordownload /tmp/report.pdf`
+- `gensparx browser upload /tmp/file.pdf`
+- `gensparx browser fill --fields '[{"ref":"1","type":"text","value":"Ada"}]'`
+- `gensparx browser dialog --accept`
+- `gensparx browser wait --text "Done"`
+- `gensparx browser wait "#main" --url "**/dash" --load networkidle --fn "window.ready===true"`
+- `gensparx browser evaluate --fn '(el) => el.textContent' --ref 7`
+- `gensparx browser highlight e12`
+- `gensparx browser trace start`
+- `gensparx browser trace stop`
 
 State:
 
-- `openclaw browser cookies`
-- `openclaw browser cookies set session abc123 --url "https://example.com"`
-- `openclaw browser cookies clear`
-- `openclaw browser storage local get`
-- `openclaw browser storage local set theme dark`
-- `openclaw browser storage session clear`
-- `openclaw browser set offline on`
-- `openclaw browser set headers --json '{"X-Debug":"1"}'`
-- `openclaw browser set credentials user pass`
-- `openclaw browser set credentials --clear`
-- `openclaw browser set geo 37.7749 -122.4194 --origin "https://example.com"`
-- `openclaw browser set geo --clear`
-- `openclaw browser set media dark`
-- `openclaw browser set timezone America/New_York`
-- `openclaw browser set locale en-US`
-- `openclaw browser set device "iPhone 14"`
+- `gensparx browser cookies`
+- `gensparx browser cookies set session abc123 --url "https://example.com"`
+- `gensparx browser cookies clear`
+- `gensparx browser storage local get`
+- `gensparx browser storage local set theme dark`
+- `gensparx browser storage session clear`
+- `gensparx browser set offline on`
+- `gensparx browser set headers --json '{"X-Debug":"1"}'`
+- `gensparx browser set credentials user pass`
+- `gensparx browser set credentials --clear`
+- `gensparx browser set geo 37.7749 -122.4194 --origin "https://example.com"`
+- `gensparx browser set geo --clear`
+- `gensparx browser set media dark`
+- `gensparx browser set timezone America/New_York`
+- `gensparx browser set locale en-US`
+- `gensparx browser set device "iPhone 14"`
 
 Notes:
 
@@ -453,16 +453,16 @@ Notes:
 
 ## Snapshots and refs
 
-OpenClaw supports two “snapshot” styles:
+GenSparx supports two “snapshot” styles:
 
-- **AI snapshot (numeric refs)**: `openclaw browser snapshot` (default; `--format ai`)
+- **AI snapshot (numeric refs)**: `gensparx browser snapshot` (default; `--format ai`)
   - Output: a text snapshot that includes numeric refs.
-  - Actions: `openclaw browser click 12`, `openclaw browser type 23 "hello"`.
+  - Actions: `gensparx browser click 12`, `gensparx browser type 23 "hello"`.
   - Internally, the ref is resolved via Playwright’s `aria-ref`.
 
-- **Role snapshot (role refs like `e12`)**: `openclaw browser snapshot --interactive` (or `--compact`, `--depth`, `--selector`, `--frame`)
+- **Role snapshot (role refs like `e12`)**: `gensparx browser snapshot --interactive` (or `--compact`, `--depth`, `--selector`, `--frame`)
   - Output: a role-based list/tree with `[ref=e12]` (and optional `[nth=1]`).
-  - Actions: `openclaw browser click e12`, `openclaw browser highlight e12`.
+  - Actions: `gensparx browser click e12`, `gensparx browser highlight e12`.
   - Internally, the ref is resolved via `getByRole(...)` (plus `nth()` for duplicates).
   - Add `--labels` to include a viewport screenshot with overlayed `e12` labels.
 
@@ -476,18 +476,18 @@ Ref behavior:
 You can wait on more than just time/text:
 
 - Wait for URL (globs supported by Playwright):
-  - `openclaw browser wait --url "**/dash"`
+  - `gensparx browser wait --url "**/dash"`
 - Wait for load state:
-  - `openclaw browser wait --load networkidle`
+  - `gensparx browser wait --load networkidle`
 - Wait for a JS predicate:
-  - `openclaw browser wait --fn "window.ready===true"`
+  - `gensparx browser wait --fn "window.ready===true"`
 - Wait for a selector to become visible:
-  - `openclaw browser wait "#main"`
+  - `gensparx browser wait "#main"`
 
 These can be combined:
 
 ```bash
-openclaw browser wait "#main" \
+gensparx browser wait "#main" \
   --url "**/dash" \
   --load networkidle \
   --fn "window.ready===true" \
@@ -498,16 +498,16 @@ openclaw browser wait "#main" \
 
 When an action fails (e.g. “not visible”, “strict mode violation”, “covered”):
 
-1. `openclaw browser snapshot --interactive`
+1. `gensparx browser snapshot --interactive`
 2. Use `click <ref>` / `type <ref>` (prefer role refs in interactive mode)
-3. If it still fails: `openclaw browser highlight <ref>` to see what Playwright is targeting
+3. If it still fails: `gensparx browser highlight <ref>` to see what Playwright is targeting
 4. If the page behaves oddly:
-   - `openclaw browser errors --clear`
-   - `openclaw browser requests --filter api --clear`
+   - `gensparx browser errors --clear`
+   - `gensparx browser requests --filter api --clear`
 5. For deep debugging: record a trace:
-   - `openclaw browser trace start`
+   - `gensparx browser trace start`
    - reproduce the issue
-   - `openclaw browser trace stop` (prints `TRACE:<path>`)
+   - `gensparx browser trace stop` (prints `TRACE:<path>`)
 
 ## JSON output
 
@@ -516,10 +516,10 @@ When an action fails (e.g. “not visible”, “strict mode violation”, “co
 Examples:
 
 ```bash
-openclaw browser status --json
-openclaw browser snapshot --interactive --json
-openclaw browser requests --filter api --json
-openclaw browser cookies --json
+gensparx browser status --json
+gensparx browser snapshot --interactive --json
+gensparx browser requests --filter api --json
+gensparx browser cookies --json
 ```
 
 Role snapshots in JSON include `refs` plus a small `stats` block (lines/chars/refs/interactive) so tools can reason about payload size and density.
@@ -542,8 +542,8 @@ These are useful for “make the site behave like X” workflows:
 
 ## Security & privacy
 
-- The openclaw browser profile may contain logged-in sessions; treat it as sensitive.
-- `browser act kind=evaluate` / `openclaw browser evaluate` and `wait --fn`
+- The gensparx browser profile may contain logged-in sessions; treat it as sensitive.
+- `browser act kind=evaluate` / `gensparx browser evaluate` and `wait --fn`
   execute arbitrary JavaScript in the page context. Prompt injection can steer
   this. Disable it with `browser.evaluateEnabled=false` if you do not need it.
 - For logins and anti-bot notes (X/Twitter, etc.), see [Browser login + X/Twitter posting](/tools/browser-login).
@@ -567,10 +567,12 @@ How it maps:
 - `browser act` uses the snapshot `ref` IDs to click/type/drag/select.
 - `browser screenshot` captures pixels (full page or element).
 - `browser` accepts:
-  - `profile` to choose a named browser profile (openclaw, chrome, or remote CDP).
+  - `profile` to choose a named browser profile (gensparx, chrome, or remote CDP).
   - `target` (`sandbox` | `host` | `node`) to select where the browser lives.
   - In sandboxed sessions, `target: "host"` requires `agents.defaults.sandbox.browser.allowHostControl=true`.
   - If `target` is omitted: sandboxed sessions default to `sandbox`, non-sandbox sessions default to `host`.
   - If a browser-capable node is connected, the tool may auto-route to it unless you pin `target="host"` or `target="node"`.
 
 This keeps the agent deterministic and avoids brittle selectors.
+
+

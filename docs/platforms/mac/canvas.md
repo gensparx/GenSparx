@@ -17,7 +17,7 @@ UI surfaces.
 
 Canvas state is stored under Application Support:
 
-- `~/Library/Application Support/OpenClaw/canvas/<session>/...`
+- `~/Library/Application Support/GenSparx/canvas/<session>/...`
 
 The Canvas panel serves those files via a **custom URL scheme**:
 
@@ -53,10 +53,10 @@ Canvas is exposed via the **Gateway WebSocket**, so the agent can:
 CLI examples:
 
 ```bash
-openclaw nodes canvas present --node <id>
-openclaw nodes canvas navigate --node <id> --url "/"
-openclaw nodes canvas eval --node <id> --js "document.title"
-openclaw nodes canvas snapshot --node <id>
+gensparx nodes canvas present --node <id>
+gensparx nodes canvas navigate --node <id> --url "/"
+gensparx nodes canvas eval --node <id> --js "document.title"
+gensparx nodes canvas snapshot --node <id>
 ```
 
 Notes:
@@ -95,25 +95,25 @@ cat > /tmp/a2ui-v0.8.jsonl <<'EOFA2'
 {"beginRendering":{"surfaceId":"main","root":"root"}}
 EOFA2
 
-openclaw nodes canvas a2ui push --jsonl /tmp/a2ui-v0.8.jsonl --node <id>
+gensparx nodes canvas a2ui push --jsonl /tmp/a2ui-v0.8.jsonl --node <id>
 ```
 
 Quick smoke:
 
 ```bash
-openclaw nodes canvas a2ui push --node <id> --text "Hello from A2UI"
+gensparx nodes canvas a2ui push --node <id> --text "Hello from A2UI"
 ```
 
 ## Triggering agent runs from Canvas
 
 Canvas can trigger new agent runs via deep links:
 
-- `openclaw://agent?...`
+- `gensparx://agent?...`
 
 Example (in JS):
 
 ```js
-window.location.href = "openclaw://agent?message=Review%20this%20design";
+window.location.href = "gensparx://agent?message=Review%20this%20design";
 ```
 
 The app prompts for confirmation unless a valid key is provided.
@@ -123,3 +123,5 @@ The app prompts for confirmation unless a valid key is provided.
 - Canvas scheme blocks directory traversal; files must live under the session root.
 - Local Canvas content uses a custom scheme (no loopback server required).
 - External `http(s)` URLs are allowed only when explicitly navigated.
+
+

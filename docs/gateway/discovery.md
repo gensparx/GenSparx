@@ -9,12 +9,12 @@ title: "Discovery and Transports"
 
 # Discovery & transports
 
-OpenClaw has two distinct problems that look similar on the surface:
+GenSparx has two distinct problems that look similar on the surface:
 
 1. **Operator remote control**: the macOS menu bar app controlling a gateway running elsewhere.
 2. **Node pairing**: iOS/Android (and future nodes) finding a gateway and pairing securely.
 
-The design goal is to keep all network discovery/advertising in the **Node Gateway** (`openclaw gateway`) and keep clients (mac app, iOS) as consumers.
+The design goal is to keep all network discovery/advertising in the **Node Gateway** (`gensparx gateway`) and keep clients (mac app, iOS) as consumers.
 
 ## Terms
 
@@ -65,7 +65,7 @@ Troubleshooting and beacon details: [Bonjour](/gateway/bonjour).
   - `gatewayTls=1` (only when TLS is enabled)
   - `gatewayTlsSha256=<sha256>` (only when TLS is enabled and fingerprint is available)
   - `canvasPort=18793` (default canvas host port; serves `/__openclaw__/canvas/`)
-  - `cliPath=<path>` (optional; absolute path to a runnable `openclaw` entrypoint or binary)
+  - `cliPath=<path>` (optional; absolute path to a runnable `gensparx` entrypoint or binary)
   - `tailnetDns=<magicdns>` (optional hint; auto-detected when Tailscale is available)
 
 Disable/override:
@@ -114,3 +114,7 @@ The gateway is the source of truth for node/client admission.
 - **Gateway**: advertises discovery beacons, owns pairing decisions, and hosts the WS endpoint.
 - **macOS app**: helps you pick a gateway, shows pairing prompts, and uses SSH only as a fallback.
 - **iOS/Android nodes**: browse Bonjour as a convenience and connect to the paired Gateway WS.
+
+
+
+

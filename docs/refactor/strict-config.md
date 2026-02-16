@@ -48,8 +48,8 @@ title: "Strict Config Validation"
 - Doctor runs **every time** config is loaded (dry-run by default).
 - If config invalid:
   - Print a summary + actionable errors.
-  - Instruct: `openclaw doctor --fix`.
-- `openclaw doctor --fix`:
+  - Instruct: `gensparx doctor --fix`.
+- `gensparx doctor --fix`:
   - Applies migrations.
   - Removes unknown keys.
   - Writes updated config.
@@ -58,14 +58,14 @@ title: "Strict Config Validation"
 
 Allowed (diagnostic-only):
 
-- `openclaw doctor`
-- `openclaw logs`
-- `openclaw health`
-- `openclaw help`
-- `openclaw status`
-- `openclaw gateway status`
+- `gensparx doctor`
+- `gensparx logs`
+- `gensparx health`
+- `gensparx help`
+- `gensparx status`
+- `gensparx gateway status`
 
-Everything else must hard-fail with: “Config invalid. Run `openclaw doctor --fix`.”
+Everything else must hard-fail with: “Config invalid. Run `gensparx doctor --fix`.”
 
 ## Error UX format
 
@@ -91,3 +91,5 @@ Everything else must hard-fail with: “Config invalid. Run `openclaw doctor --f
 - Plugin missing schema → plugin load blocked with clear error.
 - Invalid config → gateway startup blocked except diagnostic commands.
 - Doctor dry-run auto; `doctor --fix` writes corrected config.
+
+

@@ -1,5 +1,5 @@
 ---
-summary: "Optional Docker-based setup and onboarding for OpenClaw"
+summary: "Optional Docker-based setup and onboarding for GenSparx"
 read_when:
   - You want a containerized gateway instead of local installs
   - You are validating the Docker flow
@@ -12,13 +12,13 @@ Docker is **optional**. Use it only if you want a containerized gateway or to va
 
 ## Is Docker right for me?
 
-- **Yes**: you want an isolated, throwaway gateway environment or to run OpenClaw on a host without local installs.
+- **Yes**: you want an isolated, throwaway gateway environment or to run GenSparx on a host without local installs.
 - **No**: you’re running on your own machine and just want the fastest dev loop. Use the normal install flow instead.
 - **Sandboxing note**: agent sandboxing uses Docker too, but it does **not** require the full gateway to run in Docker. See [Sandboxing](/gateway/sandboxing).
 
 This guide covers:
 
-- Containerized Gateway (full OpenClaw in Docker)
+- Containerized Gateway (full GenSparx in Docker)
 - Per-session Agent Sandbox (host gateway + Docker-isolated agent tools)
 
 Sandboxing details: [Sandboxing](/gateway/sandboxing)
@@ -56,7 +56,7 @@ After it finishes:
 
 - Open `http://127.0.0.1:18789/` in your browser.
 - Paste the token into the Control UI (Settings → token).
-- Need the tokenized URL again? Run `docker compose run --rm openclaw-cli dashboard --no-open`.
+- Need the tokenized URL again? Run `docker compose run --rm GenSparx-cli dashboard --no-open`.
 
 It writes config/workspace on the host:
 
@@ -68,9 +68,9 @@ Running on a VPS? See [Hetzner (Docker VPS)](/platforms/hetzner).
 ### Manual flow (compose)
 
 ```bash
-docker build -t openclaw:local -f Dockerfile .
-docker compose run --rm openclaw-cli onboard
-docker compose up -d openclaw-gateway
+docker build -t gensparx:local -f Dockerfile .
+docker compose run --rm GenSparx-cli onboard
+docker compose up -d GenSparx-gateway
 ```
 
 Note: run `docker compose ...` from the repo root. If you enabled
@@ -87,9 +87,9 @@ If you see “unauthorized” or “disconnected (1008): pairing required”, fe
 fresh dashboard link and approve the browser device:
 
 ```bash
-docker compose run --rm openclaw-cli dashboard --no-open
-docker compose run --rm openclaw-cli devices list
-docker compose run --rm openclaw-cli devices approve <requestId>
+docker compose run --rm GenSparx-cli dashboard --no-open
+docker compose run --rm GenSparx-cli devices list
+docker compose run --rm GenSparx-cli devices approve <requestId>
 ```
 
 More detail: [Dashboard](/web/dashboard), [Devices](/cli/devices).
@@ -99,7 +99,7 @@ More detail: [Dashboard](/web/dashboard), [Devices](/cli/devices).
 If you want to mount additional host directories into the containers, set
 `OPENCLAW_EXTRA_MOUNTS` before running `docker-setup.sh`. This accepts a
 comma-separated list of Docker bind mounts and applies them to both
-`openclaw-gateway` and `openclaw-cli` by generating `docker-compose.extra.yml`.
+`GenSparx-gateway` and `GenSparx-cli` by generating `docker-compose.extra.yml`.
 
 Example:
 
@@ -192,7 +192,7 @@ export OPENCLAW_DOCKER_APT_PACKAGES="git curl jq"
 3. **Install Playwright browsers without `npx`** (avoids npm override conflicts):
 
 ```bash
-docker compose run --rm openclaw-cli \
+docker compose run --rm GenSparx-cli \
   node /app/node_modules/playwright-core/cli.js install chromium
 ```
 
@@ -209,12 +209,12 @@ If you need Playwright to install system deps, rebuild the image with
 ### Permissions + EACCES
 
 The image runs as `node` (uid 1000). If you see permission errors on
-`/home/node/.openclaw`, make sure your host bind mounts are owned by uid 1000.
+`/home/node/.GenSparx`, make sure your host bind mounts are owned by uid 1000.
 
 Example (Linux host):
 
 ```bash
-sudo chown -R 1000:1000 /path/to/openclaw-config /path/to/openclaw-workspace
+sudo chown -R 1000:1000 /path/to/GenSparx-config /path/to/GenSparx-workspace
 ```
 
 If you choose to run as root for convenience, you accept the security tradeoff.
@@ -259,19 +259,19 @@ Use the CLI container to configure channels, then restart the gateway if needed.
 WhatsApp (QR):
 
 ```bash
-docker compose run --rm openclaw-cli channels login
+docker compose run --rm GenSparx-cli channels login
 ```
 
 Telegram (bot token):
 
 ```bash
-docker compose run --rm openclaw-cli channels add --channel telegram --token "<token>"
+docker compose run --rm GenSparx-cli channels add --channel telegram --token "<token>"
 ```
 
 Discord (bot token):
 
 ```bash
-docker compose run --rm openclaw-cli channels add --channel discord --token "<token>"
+docker compose run --rm GenSparx-cli channels add --channel discord --token "<token>"
 ```
 
 Docs: [WhatsApp](/channels/whatsapp), [Telegram](/channels/telegram), [Discord](/channels/discord)
@@ -286,7 +286,7 @@ URL you land on and paste it back into the wizard to finish auth.
 ### Health check
 
 ```bash
-docker compose exec openclaw-gateway node dist/index.js health --token "$OPENCLAW_GATEWAY_TOKEN"
+docker compose exec GenSparx-gateway node dist/index.js health --token "$OPENCLAW_GATEWAY_TOKEN"
 ```
 
 ### E2E smoke test (Docker)
@@ -341,7 +341,7 @@ precedence, and troubleshooting.
 
 ### Default behavior
 
-- Image: `openclaw-sandbox:bookworm-slim`
+- Image: `GenSparx-sandbox:bookworm-slim`
 - One container per agent
 - Agent workspace access: `workspaceAccess: "none"` (default) uses `~/.openclaw/sandboxes`
   - `"ro"` keeps the sandbox workspace at `/workspace` and mounts the agent workspace read-only at `/agent` (disables `write`/`edit`/`apply_patch`)
@@ -358,9 +358,9 @@ If you plan to install packages in `setupCommand`, note:
 - Default `docker.network` is `"none"` (no egress).
 - `readOnlyRoot: true` blocks package installs.
 - `user` must be root for `apt-get` (omit `user` or set `user: "0:0"`).
-  OpenClaw auto-recreates containers when `setupCommand` (or docker config) changes
+  GenSparx auto-recreates containers when `setupCommand` (or docker config) changes
   unless the container was **recently used** (within ~5 minutes). Hot containers
-  log a warning with the exact `openclaw sandbox recreate ...` command.
+  log a warning with the exact `gensparx sandbox recreate ...` command.
 
 ```json5
 {
@@ -372,7 +372,7 @@ If you plan to install packages in `setupCommand`, note:
         workspaceAccess: "none", // none | ro | rw
         workspaceRoot: "~/.openclaw/sandboxes",
         docker: {
-          image: "openclaw-sandbox:bookworm-slim",
+          image: "GenSparx-sandbox:bookworm-slim",
           workdir: "/workspace",
           readOnlyRoot: true,
           tmpfs: ["/tmp", "/var/tmp", "/run"],
@@ -390,7 +390,7 @@ If you plan to install packages in `setupCommand`, note:
             nproc: 256,
           },
           seccompProfile: "/path/to/seccomp.json",
-          apparmorProfile: "openclaw-sandbox",
+          apparmorProfile: "GenSparx-sandbox",
           dns: ["1.1.1.1", "8.8.8.8"],
           extraHosts: ["internal.service:10.0.0.5"],
         },
@@ -436,7 +436,7 @@ Multi-agent: override `agents.defaults.sandbox.{docker,browser,prune}.*` per age
 scripts/sandbox-setup.sh
 ```
 
-This builds `openclaw-sandbox:bookworm-slim` using `Dockerfile.sandbox`.
+This builds `GenSparx-sandbox:bookworm-slim` using `Dockerfile.sandbox`.
 
 ### Sandbox common image (optional)
 
@@ -446,13 +446,13 @@ If you want a sandbox image with common build tooling (Node, Go, Rust, etc.), bu
 scripts/sandbox-common-setup.sh
 ```
 
-This builds `openclaw-sandbox-common:bookworm-slim`. To use it:
+This builds `GenSparx-sandbox-common:bookworm-slim`. To use it:
 
 ```json5
 {
   agents: {
     defaults: {
-      sandbox: { docker: { image: "openclaw-sandbox-common:bookworm-slim" } },
+      sandbox: { docker: { image: "GenSparx-sandbox-common:bookworm-slim" } },
     },
   },
 }
@@ -466,7 +466,7 @@ To run the browser tool inside the sandbox, build the browser image:
 scripts/sandbox-browser-setup.sh
 ```
 
-This builds `openclaw-sandbox-browser:bookworm-slim` using
+This builds `GenSparx-sandbox-browser:bookworm-slim` using
 `Dockerfile.sandbox-browser`. The container runs Chromium with CDP enabled and
 an optional noVNC observer (headful via Xvfb).
 
@@ -496,7 +496,7 @@ Custom browser image:
 {
   agents: {
     defaults: {
-      sandbox: { browser: { image: "my-openclaw-browser" } },
+      sandbox: { browser: { image: "my-GenSparx-browser" } },
     },
   },
 }
@@ -516,14 +516,14 @@ Prune rules (`agents.defaults.sandbox.prune`) apply to browser containers too.
 Build your own image and point config to it:
 
 ```bash
-docker build -t my-openclaw-sbx -f Dockerfile.sandbox .
+docker build -t my-GenSparx-sbx -f Dockerfile.sandbox .
 ```
 
 ```json5
 {
   agents: {
     defaults: {
-      sandbox: { docker: { image: "my-openclaw-sbx" } },
+      sandbox: { docker: { image: "my-GenSparx-sbx" } },
     },
   },
 }
@@ -557,11 +557,15 @@ Example:
 
 ## Troubleshooting
 
-- Image missing: build with [`scripts/sandbox-setup.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/sandbox-setup.sh) or set `agents.defaults.sandbox.docker.image`.
+- Image missing: build with [`scripts/sandbox-setup.sh`](https://github.com/GenSparx/GenSparx/blob/main/scripts/sandbox-setup.sh) or set `agents.defaults.sandbox.docker.image`.
 - Container not running: it will auto-create per session on demand.
 - Permission errors in sandbox: set `docker.user` to a UID:GID that matches your
   mounted workspace ownership (or chown the workspace folder).
-- Custom tools not found: OpenClaw runs commands with `sh -lc` (login shell), which
+- Custom tools not found: GenSparx runs commands with `sh -lc` (login shell), which
   sources `/etc/profile` and may reset PATH. Set `docker.env.PATH` to prepend your
   custom tool paths (e.g., `/custom/bin:/usr/local/share/npm-global/bin`), or add
   a script under `/etc/profile.d/` in your Dockerfile.
+
+
+
+

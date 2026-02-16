@@ -52,7 +52,7 @@ Keep the Gateway on loopback and let Tailscale Serve proxy it:
 Then start the gateway:
 
 ```bash
-openclaw gateway
+gensparx gateway
 ```
 
 Open:
@@ -74,7 +74,7 @@ Open:
 Then start the gateway (token required for non-loopback binds):
 
 ```bash
-openclaw gateway
+gensparx gateway
 ```
 
 Open:
@@ -114,3 +114,5 @@ The Gateway serves static files from `dist/control-ui`. Build them with:
 ```bash
 pnpm ui:build # auto-installs UI deps on first run
 ```
+
+

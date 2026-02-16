@@ -1,12 +1,12 @@
 ---
-summary: "CLI reference for `openclaw doctor` (health checks + guided repairs)"
+summary: "CLI reference for `gensparx doctor` (health checks + guided repairs)"
 read_when:
   - You have connectivity/auth issues and want guided fixes
   - You updated and want a sanity check
 title: "doctor"
 ---
 
-# `openclaw doctor`
+# `gensparx doctor`
 
 Health checks + quick fixes for the gateway and channels.
 
@@ -18,9 +18,9 @@ Related:
 ## Examples
 
 ```bash
-openclaw doctor
-openclaw doctor --repair
-openclaw doctor --deep
+gensparx doctor
+gensparx doctor --repair
+gensparx doctor --deep
 ```
 
 Notes:
@@ -39,3 +39,5 @@ launchctl getenv OPENCLAW_GATEWAY_PASSWORD
 launchctl unsetenv OPENCLAW_GATEWAY_TOKEN
 launchctl unsetenv OPENCLAW_GATEWAY_PASSWORD
 ```
+
+

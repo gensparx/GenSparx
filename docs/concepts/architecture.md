@@ -118,7 +118,7 @@ Details: [Gateway protocol](/gateway/protocol), [Pairing](/start/pairing),
 
 ## Operations snapshot
 
-- Start: `openclaw gateway` (foreground, logs to stdout).
+- Start: `gensparx gateway` (foreground, logs to stdout).
 - Health: `health` over WS (also included in `hello-ok`).
 - Supervision: launchd/systemd for auto‑restart.
 
@@ -127,3 +127,5 @@ Details: [Gateway protocol](/gateway/protocol), [Pairing](/start/pairing),
 - Exactly one Gateway controls a single Baileys session per host.
 - Handshake is mandatory; any non‑JSON or non‑connect first frame is a hard close.
 - Events are not replayed; clients must refresh on gaps.
+
+

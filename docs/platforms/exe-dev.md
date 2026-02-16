@@ -1,5 +1,5 @@
 ---
-summary: "Run OpenClaw Gateway on exe.dev (VM + HTTPS proxy) for remote access"
+summary: "Run GenSparx Gateway on exe.dev (VM + HTTPS proxy) for remote access"
 read_when:
   - You want a cheap always-on Linux host for the Gateway
   - You want remote Control UI access without running your own VPS
@@ -8,7 +8,7 @@ title: "exe.dev"
 
 # exe.dev
 
-Goal: OpenClaw Gateway running on an exe.dev VM, reachable from your laptop via: `https://<vm-name>.exe.xyz`
+Goal: GenSparx Gateway running on an exe.dev VM, reachable from your laptop via: `https://<vm-name>.exe.xyz`
 
 This page assumes exe.dev's default **exeuntu** image. If you picked a different distro, map packages accordingly.
 
@@ -27,11 +27,11 @@ This page assumes exe.dev's default **exeuntu** image. If you picked a different
 
 ## Automated Install with Shelley
 
-Shelley, [exe.dev](https://exe.dev)'s agent, can install OpenClaw instantly with our
+Shelley, [exe.dev](https://exe.dev)'s agent, can install GenSparx instantly with our
 prompt. The prompt used is as below:
 
 ```
-Set up OpenClaw (https://docs.openclaw.ai/install) on this VM. Use the non-interactive and accept-risk flags for openclaw onboarding. Add the supplied auth or token as needed. Configure nginx to forward from the default port 18789 to the root location on the default enabled site config, making sure to enable Websocket support. Pairing is done by "openclaw devices list" and "openclaw device approve <request id>". Make sure the dashboard shows that OpenClaw's health is OK. exe.dev handles forwarding from port 8000 to port 80/443 and HTTPS for us, so the final "reachable" should be <vm-name>.exe.xyz, without port specification.
+Set up GenSparx (https://docs.gensparx.com/install) on this VM. Use the non-interactive and accept-risk flags for gensparx onboarding. Add the supplied auth or token as needed. Configure nginx to forward from the default port 18789 to the root location on the default enabled site config, making sure to enable Websocket support. Pairing is done by "gensparx devices list" and "gensparx device approve <request id>". Make sure the dashboard shows that GenSparx's health is OK. exe.dev handles forwarding from port 8000 to port 80/443 and HTTPS for us, so the final "reachable" should be <vm-name>.exe.xyz, without port specification.
 ```
 
 ## Manual installation
@@ -50,7 +50,7 @@ Then connect:
 ssh <vm-name>.exe.xyz
 ```
 
-Tip: keep this VM **stateful**. OpenClaw stores state under `~/.openclaw/` and `~/.openclaw/workspace/`.
+Tip: keep this VM **stateful**. GenSparx stores state under `~/.openclaw/` and `~/.openclaw/workspace/`.
 
 ## 2) Install prerequisites (on the VM)
 
@@ -59,15 +59,15 @@ sudo apt-get update
 sudo apt-get install -y git curl jq ca-certificates openssl
 ```
 
-## 3) Install OpenClaw
+## 3) Install GenSparx
 
-Run the OpenClaw install script:
+Run the GenSparx install script:
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash
+curl -fsSL https://gensparx.com/install.sh | bash
 ```
 
-## 4) Setup nginx to proxy OpenClaw to port 8000
+## 4) Setup nginx to proxy GenSparx to port 8000
 
 Edit `/etc/nginx/sites-enabled/default` with
 
@@ -101,10 +101,10 @@ server {
 }
 ```
 
-## 5) Access OpenClaw and grant privileges
+## 5) Access GenSparx and grant privileges
 
 Access `https://<vm-name>.exe.xyz/?token=YOUR-TOKEN-FROM-TERMINAL` (see the Control UI output from onboarding). Approve
-devices with `openclaw devices list` and `openclaw devices approve <requestId>`. When in doubt,
+devices with `gensparx devices list` and `gensparx devices approve <requestId>`. When in doubt,
 use Shelley from your browser!
 
 ## Remote Access
@@ -116,10 +116,12 @@ with email auth.
 ## Updating
 
 ```bash
-npm i -g openclaw@latest
-openclaw doctor
-openclaw gateway restart
-openclaw health
+npm i -g gensparx@latest
+gensparx doctor
+gensparx gateway restart
+gensparx health
 ```
 
 Guide: [Updating](/install/updating)
+
+

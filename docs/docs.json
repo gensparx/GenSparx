@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "name": "OpenClaw",
+  "name": "GenSparx",
   "theme": "mint",
   "icons": {
     "library": "lucide"
@@ -27,12 +27,12 @@
     "links": [
       {
         "label": "GitHub",
-        "href": "https://github.com/openclaw/openclaw",
+        "href": "https://github.com/sparkaizen-AI/openclaw",
         "icon": "github"
       },
       {
         "label": "Releases",
-        "href": "https://github.com/openclaw/openclaw/releases",
+        "href": "https://github.com/sparkaizen-AI/openclaw/releases",
         "icon": "package"
       }
     ]
@@ -1687,3 +1687,4 @@
     ]
   }
 }
+

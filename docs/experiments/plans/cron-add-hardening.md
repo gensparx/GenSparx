@@ -1,6 +1,6 @@
 ---
 summary: "Harden cron.add input handling, align schemas, and improve cron UI/agent tooling"
-owner: "openclaw"
+owner: "gensparx"
 status: "complete"
 last_updated: "2026-01-05"
 title: "Cron Add Hardening"
@@ -61,3 +61,5 @@ See [Cron jobs](/automation/cron-jobs) for the normalized shape and examples.
 
 - Should `cron.add` accept explicit `state` from clients (currently disallowed by schema)?
 - Should we allow `webchat` as an explicit delivery provider (currently filtered in delivery resolution)?
+
+

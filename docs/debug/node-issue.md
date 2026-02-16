@@ -2,7 +2,7 @@
 summary: Node + tsx "__name is not a function" crash notes and workarounds
 read_when:
   - Debugging Node-only dev scripts or watch mode failures
-  - Investigating tsx/esbuild loader crashes in OpenClaw
+  - Investigating tsx/esbuild loader crashes in GenSparx
 title: "Node + tsx Crash"
 ---
 
@@ -10,10 +10,10 @@ title: "Node + tsx Crash"
 
 ## Summary
 
-Running OpenClaw via Node with `tsx` fails at startup with:
+Running GenSparx via Node with `tsx` fails at startup with:
 
 ```
-[openclaw] Failed to start CLI: TypeError: __name is not a function
+[gensparx] Failed to start CLI: TypeError: __name is not a function
     at createSubsystemLogger (.../src/logging/subsystem.ts:203:25)
     at .../src/agents/auth-profiles/constants.ts:25:20
 ```
@@ -56,7 +56,7 @@ node --import tsx scripts/repro/tsx-name-repro.ts
 ## Regression history
 
 - `2871657e` (2026-01-06): scripts changed from Bun to tsx to make Bun optional.
-- Before that (Bun path), `openclaw status` and `gateway:watch` worked.
+- Before that (Bun path), `gensparx status` and `gateway:watch` worked.
 
 ## Workarounds
 
@@ -81,3 +81,5 @@ node --import tsx scripts/repro/tsx-name-repro.ts
 - Repro on Node 22/24 to confirm Node 25 regression.
 - Test `tsx` nightly or pin to earlier version if a known regression exists.
 - If reproduces on Node LTS, file a minimal repro upstream with the `__name` stack trace.
+
+

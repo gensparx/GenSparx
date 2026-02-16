@@ -1,14 +1,14 @@
 ---
-summary: "OpenClaw macOS companion app (menu bar + gateway broker)"
+summary: "GenSparx macOS companion app (menu bar + gateway broker)"
 read_when:
   - Implementing macOS app features
   - Changing gateway lifecycle or node bridging on macOS
 title: "macOS App"
 ---
 
-# OpenClaw macOS Companion (menu bar + gateway broker)
+# GenSparx macOS Companion (menu bar + gateway broker)
 
-The macOS app is the **menu‑bar companion** for OpenClaw. It owns permissions,
+The macOS app is the **menu‑bar companion** for GenSparx. It owns permissions,
 manages/attaches to the Gateway locally (launchd or manual), and exposes macOS
 capabilities to the agent as a node.
 
@@ -21,12 +21,12 @@ capabilities to the agent as a node.
 - Exposes macOS‑only tools (Canvas, Camera, Screen Recording, `system.run`).
 - Starts the local node host service in **remote** mode (launchd), and stops it in **local** mode.
 - Optionally hosts **PeekabooBridge** for UI automation.
-- Installs the global CLI (`openclaw`) via npm/pnpm on request (bun not recommended for the Gateway runtime).
+- Installs the global CLI (`gensparx`) via npm/pnpm on request (bun not recommended for the Gateway runtime).
 
 ## Local vs remote mode
 
 - **Local** (default): the app attaches to a running local Gateway if present;
-  otherwise it enables the launchd service via `openclaw gateway install`.
+  otherwise it enables the launchd service via `gensparx gateway install`.
 - **Remote**: the app connects to a Gateway over SSH/Tailscale and never starts
   a local process.
   The app starts the local **node host service** so the remote Gateway can reach this Mac.
@@ -45,7 +45,7 @@ launchctl bootout gui/$UID/bot.molt.gateway
 Replace the label with `bot.molt.<profile>` when running a named profile.
 
 If the LaunchAgent isn’t installed, enable it from the app or run
-`openclaw gateway install`.
+`gensparx gateway install`.
 
 ## Node capabilities (mac)
 
@@ -108,14 +108,14 @@ Notes:
 
 ## Deep links
 
-The app registers the `openclaw://` URL scheme for local actions.
+The app registers the `gensparx://` URL scheme for local actions.
 
-### `openclaw://agent`
+### `gensparx://agent`
 
 Triggers a Gateway `agent` request.
 
 ```bash
-open 'openclaw://agent?message=Hello%20from%20deep%20link'
+open 'gensparx://agent?message=Hello%20from%20deep%20link'
 ```
 
 Query parameters:
@@ -134,7 +134,7 @@ Safety:
 
 ## Onboarding flow (typical)
 
-1. Install and launch **OpenClaw.app**.
+1. Install and launch **GenSparx.app**.
 2. Complete the permissions checklist (TCC prompts).
 3. Ensure **Local** mode is active and the Gateway is running.
 4. Install the CLI if you want terminal access.
@@ -142,7 +142,7 @@ Safety:
 ## Build & dev workflow (native)
 
 - `cd apps/macos && swift build`
-- `swift run OpenClaw` (or Xcode)
+- `swift run GenSparx` (or Xcode)
 - Package app: `scripts/package-mac-app.sh`
 
 ## Debug gateway connectivity (macOS CLI)
@@ -170,7 +170,7 @@ Discovery options:
 - `--timeout <ms>`: overall discovery window (default: `2000`)
 - `--json`: structured output for diffing
 
-Tip: compare against `openclaw gateway discover --json` to see whether the
+Tip: compare against `gensparx gateway discover --json` to see whether the
 macOS app’s discovery pipeline (NWBrowser + tailnet DNS‑SD fallback) differs from
 the Node CLI’s `dns-sd` based discovery.
 
@@ -190,14 +190,16 @@ components can talk to a remote Gateway as if it were on localhost.
   ExitOnForwardFailure + keepalive options.
 - **IP reporting:** the SSH tunnel uses loopback, so the gateway will see the node
   IP as `127.0.0.1`. Use **Direct (ws/wss)** transport if you want the real client
-  IP to appear (see [macOS remote access](/platforms/mac/remote)).
+  IP to appear (see [macOS remote access](/platforms/macos)).
 
-For setup steps, see [macOS remote access](/platforms/mac/remote). For protocol
+For setup steps, see [macOS remote access](/platforms/macos). For protocol
 details, see [Gateway protocol](/gateway/protocol).
 
 ## Related docs
 
 - [Gateway runbook](/gateway)
-- [Gateway (macOS)](/platforms/mac/bundled-gateway)
-- [macOS permissions](/platforms/mac/permissions)
-- [Canvas](/platforms/mac/canvas)
+- [Gateway (macOS)](/platforms/macos)
+- [macOS permissions](/platforms/macos)
+- [Canvas](/platforms/macos)
+
+

@@ -1,7 +1,7 @@
 ---
-summary: "Use OpenAI via API keys or Codex subscription in OpenClaw"
+summary: "Use OpenAI via API keys or Codex subscription in GenSparx"
 read_when:
-  - You want to use OpenAI models in OpenClaw
+  - You want to use OpenAI models in GenSparx
   - You want Codex subscription auth instead of API keys
 title: "OpenAI"
 ---
@@ -19,9 +19,9 @@ Get your API key from the OpenAI dashboard.
 ### CLI setup
 
 ```bash
-openclaw onboard --auth-choice openai-api-key
+gensparx onboard --auth-choice openai-api-key
 # or non-interactive
-openclaw onboard --openai-api-key "$OPENAI_API_KEY"
+gensparx onboard --openai-api-key "$OPENAI_API_KEY"
 ```
 
 ### Config snippet
@@ -42,10 +42,10 @@ Codex cloud requires ChatGPT sign-in, while the Codex CLI supports ChatGPT or AP
 
 ```bash
 # Run Codex OAuth in the wizard
-openclaw onboard --auth-choice openai-codex
+gensparx onboard --auth-choice openai-codex
 
 # Or run OAuth directly
-openclaw models auth login --provider openai-codex
+gensparx models auth login --provider openai-codex
 ```
 
 ### Config snippet
@@ -60,3 +60,5 @@ openclaw models auth login --provider openai-codex
 
 - Model refs always use `provider/model` (see [/concepts/models](/concepts/models)).
 - Auth details + reuse rules are in [/concepts/oauth](/concepts/oauth).
+
+

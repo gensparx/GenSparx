@@ -15,7 +15,7 @@ should use the unified Gateway WebSocket protocol instead.
 If you are building an operator or node client, use the
 [Gateway protocol](/gateway/protocol).
 
-**Note:** Current OpenClaw builds no longer ship the TCP bridge listener; this document is kept for historical reference.
+**Note:** Current GenSparx builds no longer ship the TCP bridge listener; this document is kept for historical reference.
 Legacy `bridge.*` config keys are no longer part of the config schema.
 
 ## Why we have both
@@ -87,3 +87,7 @@ Payload fields (all optional unless noted):
 
 Bridge is currently **implicit v1** (no min/max negotiation). Backward‑compat
 is expected; add a bridge protocol version field before any breaking changes.
+
+
+
+

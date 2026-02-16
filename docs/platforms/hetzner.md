@@ -1,27 +1,27 @@
 ---
-summary: "Run OpenClaw Gateway 24/7 on a cheap Hetzner VPS (Docker) with durable state and baked-in binaries"
+summary: "Run GenSparx Gateway 24/7 on a cheap Hetzner VPS (Docker) with durable state and baked-in binaries"
 read_when:
-  - You want OpenClaw running 24/7 on a cloud VPS (not your laptop)
+  - You want GenSparx running 24/7 on a cloud VPS (not your laptop)
   - You want a production-grade, always-on Gateway on your own VPS
   - You want full control over persistence, binaries, and restart behavior
-  - You are running OpenClaw in Docker on Hetzner or a similar provider
+  - You are running GenSparx in Docker on Hetzner or a similar provider
 title: "Hetzner"
 ---
 
-# OpenClaw on Hetzner (Docker, Production VPS Guide)
+# GenSparx on Hetzner (Docker, Production VPS Guide)
 
 ## Goal
 
-Run a persistent OpenClaw Gateway on a Hetzner VPS using Docker, with durable state, baked-in binaries, and safe restart behavior.
+Run a persistent GenSparx Gateway on a Hetzner VPS using Docker, with durable state, baked-in binaries, and safe restart behavior.
 
-If you want “OpenClaw 24/7 for ~$5”, this is the simplest reliable setup.
+If you want “GenSparx 24/7 for ~$5”, this is the simplest reliable setup.
 Hetzner pricing changes; pick the smallest Debian/Ubuntu VPS and scale up if you hit OOMs.
 
 ## What are we doing (simple terms)?
 
 - Rent a small Linux server (Hetzner VPS)
 - Install Docker (isolated app runtime)
-- Start the OpenClaw Gateway in Docker
+- Start the GenSparx Gateway in Docker
 - Persist `~/.openclaw` + `~/.openclaw/workspace` on the host (survives restarts/rebuilds)
 - Access the Control UI from your laptop via an SSH tunnel
 
@@ -40,7 +40,7 @@ For the generic Docker flow, see [Docker](/install/docker).
 
 1. Provision Hetzner VPS
 2. Install Docker
-3. Clone OpenClaw repository
+3. Clone GenSparx repository
 4. Create persistent host directories
 5. Configure `.env` and `docker-compose.yml`
 6. Bake required binaries into the image
@@ -96,11 +96,11 @@ docker compose version
 
 ---
 
-## 3) Clone the OpenClaw repository
+## 3) Clone the GenSparx repository
 
 ```bash
 git clone https://github.com/openclaw/openclaw.git
-cd openclaw
+cd gensparx
 ```
 
 This guide assumes you will build a custom image to guarantee binary persistence.
@@ -128,7 +128,7 @@ chown -R 1000:1000 /root/.openclaw/workspace
 Create `.env` in the repository root.
 
 ```bash
-OPENCLAW_IMAGE=openclaw:latest
+OPENCLAW_IMAGE=gensparx:latest
 OPENCLAW_GATEWAY_TOKEN=change-me-now
 OPENCLAW_GATEWAY_BIND=lan
 OPENCLAW_GATEWAY_PORT=18789
@@ -313,7 +313,7 @@ Paste your gateway token.
 
 ## What persists where (source of truth)
 
-OpenClaw runs in Docker, but Docker is not the source of truth.
+GenSparx runs in Docker, but Docker is not the source of truth.
 All long-lived state must survive restarts, rebuilds, and reboots.
 
 | Component           | Location                          | Persistence mechanism  | Notes                            |
@@ -328,3 +328,5 @@ All long-lived state must survive restarts, rebuilds, and reboots.
 | Node runtime        | Container filesystem              | Docker image           | Rebuilt every image build        |
 | OS packages         | Container filesystem              | Docker image           | Do not install at runtime        |
 | Docker container    | Ephemeral                         | Restartable            | Safe to destroy                  |
+
+

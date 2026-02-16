@@ -1,11 +1,11 @@
 ---
-summary: "CLI reference for `openclaw agents` (list/add/delete/set identity)"
+summary: "CLI reference for `gensparx agents` (list/add/delete/set identity)"
 read_when:
   - You want multiple isolated agents (workspaces + routing + auth)
 title: "agents"
 ---
 
-# `openclaw agents`
+# `gensparx agents`
 
 Manage isolated agents (workspaces + auth + routing).
 
@@ -17,11 +17,11 @@ Related:
 ## Examples
 
 ```bash
-openclaw agents list
-openclaw agents add work --workspace ~/.openclaw/workspace-work
-openclaw agents set-identity --workspace ~/.openclaw/workspace --from-identity
-openclaw agents set-identity --agent main --avatar avatars/openclaw.png
-openclaw agents delete work
+gensparx agents list
+gensparx agents add work --workspace ~/.openclaw/workspace-work
+gensparx agents set-identity --workspace ~/.openclaw/workspace --from-identity
+gensparx agents set-identity --agent main --avatar avatars/openclaw.png
+gensparx agents delete work
 ```
 
 ## Identity files
@@ -45,13 +45,13 @@ Avatar paths resolve relative to the workspace root.
 Load from `IDENTITY.md`:
 
 ```bash
-openclaw agents set-identity --workspace ~/.openclaw/workspace --from-identity
+gensparx agents set-identity --workspace ~/.openclaw/workspace --from-identity
 ```
 
 Override fields explicitly:
 
 ```bash
-openclaw agents set-identity --agent main --name "OpenClaw" --emoji "🦞" --avatar avatars/openclaw.png
+gensparx agents set-identity --agent main --name "GenSparx" --emoji "🦞" --avatar avatars/openclaw.png
 ```
 
 Config sample:
@@ -63,7 +63,7 @@ Config sample:
       {
         id: "main",
         identity: {
-          name: "OpenClaw",
+          name: "GenSparx",
           theme: "space lobster",
           emoji: "🦞",
           avatar: "avatars/openclaw.png",
@@ -73,3 +73,5 @@ Config sample:
   },
 }
 ```
+
+

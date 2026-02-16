@@ -72,7 +72,7 @@ Example:
   - macOS: `/opt/homebrew/bin`, `/usr/local/bin`, `/usr/bin`, `/bin`
   - Linux: `/usr/local/bin`, `/usr/bin`, `/bin`
 - `host=sandbox`: runs `sh -lc` (login shell) inside the container, so `/etc/profile` may reset `PATH`.
-  OpenClaw prepends `env.PATH` after profile sourcing via an internal env var (no shell interpolation);
+  GenSparx prepends `env.PATH` after profile sourcing via an internal env var (no shell interpolation);
   `tools.exec.pathPrepend` applies here too.
 - `host=node`: only non-blocked env overrides you pass are sent to the node. `env.PATH` overrides are
   rejected for host execution. Headless node hosts accept `PATH` only when it prepends the node host
@@ -81,8 +81,8 @@ Example:
 Per-agent node binding (use the agent list index in config):
 
 ```bash
-openclaw config get agents.list
-openclaw config set agents.list[0].tools.exec.node "node-id-or-name"
+gensparx config get agents.list
+gensparx config set agents.list[0].tools.exec.node "node-id-or-name"
 ```
 
 Control UI: the Nodes tab includes a small “Exec node binding” panel for the same settings.
@@ -177,3 +177,5 @@ Notes:
 - Only available for OpenAI/OpenAI Codex models.
 - Tool policy still applies; `allow: ["exec"]` implicitly allows `apply_patch`.
 - Config lives under `tools.exec.applyPatch`.
+
+

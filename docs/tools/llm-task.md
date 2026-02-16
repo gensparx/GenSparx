@@ -12,7 +12,7 @@ title: "LLM Task"
 returns structured output (optionally validated against JSON Schema).
 
 This is ideal for workflow engines like Lobster: you can add a single LLM step
-without writing custom OpenClaw code for each workflow.
+without writing custom GenSparx code for each workflow.
 
 ## Enable the plugin
 
@@ -113,3 +113,5 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 - No tools are exposed to the model for this run.
 - Treat output as untrusted unless you validate with `schema`.
 - Put approvals before any side-effecting step (send, post, exec).
+
+

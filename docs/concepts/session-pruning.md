@@ -21,7 +21,7 @@ Session pruning trims **old tool results** from the in-memory context right befo
 
 - **OAuth or setup-token** profiles: enable `cache-ttl` pruning and set heartbeat to `1h`.
 - **API key** profiles: enable `cache-ttl` pruning, set heartbeat to `30m`, and default `cacheControlTtl` to `1h` on Anthropic models.
-- If you set any of these values explicitly, OpenClaw does **not** override them.
+- If you set any of these values explicitly, GenSparx does **not** override them.
 
 ## What this improves (cost + cache behavior)
 
@@ -120,3 +120,5 @@ Restrict pruning to specific tools:
 ```
 
 See config reference: [Gateway Configuration](/gateway/configuration)
+
+
