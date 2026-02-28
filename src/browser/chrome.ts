@@ -15,6 +15,7 @@ import {
 } from "./chrome.executables.js";
 import {
   decorateOpenClawProfile,
+  decorateGenSparxProfile,
   ensureProfileCleanExit,
   isProfileDecorated,
 } from "./chrome.profile-decoration.js";
@@ -34,6 +35,7 @@ export {
 } from "./chrome.executables.js";
 export {
   decorateOpenClawProfile,
+  decorateGenSparxProfile,
   ensureProfileCleanExit,
   isProfileDecorated,
 } from "./chrome.profile-decoration.js";
@@ -62,6 +64,9 @@ function resolveBrowserExecutable(resolved: ResolvedBrowserConfig): BrowserExecu
 export function resolveOpenClawUserDataDir(profileName = DEFAULT_OPENCLAW_BROWSER_PROFILE_NAME) {
   return path.join(CONFIG_DIR, "browser", profileName, "user-data");
 }
+
+// GenSparx alias (primary name for rebranded gateway)
+export const resolveGenSparxUserDataDir = resolveOpenClawUserDataDir;
 
 function cdpUrlForPort(cdpPort: number) {
   return `http://127.0.0.1:${cdpPort}`;
@@ -264,16 +269,16 @@ export async function launchOpenClawChrome(
         name: profile.name,
         color: profile.color,
       });
-      log.info(`🦞 openclaw browser profile decorated (${profile.color})`);
+      log.info(`🦞 GenSparx browser profile decorated (${profile.color})`);
     } catch (err) {
-      log.warn(`openclaw browser profile decoration failed: ${String(err)}`);
+      log.warn(`GenSparx browser profile decoration failed: ${String(err)}`);
     }
   }
 
   try {
     ensureProfileCleanExit(userDataDir);
   } catch (err) {
-    log.warn(`openclaw browser clean-exit prefs failed: ${String(err)}`);
+    log.warn(`GenSparx browser clean-exit prefs failed: ${String(err)}`);
   }
 
   const proc = spawnOnce();
@@ -299,7 +304,7 @@ export async function launchOpenClawChrome(
 
   const pid = proc.pid ?? -1;
   log.info(
-    `🦞 openclaw browser started (${exe.kind}) profile "${profile.name}" on 127.0.0.1:${profile.cdpPort} (pid ${pid})`,
+    `🦞 GenSparx browser started (${exe.kind}) profile "${profile.name}" on 127.0.0.1:${profile.cdpPort} (pid ${pid})`,
   );
 
   return {
@@ -311,6 +316,9 @@ export async function launchOpenClawChrome(
     proc,
   };
 }
+
+// GenSparx alias (primary name for rebranded gateway)
+export const launchGenSparxChrome = launchOpenClawChrome;
 
 export async function stopOpenClawChrome(running: RunningChrome, timeoutMs = 2500) {
   const proc = running.proc;
@@ -340,3 +348,6 @@ export async function stopOpenClawChrome(running: RunningChrome, timeoutMs = 250
     // ignore
   }
 }
+
+// GenSparx alias (primary name for rebranded gateway)
+export const stopGenSparxChrome = stopOpenClawChrome;

@@ -140,7 +140,7 @@ export async function applyAuthChoiceOpenAI(
       spin.stop("OpenAI OAuth failed");
       params.runtime.error(String(err));
       await params.prompter.note(
-        "Trouble with OAuth? See https://docs.openclaw.ai/start/faq",
+        "Trouble with OAuth? See https://docs.gensparx.com/start/faq",
         "OAuth help",
       );
     }

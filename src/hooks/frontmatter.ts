@@ -134,6 +134,9 @@ export function resolveOpenClawMetadata(
   }
 }
 
+// GenSparx rebrand alias for hook metadata resolution
+export const resolveGenSparxMetadata = resolveOpenClawMetadata;
+
 export function resolveHookInvocationPolicy(
   frontmatter: ParsedHookFrontmatter,
 ): HookInvocationPolicy {

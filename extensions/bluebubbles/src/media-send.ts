@@ -1,6 +1,6 @@
+import { resolveChannelMediaMaxBytes, type GenSparxConfig } from "gensparx/plugin-sdk";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { resolveChannelMediaMaxBytes, type OpenClawConfig } from "openclaw/plugin-sdk";
 import { sendBlueBubblesAttachment } from "./attachments.js";
 import { resolveBlueBubblesMessageId } from "./monitor.js";
 import { getBlueBubblesRuntime } from "./runtime.js";
@@ -55,7 +55,7 @@ function resolveFilenameFromSource(source?: string): string | undefined {
 }
 
 export async function sendBlueBubblesMedia(params: {
-  cfg: OpenClawConfig;
+  cfg: GenSparxConfig;
   to: string;
   mediaUrl?: string;
   mediaPath?: string;

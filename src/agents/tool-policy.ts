@@ -36,8 +36,28 @@ export const TOOL_GROUPS: Record<string, string[]> = {
   "group:messaging": ["message"],
   // Nodes + device tools
   "group:nodes": ["nodes"],
-  // All OpenClaw native tools (excludes provider plugins).
+  // All GenSparx native tools (excludes provider plugins).
   "group:openclaw": [
+    "browser",
+    "canvas",
+    "nodes",
+    "cron",
+    "message",
+    "gateway",
+    "agents_list",
+    "sessions_list",
+    "sessions_history",
+    "sessions_send",
+    "sessions_spawn",
+    "session_status",
+    "memory_search",
+    "memory_get",
+    "web_search",
+    "web_fetch",
+    "image",
+  ],
+  // GenSparx native tools (alias for legacy openclaw group)
+  "group:gensparx": [
     "browser",
     "canvas",
     "nodes",

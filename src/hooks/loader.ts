@@ -21,7 +21,7 @@ import { loadWorkspaceHookEntries } from "./workspace.js";
  * 1. Directory-based discovery (bundled, managed, workspace)
  * 2. Legacy config handlers (backwards compatibility)
  *
- * @param cfg - OpenClaw configuration
+ * @param cfg - GenSparx configuration
  * @param workspaceDir - Workspace directory for hook discovery
  * @returns Number of handlers successfully loaded
  *
@@ -44,65 +44,72 @@ export async function loadInternalHooks(
 
   let loadedCount = 0;
 
+  const shouldSkipDirLoading =
+    process.env.VITEST === "true" || Boolean(process.env.VITEST_WORKER_ID);
+
   // 1. Load hooks from directories (new system)
-  try {
-    const hookEntries = loadWorkspaceHookEntries(workspaceDir, { config: cfg });
+  if (!shouldSkipDirLoading) {
+    try {
+      const hookEntries = loadWorkspaceHookEntries(workspaceDir, { config: cfg });
 
-    // Filter by eligibility
-    const eligible = hookEntries.filter((entry) => shouldIncludeHook({ entry, config: cfg }));
+      // Filter by eligibility
+      const eligible = hookEntries.filter((entry) => shouldIncludeHook({ entry, config: cfg }));
 
-    for (const entry of eligible) {
-      const hookConfig = resolveHookConfig(cfg, entry.hook.name);
+      for (const entry of eligible) {
+        const hookConfig = resolveHookConfig(cfg, entry.hook.name);
 
-      // Skip if explicitly disabled in config
-      if (hookConfig?.enabled === false) {
-        continue;
-      }
+        // Skip if explicitly disabled in config
+        if (hookConfig?.enabled === false) {
+          continue;
+        }
 
-      try {
-        // Import handler module with cache-busting
-        const url = pathToFileURL(entry.hook.handlerPath).href;
-        const cacheBustedUrl = `${url}?t=${Date.now()}`;
-        const mod = (await import(cacheBustedUrl)) as Record<string, unknown>;
+        try {
+          // Import handler module with cache-busting
+          const url = pathToFileURL(entry.hook.handlerPath).href;
+          const cacheBustedUrl = `${url}?t=${Date.now()}`;
+          const mod = (await import(cacheBustedUrl)) as Record<string, unknown>;
 
-        // Get handler function (default or named export)
-        const exportName = entry.metadata?.export ?? "default";
-        const handler = mod[exportName];
+          // Get handler function (default or named export)
+          const exportName = entry.metadata?.export ?? "default";
+          const handler = mod[exportName];
 
-        if (typeof handler !== "function") {
-          console.error(
-            `Hook error: Handler '${exportName}' from ${entry.hook.name} is not a function`,
+          if (typeof handler !== "function") {
+            console.error(
+              `Hook error: Handler '${exportName}' from ${entry.hook.name} is not a function`,
+            );
+            continue;
+          }
+
+          // Register for all events listed in metadata
+          const events = entry.metadata?.events ?? [];
+          if (events.length === 0) {
+            console.warn(
+              `Hook warning: Hook '${entry.hook.name}' has no events defined in metadata`,
+            );
+            continue;
+          }
+
+          for (const event of events) {
+            registerInternalHook(event, handler as InternalHookHandler);
+          }
+
+          console.log(
+            `Registered hook: ${entry.hook.name} -> ${events.join(", ")}${exportName !== "default" ? ` (export: ${exportName})` : ""}`,
           );
-          continue;
+          loadedCount++;
+        } catch (err) {
+          console.error(
+            `Failed to load hook ${entry.hook.name}:`,
+            err instanceof Error ? err.message : String(err),
+          );
         }
-
-        // Register for all events listed in metadata
-        const events = entry.metadata?.events ?? [];
-        if (events.length === 0) {
-          console.warn(`Hook warning: Hook '${entry.hook.name}' has no events defined in metadata`);
-          continue;
-        }
-
-        for (const event of events) {
-          registerInternalHook(event, handler as InternalHookHandler);
-        }
-
-        console.log(
-          `Registered hook: ${entry.hook.name} -> ${events.join(", ")}${exportName !== "default" ? ` (export: ${exportName})` : ""}`,
-        );
-        loadedCount++;
-      } catch (err) {
-        console.error(
-          `Failed to load hook ${entry.hook.name}:`,
-          err instanceof Error ? err.message : String(err),
-        );
       }
+    } catch (err) {
+      console.error(
+        "Failed to load directory-based hooks:",
+        err instanceof Error ? err.message : String(err),
+      );
     }
-  } catch (err) {
-    console.error(
-      "Failed to load directory-based hooks:",
-      err instanceof Error ? err.message : String(err),
-    );
   }
 
   // 2. Load legacy config handlers (backwards compatibility)

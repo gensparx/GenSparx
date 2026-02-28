@@ -59,7 +59,7 @@ function defaultIndexHTML() {
   return `<!doctype html>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>OpenClaw Canvas</title>
+<title>GenSparx Canvas</title>
 <style>
   html, body { height: 100%; margin: 0; background: #000; color: #fff; font: 16px/1.4 -apple-system, BlinkMacSystemFont, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
   .wrap { min-height: 100%; display: grid; place-items: center; padding: 24px; }
@@ -77,7 +77,7 @@ function defaultIndexHTML() {
 <div class="wrap">
   <div class="card">
     <div class="title">
-      <h1>OpenClaw Canvas</h1>
+      <h1>GenSparx Canvas</h1>
       <div class="sub">Interactive test page (auto-reload enabled)</div>
     </div>
 
@@ -94,22 +94,27 @@ function defaultIndexHTML() {
 </div>
 <script>
 (() => {
+  const handlerNames = ["gensparxCanvasA2UIAction", "openclawCanvasA2UIAction"];
   const logEl = document.getElementById("log");
   const statusEl = document.getElementById("status");
-  const log = (msg) => { logEl.textContent = String(msg); };
+  const log = (msg) => {
+    logEl.textContent = String(msg);
+  };
 
   const hasIOS = () =>
     !!(
       window.webkit &&
       window.webkit.messageHandlers &&
-      window.webkit.messageHandlers.openclawCanvasA2UIAction
+      handlerNames.some((name) => window.webkit.messageHandlers[name])
     );
   const hasAndroid = () =>
-    !!(
-      (window.openclawCanvasA2UIAction &&
-        typeof window.openclawCanvasA2UIAction.postMessage === "function")
-    );
-  const hasHelper = () => typeof window.openclawSendUserAction === "function";
+    !!handlerNames.some((name) => {
+      const h = window[name];
+      return h && typeof h.postMessage === "function";
+    });
+  const hasHelper = () =>
+    typeof window.gensparxSendUserAction === "function" ||
+    typeof window.openclawSendUserAction === "function";
   statusEl.innerHTML =
     "Bridge: " +
     (hasHelper() ? "<span class='ok'>ready</span>" : "<span class='bad'>missing</span>") +
@@ -117,20 +122,30 @@ function defaultIndexHTML() {
     " · Android=" + (hasAndroid() ? "yes" : "no");
 
   const onStatus = (ev) => {
-    const d = ev && ev.detail || {};
-    log("Action status: id=" + (d.id || "?") + " ok=" + String(!!d.ok) + (d.error ? (" error=" + d.error) : ""));
+    const d = (ev && ev.detail) || {};
+    log(
+      "Action status: id=" +
+        (d.id || "?") +
+        " ok=" +
+        String(!!d.ok) +
+        (d.error ? " error=" + d.error : ""),
+    );
   };
+  window.addEventListener("gensparx:a2ui-action-status", onStatus);
   window.addEventListener("openclaw:a2ui-action-status", onStatus);
 
   function send(name, sourceComponentId) {
     if (!hasHelper()) {
-      log("No action bridge found. Ensure you're viewing this on an iOS/Android OpenClaw node canvas.");
+      log("No action bridge found. Ensure you're viewing this on an iOS/Android GenSparx node canvas.");
       return;
     }
     const sendUserAction =
-      typeof window.openclawSendUserAction === "function"
+      (typeof window.gensparxSendUserAction === "function"
+        ? window.gensparxSendUserAction
+        : undefined) ??
+      (typeof window.openclawSendUserAction === "function"
         ? window.openclawSendUserAction
-        : undefined;
+        : undefined);
     const ok = sendUserAction({
       name,
       surfaceId: "main",
@@ -194,7 +209,7 @@ async function resolveFilePath(rootReal: string, urlPath: string) {
 }
 
 function isDisabledByEnv() {
-  if (isTruthyEnvValue(process.env.OPENCLAW_SKIP_CANVAS_HOST)) {
+  if (isTruthyEnvValue(process.env.GENSPARX_SKIP_CANVAS_HOST)) {
     return true;
   }
   if (isTruthyEnvValue(process.env.OPENCLAW_SKIP_CANVAS_HOST)) {
@@ -235,7 +250,10 @@ async function prepareCanvasRoot(rootDir: string) {
 }
 
 function resolveDefaultCanvasRoot(): string {
-  const candidates = [path.join(os.homedir(), ".openclaw", "canvas")];
+  const candidates = [
+    path.join(os.homedir(), ".gensparx", "canvas"),
+    path.join(os.homedir(), ".openclaw", "canvas"),
+  ];
   const existing = candidates.find((dir) => {
     try {
       return fsSync.statSync(dir).isDirectory();
@@ -365,14 +383,24 @@ export async function createCanvasHostHandler(
         return true;
       }
 
-      const opened = await resolveFilePath(rootReal, urlPath);
+      let opened = await resolveFilePath(rootReal, urlPath);
+      if (!opened && (urlPath === "/" || urlPath.endsWith("/"))) {
+        // Try a direct index.html read (Windows paths can confuse openFileWithinRoot).
+        try {
+          const data = await fs.readFile(path.join(rootReal, "index.html"), "utf8");
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "text/html; charset=utf-8");
+          res.end(liveReload ? injectCanvasLiveReload(data) : data);
+          return true;
+        } catch {
+          // fall through to default fallback
+        }
+      }
       if (!opened) {
         if (urlPath === "/" || urlPath.endsWith("/")) {
-          res.statusCode = 404;
+          res.statusCode = 200;
           res.setHeader("Content-Type", "text/html; charset=utf-8");
-          res.end(
-            `<!doctype html><meta charset="utf-8" /><title>OpenClaw Canvas</title><pre>Missing file.\nCreate ${rootDir}/index.html</pre>`,
-          );
+          res.end(liveReload ? injectCanvasLiveReload(defaultIndexHTML()) : defaultIndexHTML());
           return true;
         }
         res.statusCode = 404;

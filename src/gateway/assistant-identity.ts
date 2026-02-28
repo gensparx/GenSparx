@@ -10,8 +10,9 @@ const MAX_ASSISTANT_EMOJI = 16;
 
 export const DEFAULT_ASSISTANT_IDENTITY: AssistantIdentity = {
   agentId: "main",
-  name: "Assistant",
-  avatar: "A",
+  name: "GenSparx",
+  avatar: "G",
+  emoji: "⚡",
 };
 
 export type AssistantIdentity = {

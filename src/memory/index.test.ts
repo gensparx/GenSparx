@@ -3,6 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getMemorySearchManager, type MemoryIndexManager } from "./index.js";
+import { describeIfFts5 } from "./test-helpers.js";
 
 let embedBatchCalls = 0;
 let failEmbeddings = false;
@@ -33,7 +34,9 @@ vi.mock("./embeddings.js", () => {
   };
 });
 
-describe("memory index", () => {
+const describeFts = describeIfFts5(describe);
+
+describeFts("memory index", () => {
   let workspaceDir: string;
   let indexPath: string;
   let manager: MemoryIndexManager | null = null;
@@ -41,7 +44,7 @@ describe("memory index", () => {
   beforeEach(async () => {
     embedBatchCalls = 0;
     failEmbeddings = false;
-    workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-mem-"));
+    workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-mem-"));
     indexPath = path.join(workspaceDir, "index.sqlite");
     await fs.mkdir(path.join(workspaceDir, "memory"));
     await fs.writeFile(

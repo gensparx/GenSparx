@@ -103,12 +103,19 @@ export function extractMSTeamsPollVote(
   }
   const pollId =
     readNestedString(value, ["openclawPollId"]) ??
+    readNestedString(value, ["GenSparxPollId"]) ??
+    readNestedString(value, ["gensparxPollId"]) ??
     readNestedString(value, ["pollId"]) ??
     readNestedString(value, ["openclaw", "pollId"]) ??
     readNestedString(value, ["openclaw", "poll", "id"]) ??
+    readNestedString(value, ["gensparx", "pollId"]) ??
+    readNestedString(value, ["gensparx", "poll", "id"]) ??
     readNestedString(value, ["data", "openclawPollId"]) ??
+    readNestedString(value, ["data", "GenSparxPollId"]) ??
+    readNestedString(value, ["data", "gensparxPollId"]) ??
     readNestedString(value, ["data", "pollId"]) ??
-    readNestedString(value, ["data", "openclaw", "pollId"]);
+    readNestedString(value, ["data", "openclaw", "pollId"]) ??
+    readNestedString(value, ["data", "gensparx", "pollId"]);
   if (!pollId) {
     return null;
   }

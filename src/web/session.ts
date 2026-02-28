@@ -12,7 +12,6 @@ import { formatCliCommand } from "../cli/command-format.js";
 import { danger, success } from "../globals.js";
 import { getChildLogger, toPinoLikeLogger } from "../logging.js";
 import { ensureDir, resolveUserPath } from "../utils.js";
-import { VERSION } from "../version.js";
 import {
   maybeRestoreCredsFromBackup,
   resolveDefaultWebAuthDir,
@@ -117,7 +116,7 @@ export async function createWaSocket(
     version,
     logger,
     printQRInTerminal: false,
-    browser: ["openclaw", "cli", VERSION],
+    browser: ["GenSparx", "Chrome", "131.0.0.0"],
     syncFullHistory: false,
     markOnlineOnConnect: false,
   });
@@ -140,7 +139,7 @@ export async function createWaSocket(
           if (status === DisconnectReason.loggedOut) {
             console.error(
               danger(
-                `WhatsApp session logged out. Run: ${formatCliCommand("openclaw channels login")}`,
+                `WhatsApp session logged out. Run: ${formatCliCommand("gensparx channels login")}`,
               ),
             );
           }

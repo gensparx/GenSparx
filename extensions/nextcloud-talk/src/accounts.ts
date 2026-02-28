@@ -1,5 +1,5 @@
+import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "gensparx/plugin-sdk";
 import { readFileSync } from "node:fs";
-import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "openclaw/plugin-sdk";
 import type { CoreConfig, NextcloudTalkAccountConfig } from "./types.js";
 
 const TRUTHY_ENV = new Set(["true", "1", "yes", "on"]);

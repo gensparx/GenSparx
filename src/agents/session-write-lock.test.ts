@@ -11,7 +11,7 @@ describe("acquireSessionWriteLock", () => {
       return;
     }
 
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-lock-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-lock-"));
     try {
       const realDir = path.join(root, "real");
       const linkDir = path.join(root, "link");
@@ -32,7 +32,7 @@ describe("acquireSessionWriteLock", () => {
   });
 
   it("keeps the lock file until the last release", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-lock-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-lock-"));
     try {
       const sessionFile = path.join(root, "sessions.json");
       const lockPath = `${sessionFile}.lock`;
@@ -51,7 +51,7 @@ describe("acquireSessionWriteLock", () => {
   });
 
   it("reclaims stale lock files", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-lock-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-lock-"));
     try {
       const sessionFile = path.join(root, "sessions.json");
       const lockPath = `${sessionFile}.lock`;
@@ -73,27 +73,43 @@ describe("acquireSessionWriteLock", () => {
   });
 
   it("removes held locks on termination signals", async () => {
-    const signals = ["SIGINT", "SIGTERM", "SIGQUIT", "SIGABRT"] as const;
-    for (const signal of signals) {
-      const root = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-lock-cleanup-"));
-      try {
-        const sessionFile = path.join(root, "sessions.json");
-        const lockPath = `${sessionFile}.lock`;
-        await acquireSessionWriteLock({ sessionFile, timeoutMs: 500 });
-        const keepAlive = () => {};
-        if (signal === "SIGINT") {
-          process.on(signal, keepAlive);
-        }
-
-        __testing.handleTerminationSignal(signal);
-
-        await expect(fs.stat(lockPath)).rejects.toThrow();
-        if (signal === "SIGINT") {
-          process.off(signal, keepAlive);
-        }
-      } finally {
-        await fs.rm(root, { recursive: true, force: true });
+    const originalKill = process.kill.bind(process) as typeof process.kill;
+    const killCalls: Array<NodeJS.Signals | undefined> = [];
+    process.kill = ((pid: number, signal?: NodeJS.Signals | number) => {
+      if (typeof signal === "string") {
+        killCalls.push(signal);
+      } else {
+        killCalls.push(undefined);
       }
+      return true;
+    }) as typeof process.kill;
+
+    const signals = ["SIGINT", "SIGTERM", "SIGQUIT", "SIGABRT"] as const;
+    try {
+      for (const signal of signals) {
+        const root = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-lock-cleanup-"));
+        try {
+          const sessionFile = path.join(root, "sessions.json");
+          const lockPath = `${sessionFile}.lock`;
+          await acquireSessionWriteLock({ sessionFile, timeoutMs: 500 });
+          const keepAlive = () => {};
+          if (signal === "SIGINT") {
+            process.on(signal, keepAlive);
+          }
+
+          __testing.handleTerminationSignal(signal);
+
+          await expect(fs.stat(lockPath)).rejects.toThrow();
+          if (signal === "SIGINT") {
+            process.off(signal, keepAlive);
+          }
+        } finally {
+          await fs.rm(root, { recursive: true, force: true });
+        }
+      }
+      expect(killCalls).not.toContain("SIGINT");
+    } finally {
+      process.kill = originalKill;
     }
   });
 
@@ -102,7 +118,7 @@ describe("acquireSessionWriteLock", () => {
     expect(__testing.cleanupSignals).toContain("SIGABRT");
   });
   it("cleans up locks on SIGINT without removing other handlers", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-lock-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-lock-"));
     const originalKill = process.kill.bind(process) as typeof process.kill;
     const killCalls: Array<NodeJS.Signals | undefined> = [];
     let otherHandlerCalled = false;
@@ -136,7 +152,7 @@ describe("acquireSessionWriteLock", () => {
   });
 
   it("cleans up locks on exit", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-lock-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-lock-"));
     try {
       const sessionFile = path.join(root, "sessions.json");
       const lockPath = `${sessionFile}.lock`;

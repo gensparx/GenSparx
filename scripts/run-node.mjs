@@ -103,11 +103,11 @@ const logRunner = (message) => {
   if (env.OPENCLAW_RUNNER_LOG === "0") {
     return;
   }
-  process.stderr.write(`[openclaw] ${message}\n`);
+  process.stderr.write(`[gensparx] ${message}\n`);
 };
 
 const runNode = () => {
-  const nodeProcess = spawn(process.execPath, ["openclaw.mjs", ...args], {
+  const nodeProcess = spawn(process.execPath, ["gensparx.mjs", ...args], {
     cwd,
     env,
     stdio: "inherit",

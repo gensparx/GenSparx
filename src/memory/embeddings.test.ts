@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DEFAULT_GEMINI_EMBEDDING_MODEL } from "./embeddings-gemini.js";
+import { describeIfFts5 } from "./test-helpers.js";
 
 vi.mock("../agents/model-auth.js", () => ({
   resolveApiKeyForProvider: vi.fn(),
@@ -18,7 +19,9 @@ const createFetchMock = () =>
     json: async () => ({ data: [{ embedding: [1, 2, 3] }] }),
   })) as unknown as typeof fetch;
 
-describe("embedding provider remote overrides", () => {
+const describeFts = describeIfFts5(describe);
+
+describeFts("embedding provider remote overrides", () => {
   afterEach(() => {
     vi.resetAllMocks();
     vi.resetModules();

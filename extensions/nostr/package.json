@@ -4,14 +4,14 @@
   "description": "OpenClaw Nostr channel plugin for NIP-04 encrypted DMs",
   "type": "module",
   "dependencies": {
+    "gensparx": "workspace:*",
     "nostr-tools": "^2.23.0",
-    "openclaw": "workspace:*",
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "openclaw": "workspace:*"
+    "gensparx": "workspace:*"
   },
-  "openclaw": {
+  "gensparx": {
     "extensions": [
       "./index.ts"
     ],

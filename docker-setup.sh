@@ -4,51 +4,84 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 COMPOSE_FILE="$ROOT_DIR/docker-compose.yml"
 EXTRA_COMPOSE_FILE="$ROOT_DIR/docker-compose.extra.yml"
-IMAGE_NAME="${OPENCLAW_IMAGE:-openclaw:local}"
-EXTRA_MOUNTS="${OPENCLAW_EXTRA_MOUNTS:-}"
-HOME_VOLUME_NAME="${OPENCLAW_HOME_VOLUME:-}"
 
-require_cmd() {
-  if ! command -v "$1" >/dev/null 2>&1; then
-    echo "Missing dependency: $1" >&2
-    exit 1
+# Prefer GenSparx envs; fall back to legacy OpenClaw names for compatibility.
+IMAGE_NAME="${GENSPARX_IMAGE:-${OPENCLAW_IMAGE:-gensparx:local}}"
+EXTRA_MOUNTS="${GENSPARX_EXTRA_MOUNTS:-${OPENCLAW_EXTRA_MOUNTS:-}}"
+HOME_VOLUME_NAME="${GENSPARX_HOME_VOLUME:-${OPENCLAW_HOME_VOLUME:-}}"
+CONFIG_DIR="${GENSPARX_CONFIG_DIR:-${OPENCLAW_CONFIG_DIR:-$HOME/.gensparx}}"
+WORKSPACE_DIR="${GENSPARX_WORKSPACE_DIR:-${OPENCLAW_WORKSPACE_DIR:-$HOME/.gensparx/workspace}}"
+GATEWAY_PORT="${GENSPARX_GATEWAY_PORT:-${OPENCLAW_GATEWAY_PORT:-18789}}"
+BRIDGE_PORT="${GENSPARX_BRIDGE_PORT:-${OPENCLAW_BRIDGE_PORT:-18790}}"
+GATEWAY_BIND="${GENSPARX_GATEWAY_BIND:-${OPENCLAW_GATEWAY_BIND:-lan}}"
+DOCKER_APT="${GENSPARX_DOCKER_APT_PACKAGES:-${OPENCLAW_DOCKER_APT_PACKAGES:-}}"
+
+docker() {
+  if [[ -n "${DOCKER_STUB_LOG:-}" ]]; then
+    if [[ "${1:-}" == "compose" && "${2:-}" == "version" ]]; then
+      return 0
+    fi
+    if [[ "${1:-}" == "build" ]]; then
+      echo "build $*" >>"${DOCKER_STUB_LOG}"
+      return 0
+    fi
+    if [[ "${1:-}" == "compose" ]]; then
+      echo "compose $*" >>"${DOCKER_STUB_LOG}"
+      return 0
+    fi
+    echo "unknown $*" >>"${DOCKER_STUB_LOG}"
+    return 0
   fi
+  command docker "$@"
 }
 
-require_cmd docker
-if ! docker compose version >/dev/null 2>&1; then
-  echo "Docker Compose not available (try: docker compose version)" >&2
-  exit 1
+# If not stubbing, ensure docker is present.
+if [[ -z "${DOCKER_STUB_LOG:-}" ]]; then
+  if ! command -v docker >/dev/null 2>&1; then
+    echo "Missing dependency: docker" >&2
+    exit 1
+  fi
+  if ! command docker compose version >/dev/null 2>&1; then
+    echo "Docker Compose not available (try: docker compose version)" >&2
+    exit 1
+  fi
 fi
 
-OPENCLAW_CONFIG_DIR="${OPENCLAW_CONFIG_DIR:-$HOME/.openclaw}"
-OPENCLAW_WORKSPACE_DIR="${OPENCLAW_WORKSPACE_DIR:-$HOME/.openclaw/workspace}"
+mkdir -p "$CONFIG_DIR"
+mkdir -p "$WORKSPACE_DIR"
 
-mkdir -p "$OPENCLAW_CONFIG_DIR"
-mkdir -p "$OPENCLAW_WORKSPACE_DIR"
-
-export OPENCLAW_CONFIG_DIR
-export OPENCLAW_WORKSPACE_DIR
-export OPENCLAW_GATEWAY_PORT="${OPENCLAW_GATEWAY_PORT:-18789}"
-export OPENCLAW_BRIDGE_PORT="${OPENCLAW_BRIDGE_PORT:-18790}"
-export OPENCLAW_GATEWAY_BIND="${OPENCLAW_GATEWAY_BIND:-lan}"
+export GENSPARX_CONFIG_DIR="$CONFIG_DIR"
+export OPENCLAW_CONFIG_DIR="$CONFIG_DIR"
+export GENSPARX_WORKSPACE_DIR="$WORKSPACE_DIR"
+export OPENCLAW_WORKSPACE_DIR="$WORKSPACE_DIR"
+export GENSPARX_GATEWAY_PORT="$GATEWAY_PORT"
+export OPENCLAW_GATEWAY_PORT="$GATEWAY_PORT"
+export GENSPARX_BRIDGE_PORT="$BRIDGE_PORT"
+export OPENCLAW_BRIDGE_PORT="$BRIDGE_PORT"
+export GENSPARX_GATEWAY_BIND="$GATEWAY_BIND"
+export OPENCLAW_GATEWAY_BIND="$GATEWAY_BIND"
+export GENSPARX_IMAGE="$IMAGE_NAME"
 export OPENCLAW_IMAGE="$IMAGE_NAME"
-export OPENCLAW_DOCKER_APT_PACKAGES="${OPENCLAW_DOCKER_APT_PACKAGES:-}"
+export GENSPARX_DOCKER_APT_PACKAGES="$DOCKER_APT"
+export OPENCLAW_DOCKER_APT_PACKAGES="$DOCKER_APT"
+export GENSPARX_EXTRA_MOUNTS="$EXTRA_MOUNTS"
 export OPENCLAW_EXTRA_MOUNTS="$EXTRA_MOUNTS"
+export GENSPARX_HOME_VOLUME="$HOME_VOLUME_NAME"
 export OPENCLAW_HOME_VOLUME="$HOME_VOLUME_NAME"
 
-if [[ -z "${OPENCLAW_GATEWAY_TOKEN:-}" ]]; then
+if [[ -z "${GENSPARX_GATEWAY_TOKEN:-${OPENCLAW_GATEWAY_TOKEN:-}}" ]]; then
   if command -v openssl >/dev/null 2>&1; then
-    OPENCLAW_GATEWAY_TOKEN="$(openssl rand -hex 32)"
+    GENSPARX_GATEWAY_TOKEN="$(openssl rand -hex 32)"
   else
-    OPENCLAW_GATEWAY_TOKEN="$(python3 - <<'PY'
+    GENSPARX_GATEWAY_TOKEN="$(python3 - <<'PY'
 import secrets
 print(secrets.token_hex(32))
 PY
 )"
   fi
 fi
-export OPENCLAW_GATEWAY_TOKEN
+export GENSPARX_GATEWAY_TOKEN
+export OPENCLAW_GATEWAY_TOKEN="${OPENCLAW_GATEWAY_TOKEN:-$GENSPARX_GATEWAY_TOKEN}"
 
 COMPOSE_FILES=("$COMPOSE_FILE")
 COMPOSE_ARGS=()
@@ -67,8 +100,8 @@ YAML
 
   if [[ -n "$home_volume" ]]; then
     printf '      - %s:/home/node\n' "$home_volume" >>"$EXTRA_COMPOSE_FILE"
-    printf '      - %s:/home/node/.openclaw\n' "$OPENCLAW_CONFIG_DIR" >>"$EXTRA_COMPOSE_FILE"
-    printf '      - %s:/home/node/.openclaw/workspace\n' "$OPENCLAW_WORKSPACE_DIR" >>"$EXTRA_COMPOSE_FILE"
+    printf '      - %s:/home/node/.openclaw\n' "$CONFIG_DIR" >>"$EXTRA_COMPOSE_FILE"
+    printf '      - %s:/home/node/.openclaw/workspace\n' "$WORKSPACE_DIR" >>"$EXTRA_COMPOSE_FILE"
   fi
 
   for mount in "${mounts[@]}"; do
@@ -82,8 +115,8 @@ YAML
 
   if [[ -n "$home_volume" ]]; then
     printf '      - %s:/home/node\n' "$home_volume" >>"$EXTRA_COMPOSE_FILE"
-    printf '      - %s:/home/node/.openclaw\n' "$OPENCLAW_CONFIG_DIR" >>"$EXTRA_COMPOSE_FILE"
-    printf '      - %s:/home/node/.openclaw/workspace\n' "$OPENCLAW_WORKSPACE_DIR" >>"$EXTRA_COMPOSE_FILE"
+    printf '      - %s:/home/node/.openclaw\n' "$CONFIG_DIR" >>"$EXTRA_COMPOSE_FILE"
+    printf '      - %s:/home/node/.openclaw/workspace\n' "$WORKSPACE_DIR" >>"$EXTRA_COMPOSE_FILE"
   fi
 
   for mount in "${mounts[@]}"; do
@@ -159,6 +192,16 @@ upsert_env() {
 }
 
 upsert_env "$ENV_FILE" \
+  GENSPARX_CONFIG_DIR \
+  GENSPARX_WORKSPACE_DIR \
+  GENSPARX_GATEWAY_PORT \
+  GENSPARX_BRIDGE_PORT \
+  GENSPARX_GATEWAY_BIND \
+  GENSPARX_GATEWAY_TOKEN \
+  GENSPARX_IMAGE \
+  GENSPARX_EXTRA_MOUNTS \
+  GENSPARX_HOME_VOLUME \
+  GENSPARX_DOCKER_APT_PACKAGES \
   OPENCLAW_CONFIG_DIR \
   OPENCLAW_WORKSPACE_DIR \
   OPENCLAW_GATEWAY_PORT \
@@ -172,7 +215,8 @@ upsert_env "$ENV_FILE" \
 
 echo "==> Building Docker image: $IMAGE_NAME"
 docker build \
-  --build-arg "OPENCLAW_DOCKER_APT_PACKAGES=${OPENCLAW_DOCKER_APT_PACKAGES}" \
+  --build-arg "GENSPARX_DOCKER_APT_PACKAGES=${DOCKER_APT}" \
+  --build-arg "OPENCLAW_DOCKER_APT_PACKAGES=${DOCKER_APT}" \
   -t "$IMAGE_NAME" \
   -f "$ROOT_DIR/Dockerfile" \
   "$ROOT_DIR"
@@ -182,7 +226,7 @@ echo "==> Onboarding (interactive)"
 echo "When prompted:"
 echo "  - Gateway bind: lan"
 echo "  - Gateway auth: token"
-echo "  - Gateway token: $OPENCLAW_GATEWAY_TOKEN"
+echo "  - Gateway token: $GENSPARX_GATEWAY_TOKEN"
 echo "  - Tailscale exposure: Off"
 echo "  - Install Gateway daemon: No"
 echo ""
@@ -205,10 +249,10 @@ docker compose "${COMPOSE_ARGS[@]}" up -d openclaw-gateway
 echo ""
 echo "Gateway running with host port mapping."
 echo "Access from tailnet devices via the host's tailnet IP."
-echo "Config: $OPENCLAW_CONFIG_DIR"
-echo "Workspace: $OPENCLAW_WORKSPACE_DIR"
-echo "Token: $OPENCLAW_GATEWAY_TOKEN"
+echo "Config: $CONFIG_DIR"
+echo "Workspace: $WORKSPACE_DIR"
+echo "Token: $GENSPARX_GATEWAY_TOKEN"
 echo ""
 echo "Commands:"
 echo "  ${COMPOSE_HINT} logs -f openclaw-gateway"
-echo "  ${COMPOSE_HINT} exec openclaw-gateway node dist/index.js health --token \"$OPENCLAW_GATEWAY_TOKEN\""
+echo "  ${COMPOSE_HINT} exec openclaw-gateway node dist/index.js health --token \"$GENSPARX_GATEWAY_TOKEN\""

@@ -77,13 +77,12 @@ export function normalizeGatewayTokenInput(value: unknown): string {
 
 export function printWizardHeader(runtime: RuntimeEnv) {
   const header = [
-    "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄",
-    "██░▄▄▄░██░▄▄░██░▄▄▄██░▀██░██░▄▄▀██░████░▄▄▀██░███░██",
-    "██░███░██░▀▀░██░▄▄▄██░█░█░██░█████░████░▀▀░██░█░█░██",
-    "██░▀▀▀░██░█████░▀▀▀██░██▄░██░▀▀▄██░▀▀░█░██░██▄▀▄▀▄██",
-    "▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀",
-    "                  🦞 OPENCLAW 🦞                    ",
-    " ",
+    "   ██████╗ ███████╗███╗   ██╗███████╗██████╗  █████╗ ██████╗ ██╗  ██╗",
+    "  ██╔════╝ ██╔════╝████╗  ██║██╔════╝██╔══██╗██╔══██╗██╔══██╗╚██╗██╔╝",
+    "  ██║  ███╗█████╗  ██╔██╗ ██║███████╗██████╔╝███████║██████╔╝ ╚███╔╝ ",
+    "  ██║   ██║██╔══╝  ██║╚██╗██║╚════██║██╔═══╝ ██╔══██║██╔══██╗ ██╔██╗ ",
+    "  ╚██████╔╝███████╗██║ ╚████║███████║██║     ██║  ██║██║  ██║██╔╝ ██╗",
+    "   ╚═════╝ ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝",
   ].join("\n");
   runtime.log(header);
 }
@@ -197,8 +196,8 @@ export function formatControlUiSshHint(params: {
     localUrl,
     authedUrl,
     "Docs:",
-    "https://docs.openclaw.ai/gateway/remote",
-    "https://docs.openclaw.ai/web/control-ui",
+    "https://docs.gensparx.com/gateway/remote",
+    "https://docs.gensparx.com/web/control-ui",
   ]
     .filter(Boolean)
     .join("\n");

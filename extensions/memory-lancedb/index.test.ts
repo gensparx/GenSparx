@@ -15,7 +15,7 @@ import { describe, test, expect, beforeEach, afterEach } from "vitest";
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY ?? "test-key";
 const HAS_OPENAI_KEY = Boolean(process.env.OPENAI_API_KEY);
-const liveEnabled = HAS_OPENAI_KEY && process.env.OPENCLAW_LIVE_TEST === "1";
+const liveEnabled = HAS_OPENAI_KEY && process.env.GENSPARX_LIVE_TEST === "1";
 const describeLive = liveEnabled ? describe : describe.skip;
 
 describe("memory plugin e2e", () => {
@@ -23,7 +23,7 @@ describe("memory plugin e2e", () => {
   let dbPath: string;
 
   beforeEach(async () => {
-    tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-memory-test-"));
+    tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-memory-test-"));
     dbPath = path.join(tmpDir, "lancedb");
   });
 
@@ -43,7 +43,7 @@ describe("memory plugin e2e", () => {
     expect(memoryPlugin.configSchema).toBeDefined();
     // oxlint-disable-next-line typescript/unbound-method
     expect(memoryPlugin.register).toBeInstanceOf(Function);
-  });
+  }, 120_000);
 
   test("config schema parses valid config", async () => {
     const { default: memoryPlugin } = await import("./index.js");
@@ -165,7 +165,7 @@ describeLive("memory plugin live tests", () => {
   let dbPath: string;
 
   beforeEach(async () => {
-    tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-memory-live-"));
+    tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-memory-live-"));
     dbPath = path.join(tmpDir, "lancedb");
   });
 

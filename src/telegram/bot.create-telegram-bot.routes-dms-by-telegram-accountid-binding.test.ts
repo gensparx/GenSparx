@@ -1,10 +1,13 @@
+import os from "node:os";
+import path from "node:path";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { resetInboundDedupe } from "../auto-reply/reply/inbound-dedupe.js";
 import { createTelegramBot } from "./bot.js";
 
-const { sessionStorePath } = vi.hoisted(() => ({
-  sessionStorePath: `/tmp/openclaw-telegram-${Math.random().toString(16).slice(2)}.json`,
-}));
+const sessionStorePath = path.join(
+  os.tmpdir(),
+  `gensparx-telegram-${Math.random().toString(16).slice(2)}.json`,
+);
 
 const { loadWebMedia } = vi.hoisted(() => ({
   loadWebMedia: vi.fn(),
@@ -194,7 +197,7 @@ describe("createTelegramBot", () => {
         date: 1736380800,
         message_id: 42,
       },
-      me: { username: "openclaw_bot" },
+      me: { username: "gensparx_bot" },
       getFile: async () => ({ download: async () => new Uint8Array() }),
     });
 
@@ -228,7 +231,7 @@ describe("createTelegramBot", () => {
         text: "hello",
         date: 1736380800,
       },
-      me: { username: "openclaw_bot" },
+      me: { username: "gensparx_bot" },
       getFile: async () => ({ download: async () => new Uint8Array() }),
     });
 
@@ -270,7 +273,7 @@ describe("createTelegramBot", () => {
         date: 1736380800,
         message_thread_id: 99,
       },
-      me: { username: "openclaw_bot" },
+      me: { username: "gensparx_bot" },
       getFile: async () => ({ download: async () => new Uint8Array() }),
     });
 
@@ -298,7 +301,7 @@ describe("createTelegramBot", () => {
         text: "hello",
         date: 1736380800,
       },
-      me: { username: "openclaw_bot" },
+      me: { username: "gensparx_bot" },
       getFile: async () => ({ download: async () => new Uint8Array() }),
     });
 
@@ -358,7 +361,7 @@ describe("createTelegramBot", () => {
         message_id: 5,
         from: { first_name: "Ada" },
       },
-      me: { username: "openclaw_bot" },
+      me: { username: "gensparx_bot" },
       getFile: async () => ({ download: async () => new Uint8Array() }),
     });
 

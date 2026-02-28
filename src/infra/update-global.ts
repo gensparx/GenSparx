@@ -9,8 +9,8 @@ export type CommandRunner = (
   options: { timeoutMs: number; cwd?: string; env?: NodeJS.ProcessEnv },
 ) => Promise<{ stdout: string; stderr: string; code: number | null }>;
 
-const PRIMARY_PACKAGE_NAME = "openclaw";
-const ALL_PACKAGE_NAMES = [PRIMARY_PACKAGE_NAME] as const;
+const PRIMARY_PACKAGE_NAME = "gensparx";
+const ALL_PACKAGE_NAMES = [PRIMARY_PACKAGE_NAME, "openclaw"] as const;
 const GLOBAL_RENAME_PREFIX = ".";
 
 async function pathExists(targetPath: string): Promise<boolean> {
@@ -91,7 +91,7 @@ export async function detectGlobalInstallManagerForRoot(
     const globalReal = await tryRealpath(globalRoot);
     for (const name of ALL_PACKAGE_NAMES) {
       const expected = path.join(globalReal, name);
-      if (path.resolve(expected) === path.resolve(pkgReal)) {
+      if (path.resolve(expected).toLowerCase() === path.resolve(pkgReal).toLowerCase()) {
         return manager;
       }
     }
@@ -101,7 +101,7 @@ export async function detectGlobalInstallManagerForRoot(
   const bunGlobalReal = await tryRealpath(bunGlobalRoot);
   for (const name of ALL_PACKAGE_NAMES) {
     const bunExpected = path.join(bunGlobalReal, name);
-    if (path.resolve(bunExpected) === path.resolve(pkgReal)) {
+    if (path.resolve(bunExpected).toLowerCase() === path.resolve(pkgReal).toLowerCase()) {
       return "bun";
     }
   }

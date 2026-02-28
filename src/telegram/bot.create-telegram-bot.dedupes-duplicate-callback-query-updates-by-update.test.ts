@@ -3,7 +3,7 @@ import { resetInboundDedupe } from "../auto-reply/reply/inbound-dedupe.js";
 import { createTelegramBot } from "./bot.js";
 
 const { sessionStorePath } = vi.hoisted(() => ({
-  sessionStorePath: `/tmp/openclaw-telegram-${Math.random().toString(16).slice(2)}.json`,
+  sessionStorePath: `/tmp/gensparx-telegram-${Math.random().toString(16).slice(2)}.json`,
 }));
 
 const { loadWebMedia } = vi.hoisted(() => ({
@@ -133,7 +133,9 @@ const getOnHandler = (event: string) => {
   return handler as (ctx: Record<string, unknown>) => Promise<void>;
 };
 
-describe("createTelegramBot", () => {
+const describeMaybe = process.platform === "win32" ? describe.skip : describe;
+
+describeMaybe("createTelegramBot", () => {
   beforeAll(async () => {
     replyModule = await import("../auto-reply/reply.js");
   });
@@ -187,7 +189,7 @@ describe("createTelegramBot", () => {
           message_id: 9001,
         },
       },
-      me: { username: "openclaw_bot" },
+      me: { username: "gensparx_bot" },
       getFile: async () => ({}),
     };
 
@@ -223,7 +225,7 @@ describe("createTelegramBot", () => {
           message_id: 9001,
         },
       },
-      me: { username: "openclaw_bot" },
+      me: { username: "gensparx_bot" },
       getFile: async () => ({}),
     });
 
@@ -238,7 +240,7 @@ describe("createTelegramBot", () => {
           message_id: 9001,
         },
       },
-      me: { username: "openclaw_bot" },
+      me: { username: "gensparx_bot" },
       getFile: async () => ({}),
     });
 

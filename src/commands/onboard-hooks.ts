@@ -15,7 +15,7 @@ export async function setupInternalHooks(
       "Hooks let you automate actions when agent commands are issued.",
       "Example: Save session context to memory when you issue /new.",
       "",
-      "Learn more: https://docs.openclaw.ai/hooks",
+      "Learn more: https://docs.gensparx.com/hooks",
     ].join("\n"),
     "Hooks",
   );
@@ -74,9 +74,9 @@ export async function setupInternalHooks(
       `Enabled ${selected.length} hook${selected.length > 1 ? "s" : ""}: ${selected.join(", ")}`,
       "",
       "You can manage hooks later with:",
-      `  ${formatCliCommand("openclaw hooks list")}`,
-      `  ${formatCliCommand("openclaw hooks enable <name>")}`,
-      `  ${formatCliCommand("openclaw hooks disable <name>")}`,
+      `  ${formatCliCommand("gensparx hooks list")}`,
+      `  ${formatCliCommand("gensparx hooks enable <name>")}`,
+      `  ${formatCliCommand("gensparx hooks disable <name>")}`,
     ].join("\n"),
     "Hooks Configured",
   );

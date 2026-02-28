@@ -168,3 +168,6 @@ export function createOpenClawTools(options?: {
 
   return [...tools, ...pluginTools];
 }
+
+// GenSparx alias for rebrand
+export const createGenSparxTools = createOpenClawTools;

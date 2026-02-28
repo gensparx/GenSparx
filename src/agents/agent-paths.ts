@@ -3,7 +3,7 @@ import { resolveStateDir } from "../config/paths.js";
 import { DEFAULT_AGENT_ID } from "../routing/session-key.js";
 import { resolveUserPath } from "../utils.js";
 
-export function resolveOpenClawAgentDir(): string {
+export function resolveGenSparxAgentDir(): string {
   const override =
     process.env.GENSPARX_AGENT_DIR?.trim() ||
     process.env.OPENCLAW_AGENT_DIR?.trim() ||
@@ -15,8 +15,8 @@ export function resolveOpenClawAgentDir(): string {
   return resolveUserPath(defaultAgentDir);
 }
 
-export function ensureOpenClawAgentEnv(): string {
-  const dir = resolveOpenClawAgentDir();
+export function ensureGenSparxAgentEnv(): string {
+  const dir = resolveGenSparxAgentDir();
   if (!process.env.GENSPARX_AGENT_DIR) {
     process.env.GENSPARX_AGENT_DIR = dir;
   }
@@ -28,3 +28,7 @@ export function ensureOpenClawAgentEnv(): string {
   }
   return dir;
 }
+
+// Legacy aliases (keep for plugin/back-compatibility)
+export const resolveOpenClawAgentDir = resolveGenSparxAgentDir;
+export const ensureOpenClawAgentEnv = ensureGenSparxAgentEnv;

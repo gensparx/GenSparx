@@ -1,7 +1,9 @@
 import { defineConfig } from "vitest/config";
 import baseConfig from "./vitest.config.ts";
 
-const baseTest = (baseConfig as { test?: { include?: string[]; exclude?: string[] } }).test ?? {};
+const resolvedBaseConfig = await Promise.resolve(baseConfig);
+const baseTest =
+  (resolvedBaseConfig as { test?: { include?: string[]; exclude?: string[] } }).test ?? {};
 const include = baseTest.include ?? [
   "src/**/*.test.ts",
   "extensions/**/*.test.ts",
@@ -10,7 +12,7 @@ const include = baseTest.include ?? [
 const exclude = baseTest.exclude ?? [];
 
 export default defineConfig({
-  ...baseConfig,
+  ...resolvedBaseConfig,
   test: {
     ...baseTest,
     include,

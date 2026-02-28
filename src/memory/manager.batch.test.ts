@@ -3,6 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getMemorySearchManager, type MemoryIndexManager } from "./index.js";
+import { describeIfFts5 } from "./test-helpers.js";
 
 const embedBatch = vi.fn(async () => []);
 const embedQuery = vi.fn(async () => [0.5, 0.5, 0.5]);
@@ -24,7 +25,9 @@ vi.mock("./embeddings.js", () => ({
   }),
 }));
 
-describe("memory indexing with OpenAI batches", () => {
+const describeFts = describeIfFts5(describe);
+
+describeFts("memory indexing with OpenAI batches", () => {
   let workspaceDir: string;
   let indexPath: string;
   let manager: MemoryIndexManager | null = null;
@@ -48,7 +51,7 @@ describe("memory indexing with OpenAI batches", () => {
       }
       return realSetTimeout(handler, delay, ...args);
     }) as typeof setTimeout);
-    workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-mem-batch-"));
+    workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-mem-batch-"));
     indexPath = path.join(workspaceDir, "index.sqlite");
     await fs.mkdir(path.join(workspaceDir, "memory"));
   });

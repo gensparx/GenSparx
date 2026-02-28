@@ -568,3 +568,61 @@ Use this launch order: `canary -> beta -> stable`.
   - revert channel to previous stable version
   - publish fix as follow-up
 - [ ] Do not continue promotion until root cause is fixed and re-verified.
+
+## 23) Launch Day Checklist (Copy/Paste)
+
+Use this exact sequence.
+
+### Step 1: Push state (already done if these pass)
+
+```bash
+git ls-remote --heads origin main
+git ls-remote --tags origin pre-launch-green-2026-02-15
+```
+
+Expected:
+- `refs/heads/main` exists
+- `refs/tags/pre-launch-green-2026-02-15` exists
+
+### Step 2: Open PR to upstream
+
+- Repo: `https://github.com/sparkaizen-AI/openclaw`
+- Base: `openclaw/openclaw:main`
+- Compare: `sparkaizen-AI:main`
+- Title: `Infra: fix Windows gateway probe SSH path resolution`
+
+PR body:
+
+- Fixes Windows runtime crash in gateway probe (`spawn /usr/bin/ssh ENOENT`).
+- Updated:
+  - `src/infra/ssh-config.ts`
+  - `src/infra/ssh-tunnel.ts`
+- Uses platform-aware SSH binary selection with env overrides:
+  - `GENSPARX_SSH_PATH`
+  - `OPENCLAW_SSH_PATH`
+- Verification:
+  - `pnpm build` (pass)
+  - `pnpm check` (pass)
+  - `pnpm vitest run --pool=threads --maxWorkers=1` (pass)
+  - `gensparx gateway probe` on Windows (no crash)
+
+### Step 3: Canary test (one machine/user)
+
+Run:
+
+```bash
+gensparx --version
+gensparx status
+gensparx doctor
+gensparx gateway probe
+```
+
+Then:
+- send 2-3 real messages
+- watch for errors/crashes for a few hours
+
+### Step 4: Decide rollout
+
+- If canary is clean: proceed to beta, then stable.
+- If canary fails: pause rollout and recover using tag:
+  - `pre-launch-green-2026-02-15`

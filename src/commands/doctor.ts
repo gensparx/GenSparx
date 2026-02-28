@@ -16,7 +16,7 @@ import { logConfigUpdated } from "../config/logging.js";
 import { resolveGatewayService } from "../daemon/service.js";
 import { resolveGatewayAuth } from "../gateway/auth.js";
 import { buildGatewayConnectionDetails } from "../gateway/call.js";
-import { resolveOpenClawPackageRoot } from "../infra/openclaw-root.js";
+import { resolveGenSparxPackageRoot } from "../infra/gensparx-root.js";
 import { defaultRuntime } from "../runtime.js";
 import { note } from "../terminal/note.js";
 import { stylePromptTitle } from "../terminal/prompt-style.js";
@@ -68,9 +68,9 @@ export async function doctorCommand(
 ) {
   const prompter = createDoctorPrompter({ runtime, options });
   printWizardHeader(runtime);
-  intro("OpenClaw doctor");
+  intro("GenSparx doctor");
 
-  const root = await resolveOpenClawPackageRoot({
+  const root = await resolveGenSparxPackageRoot({
     moduleUrl: import.meta.url,
     argv1: process.argv[1],
     cwd: process.cwd(),
@@ -101,11 +101,11 @@ export async function doctorCommand(
   if (!cfg.gateway?.mode) {
     const lines = [
       "gateway.mode is unset; gateway start will be blocked.",
-      `Fix: run ${formatCliCommand("openclaw configure")} and set Gateway mode (local/remote).`,
-      `Or set directly: ${formatCliCommand("openclaw config set gateway.mode local")}`,
+      `Fix: run ${formatCliCommand("gensparx configure")} and set Gateway mode (local/remote).`,
+      `Or set directly: ${formatCliCommand("gensparx config set gateway.mode local")}`,
     ];
     if (!fs.existsSync(configPath)) {
-      lines.push(`Missing config: run ${formatCliCommand("openclaw setup")} first.`);
+      lines.push(`Missing config: run ${formatCliCommand("gensparx setup")} first.`);
     }
     note(lines.join("\n"), "Gateway");
   }
@@ -117,6 +117,19 @@ export async function doctorCommand(
     prompter,
     allowKeychainPrompt: options.nonInteractive !== true && Boolean(process.stdin.isTTY),
   });
+  const fastMode = process.env.GENSPARX_TEST_FAST === "1";
+  if (fastMode && cfg !== configResult.cfg) {
+    cfg = applyWizardMetadata(cfg, { command: "doctor", mode: resolveMode(cfg) });
+    await writeConfigFile(cfg);
+  }
+  const configChanged = cfg !== configResult.cfg;
+  const forceWriteConfig =
+    prompter.shouldRepair ||
+    configResult.shouldWriteConfig ||
+    options.nonInteractive === true ||
+    options.yes === true ||
+    fastMode ||
+    configChanged;
   const gatewayDetails = buildGatewayConnectionDetails({ config: cfg });
   if (gatewayDetails.remoteFallbackNote) {
     note(gatewayDetails.remoteFallbackNote, "Gateway");
@@ -182,10 +195,37 @@ export async function doctorCommand(
     }
   }
 
-  await noteStateIntegrity(cfg, prompter, configResult.path ?? CONFIG_PATH);
+  try {
+    await noteStateIntegrity(cfg, prompter, configResult.path ?? CONFIG_PATH);
+  } catch (err) {
+    runtime.error?.(`State integrity check failed: ${String(err)}`);
+  }
+
+  noteSandboxScopeWarnings(cfg);
+
+  if (options.nonInteractive === true || options.yes === true) {
+    if (forceWriteConfig) {
+      const cfgToWrite = applyWizardMetadata(cfg, { command: "doctor", mode: resolveMode(cfg) });
+      await writeConfigFile(cfgToWrite);
+      logConfigUpdated(runtime);
+    }
+    outro("Doctor complete.");
+    return;
+  }
 
   cfg = await maybeRepairSandboxImages(cfg, runtime, prompter);
-  noteSandboxScopeWarnings(cfg);
+
+  // Fast/CI mode: after core integrity/migration checks, bail out before gateway/service work.
+  const shouldFastExit = fastMode;
+  if (shouldFastExit) {
+    if (forceWriteConfig || configChanged) {
+      const cfgToWrite = applyWizardMetadata(cfg, { command: "doctor", mode: resolveMode(cfg) });
+      await writeConfigFile(cfgToWrite);
+      logConfigUpdated(runtime);
+    }
+    outro("Doctor complete.");
+    return;
+  }
 
   await maybeScanExtraGatewayServices(options, runtime, prompter);
   await maybeRepairGatewayServiceConfig(cfg, resolveMode(cfg), runtime, prompter);
@@ -232,11 +272,7 @@ export async function doctorCommand(
     }
   }
 
-  if (
-    options.nonInteractive !== true &&
-    process.platform === "linux" &&
-    resolveMode(cfg) === "local"
-  ) {
+  if (process.platform === "linux" && resolveMode(cfg) === "local") {
     const service = resolveGatewayService();
     let loaded = false;
     try {
@@ -268,7 +304,7 @@ export async function doctorCommand(
   const { healthOk } = await checkGatewayHealth({
     runtime,
     cfg,
-    timeoutMs: options.nonInteractive === true ? 3000 : 10_000,
+    timeoutMs: 10_000,
   });
   await maybeRepairGatewayDaemon({
     cfg,
@@ -279,7 +315,8 @@ export async function doctorCommand(
     healthOk,
   });
 
-  const shouldWriteConfig = prompter.shouldRepair || configResult.shouldWriteConfig;
+  const shouldWriteConfig =
+    prompter.shouldRepair || configResult.shouldWriteConfig || fastMode || configChanged;
   if (shouldWriteConfig) {
     cfg = applyWizardMetadata(cfg, { command: "doctor", mode: resolveMode(cfg) });
     await writeConfigFile(cfg);
@@ -289,7 +326,7 @@ export async function doctorCommand(
       runtime.log(`Backup: ${shortenHomePath(backupPath)}`);
     }
   } else {
-    runtime.log(`Run "${formatCliCommand("openclaw doctor --fix")}" to apply changes.`);
+    runtime.log(`Run "${formatCliCommand("gensparx doctor --fix")}" to apply changes.`);
   }
 
   if (options.workspaceSuggestions !== false) {

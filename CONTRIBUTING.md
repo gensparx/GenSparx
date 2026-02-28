@@ -1,12 +1,12 @@
-# Contributing to OpenClaw
+# Contributing to GenSparx
 
-Welcome to the lobster tank! 🦞
+Welcome to the GenSparx contributor space! 🦞
 
 ## Quick Links
 
 - **GitHub:** https://github.com/openclaw/openclaw
 - **Discord:** https://discord.gg/qkhbAGHRBT
-- **X/Twitter:** [@steipete](https://x.com/steipete) / [@openclaw](https://x.com/openclaw)
+- **X/Twitter:** [@steipete](https://x.com/steipete) / [@gensparx](https://x.com/gensparx)
 
 ## Maintainers
 
@@ -30,7 +30,7 @@ Welcome to the lobster tank! 🦞
 
 ## Before You PR
 
-- Test locally with your OpenClaw instance
+- Test locally with your GenSparx instance
 - Run tests: `pnpm build && pnpm check && pnpm test`
 - Keep PRs focused (one thing per PR)
 - Describe what & why

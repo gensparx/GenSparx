@@ -188,14 +188,14 @@ export async function processFeishuMessage(
                 senderId,
                 {
                   text: [
-                    "OpenClaw access not configured.",
+                    "GenSparx access not configured.",
                     "",
                     `Your Feishu Open ID: ${senderId}`,
                     "",
                     `Pairing code: ${code}`,
                     "",
-                    "Ask the OpenClaw admin to approve with:",
-                    `openclaw pairing approve feishu ${code}`,
+                    "Ask the GenSparx admin to approve with:",
+                    `gensparx pairing approve feishu ${code}`,
                   ].join("\n"),
                 },
                 { receiveIdType: "open_id" },

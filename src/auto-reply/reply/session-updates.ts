@@ -51,6 +51,13 @@ export async function prependSystemEvents(params: {
   const resolveSystemEventTimezone = (cfg: OpenClawConfig) => {
     const raw = cfg.agents?.defaults?.envelopeTimezone?.trim();
     if (!raw) {
+      const envTz = process.env.TZ?.trim();
+      if (envTz) {
+        const explicit = resolveExplicitTimezone(envTz);
+        if (explicit) {
+          return { mode: "iana" as const, timeZone: explicit };
+        }
+      }
       return { mode: "local" as const };
     }
     const lowered = raw.toLowerCase();
@@ -58,6 +65,13 @@ export async function prependSystemEvents(params: {
       return { mode: "utc" as const };
     }
     if (lowered === "local" || lowered === "host") {
+      const envTz = process.env.TZ?.trim();
+      if (envTz) {
+        const explicit = resolveExplicitTimezone(envTz);
+        if (explicit) {
+          return { mode: "iana" as const, timeZone: explicit };
+        }
+      }
       return { mode: "local" as const };
     }
     if (lowered === "user") {

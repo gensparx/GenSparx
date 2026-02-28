@@ -156,7 +156,7 @@ function warnIfConfigFromFuture(cfg: OpenClawConfig, logger: Pick<typeof console
   }
   if (cmp < 0) {
     logger.warn(
-      `Config was last written by a newer OpenClaw (${touched}); current version is ${VERSION}.`,
+      `Config was last written by a newer GenSparx (${touched}); current version is ${VERSION}.`,
     );
   }
 }
@@ -203,9 +203,27 @@ export function parseConfigJson5(
 export function createConfigIO(overrides: ConfigIoDeps = {}) {
   const deps = normalizeDeps(overrides);
   const requestedConfigPath = resolveConfigPathForDeps(deps);
-  const candidatePaths = deps.configPath
+  const explicitConfigOverride =
+    Boolean(deps.configPath) ||
+    Boolean(
+      deps.env.GENSPARX_CONFIG_PATH?.trim() ||
+      deps.env.OPENCLAW_CONFIG_PATH?.trim() ||
+      deps.env.CLAWDBOT_CONFIG_PATH?.trim(),
+    );
+  const explicitStateOverride = Boolean(
+    deps.env.GENSPARX_STATE_DIR?.trim() ||
+    deps.env.OPENCLAW_STATE_DIR?.trim() ||
+    deps.env.CLAWDBOT_STATE_DIR?.trim(),
+  );
+  const candidatePaths = explicitConfigOverride
     ? [requestedConfigPath]
-    : resolveDefaultConfigCandidates(deps.env, deps.homedir);
+    : explicitStateOverride
+      ? resolveDefaultConfigCandidates(deps.env, deps.homedir).filter(
+          (candidate) =>
+            path.resolve(path.dirname(candidate)) ===
+            path.resolve(resolveStateDir(deps.env, deps.homedir)),
+        )
+      : resolveDefaultConfigCandidates(deps.env, deps.homedir);
   const configPath =
     candidatePaths.find((candidate) => deps.fs.existsSync(candidate)) ?? requestedConfigPath;
 
@@ -324,6 +342,15 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
     const exists = deps.fs.existsSync(configPath);
     if (!exists) {
       const hash = hashConfigRaw(null);
+      if (shouldEnableShellEnvFallback(deps.env) && !shouldDeferShellEnvFallback(deps.env)) {
+        loadShellEnvFallback({
+          enabled: true,
+          env: deps.env,
+          expectedKeys: SHELL_ENV_EXPECTED_KEYS,
+          logger: deps.logger,
+          timeoutMs: resolveShellEnvFallbackTimeoutMs(deps.env),
+        });
+      }
       const config = applyTalkApiKey(
         applyModelDefaults(
           applyCompactionDefaults(

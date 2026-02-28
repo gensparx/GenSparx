@@ -4,12 +4,12 @@
   "description": "OpenClaw core memory search plugin",
   "type": "module",
   "devDependencies": {
-    "openclaw": "workspace:*"
+    "gensparx": "workspace:*"
   },
   "peerDependencies": {
-    "openclaw": ">=2026.1.26"
+    "gensparx": ">=2026.1.26"
   },
-  "openclaw": {
+  "gensparx": {
     "extensions": [
       "./index.ts"
     ]

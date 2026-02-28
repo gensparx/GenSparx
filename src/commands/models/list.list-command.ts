@@ -27,8 +27,12 @@ export async function modelsListCommand(
     if (!raw) {
       return undefined;
     }
+    const normalizedRaw = raw.toLowerCase();
+    if (["z.ai", "z-ai", "zai"].includes(normalizedRaw)) {
+      return "zai";
+    }
     const parsed = parseModelRef(`${raw}/_`, DEFAULT_PROVIDER);
-    return parsed?.provider ?? raw.toLowerCase();
+    return parsed?.provider ?? normalizedRaw;
   })();
 
   let models: Model<Api>[] = [];
@@ -121,7 +125,11 @@ export async function modelsListCommand(
   }
 
   if (rows.length === 0) {
-    runtime.log("No models found.");
+    if (opts.json) {
+      printModelTable(rows, runtime, opts);
+    } else {
+      runtime.log("No models found.");
+    }
     return;
   }
 

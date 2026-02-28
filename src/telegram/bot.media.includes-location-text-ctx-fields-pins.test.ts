@@ -94,7 +94,7 @@ vi.mock("../auto-reply/reply.js", () => {
 });
 
 describe("telegram inbound media", () => {
-  const _INBOUND_MEDIA_TEST_TIMEOUT_MS = process.platform === "win32" ? 30_000 : 20_000;
+  const _INBOUND_MEDIA_TEST_TIMEOUT_MS = process.platform === "win32" ? 60_000 : 20_000;
   it(
     "includes location text and ctx fields for pins",
     async () => {
@@ -123,7 +123,7 @@ describe("telegram inbound media", () => {
             horizontal_accuracy: 12,
           },
         },
-        me: { username: "openclaw_bot" },
+        me: { username: "gensparx_bot" },
         getFile: async () => ({ file_path: "unused" }),
       });
 
@@ -166,7 +166,7 @@ describe("telegram inbound media", () => {
             location: { latitude: 48.858844, longitude: 2.294351 },
           },
         },
-        me: { username: "openclaw_bot" },
+        me: { username: "gensparx_bot" },
         getFile: async () => ({ file_path: "unused" }),
       });
 

@@ -10,29 +10,26 @@ async function writeEnvFile(filePath: string, contents: string) {
 }
 
 describe("loadDotEnv", () => {
-  it("loads ~/.openclaw/.env as fallback without overriding CWD .env", async () => {
+  it("loads ~/.gensparx/.env as fallback without overriding CWD .env", async () => {
     const prevEnv = { ...process.env };
-    const prevCwd = process.cwd();
 
-    const base = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-dotenv-test-"));
+    const base = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-dotenv-test-"));
     const cwdDir = path.join(base, "cwd");
     const stateDir = path.join(base, "state");
 
-    process.env.OPENCLAW_STATE_DIR = stateDir;
+    process.env.GENSPARX_STATE_DIR = stateDir;
 
     await writeEnvFile(path.join(stateDir, ".env"), "FOO=from-global\nBAR=1\n");
     await writeEnvFile(path.join(cwdDir, ".env"), "FOO=from-cwd\n");
 
-    process.chdir(cwdDir);
     delete process.env.FOO;
     delete process.env.BAR;
 
-    loadDotEnv({ quiet: true });
+    loadDotEnv({ quiet: true, cwd: cwdDir });
 
     expect(process.env.FOO).toBe("from-cwd");
     expect(process.env.BAR).toBe("1");
 
-    process.chdir(prevCwd);
     for (const key of Object.keys(process.env)) {
       if (!(key in prevEnv)) {
         delete process.env[key];
@@ -49,25 +46,21 @@ describe("loadDotEnv", () => {
 
   it("does not override an already-set env var from the shell", async () => {
     const prevEnv = { ...process.env };
-    const prevCwd = process.cwd();
 
-    const base = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-dotenv-test-"));
+    const base = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-dotenv-test-"));
     const cwdDir = path.join(base, "cwd");
     const stateDir = path.join(base, "state");
 
-    process.env.OPENCLAW_STATE_DIR = stateDir;
+    process.env.GENSPARX_STATE_DIR = stateDir;
     process.env.FOO = "from-shell";
 
     await writeEnvFile(path.join(stateDir, ".env"), "FOO=from-global\n");
     await writeEnvFile(path.join(cwdDir, ".env"), "FOO=from-cwd\n");
 
-    process.chdir(cwdDir);
-
-    loadDotEnv({ quiet: true });
+    loadDotEnv({ quiet: true, cwd: cwdDir });
 
     expect(process.env.FOO).toBe("from-shell");
 
-    process.chdir(prevCwd);
     for (const key of Object.keys(process.env)) {
       if (!(key in prevEnv)) {
         delete process.env[key];

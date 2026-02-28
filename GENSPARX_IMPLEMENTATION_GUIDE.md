@@ -9,8 +9,10 @@ If you want to publish GenSparx for production, follow this exact order:
 ## PHASE 1: CRITICAL REBRANDING (Must do - 2 hours)
 
 ### ✅ TASK 1.1: Rename NPM Package
+
 **File:** `package.json` (line 2)  
 **Action:**
+
 ```json
 // BEFORE
 {"name": "openclaw"}
@@ -24,8 +26,10 @@ If you want to publish GenSparx for production, follow this exact order:
 ---
 
 ### ✅ TASK 1.2: Rename CLI Binary
+
 **File:** `package.json` (lines 8-9)  
 **Action:**
+
 ```json
 // BEFORE
 {
@@ -49,11 +53,13 @@ If you want to publish GenSparx for production, follow this exact order:
 ---
 
 ### ✅ TASK 1.3: Update All Environment Variables
+
 **Files:** All files in `src/` and `package.json`
 
 **Pattern:** Replace all instances of `OPENCLAW_` with `GENSPARX_`
 
 **Key Variables:**
+
 ```bash
 # OLD → NEW
 OPENCLAW_GATEWAY_TOKEN → GENSPARX_GATEWAY_TOKEN
@@ -66,6 +72,7 @@ CLAWDBOT_SKIP_CHANNELS → GENSPARKBOT_SKIP_CHANNELS
 ```
 
 **Command to find all:**
+
 ```bash
 grep -r "OPENCLAW_" src/ package.json scripts/
 ```
@@ -75,7 +82,9 @@ grep -r "OPENCLAW_" src/ package.json scripts/
 ---
 
 ### ✅ TASK 1.4: Update Config Directory Paths
-**Files:** 
+
+**Files:**
+
 - `src/utils.ts` (resolveUserPath function)
 - `src/config/config-paths.ts`
 - `src/agents/agent-paths.ts`
@@ -83,6 +92,7 @@ grep -r "OPENCLAW_" src/ package.json scripts/
 **Pattern:** Replace `~/.openclaw` → `~/.gensparx`
 
 **Also:**
+
 - `/tmp/openclaw-*` → `/tmp/gensparx-*`
 - References to `~/.openclaw/canvas/` → `~/.gensparx/canvas/`
 - References to `~/.openclaw/sessions/` → `~/.gensparx/sessions/`
@@ -94,11 +104,14 @@ grep -r "OPENCLAW_" src/ package.json scripts/
 ### ✅ TASK 1.5: Update App Bundle IDs
 
 #### macOS
+
 **Files:**
+
 - `apps/macos/Sources/OpenClaw/Info.plist`
 - `apps/macos/project.yml`
 
 **Change:**
+
 ```xml
 <!-- BEFORE -->
 ai.openclaw.mac
@@ -108,21 +121,27 @@ ai.gensparx.mac
 ```
 
 #### iOS
+
 **Files:**
+
 - `apps/ios/Sources/Info.plist`
 - `apps/ios/project.yml`
 
 **Change:**
+
 ```
 ai.openclaw.ios → ai.gensparx.ios
 ```
 
 #### Android
+
 **Files:**
+
 - `apps/android/app/build.gradle.kts` (line with applicationId)
 - `apps/android/app/src/main/AndroidManifest.xml`
 
 **Change:**
+
 ```
 ai.openclaw.android → ai.gensparx.android
 ```
@@ -134,11 +153,13 @@ ai.openclaw.android → ai.gensparx.android
 ## PHASE 2: HIGH PRIORITY (2-3 hours)
 
 ### ✅ TASK 2.1: Update Extension Package Names
+
 **Files:** All `extensions/*/package.json` (30+ extensions)
 
 **Pattern:** `@openclaw/*` → `@gensparx/*`
 
 **Example:**
+
 ```json
 // BEFORE
 {
@@ -154,6 +175,7 @@ ai.openclaw.android → ai.gensparx.android
 ```
 
 **Also update:**
+
 - Dependencies in `extensions/*/package.json` that reference other extensions
 - Any imports in plugin code
 
@@ -162,20 +184,23 @@ ai.openclaw.android → ai.gensparx.android
 ---
 
 ### ✅ TASK 2.2: Update CLI Command Registration
+
 **Files:** `src/cli/**/*.ts` (100+ files)
 
 **What to look for:**
+
 - `.command("openclaw")` → `.command("gensparx")`
 - Help text mentioning "openclaw"
 - Error messages showing "openclaw" command
 
 **Example:**
+
 ```typescript
 // BEFORE
-program.command("openclaw gateway start")
+program.command("openclaw gateway start");
 
-// AFTER  
-program.command("gensparx gateway start")
+// AFTER
+program.command("gensparx gateway start");
 ```
 
 **Why:** Users won't know what command to run
@@ -183,9 +208,11 @@ program.command("gensparx gateway start")
 ---
 
 ### ✅ TASK 2.3: Update Script Commands in package.json
+
 **File:** `package.json` (scripts section)
 
 **Replace in all scripts:**
+
 ```json
 // BEFORE
 {
@@ -209,6 +236,7 @@ program.command("gensparx gateway start")
 ### ✅ TASK 3.1: Update All Documentation (50+ files)
 
 **Primary docs to update:**
+
 - `docs/**/*.md` (all examples showing `openclaw` command)
 - `README.md`
 - `CONTRIBUTING.md`
@@ -217,12 +245,14 @@ program.command("gensparx gateway start")
 - `docs/start/**/*.md` (quick start guides)
 
 **Find & Replace Pattern:**
+
 ```
 openclaw → gensparx
 OpenClaw → GenSparx
 ```
 
 **Be careful not to replace:**
+
 - GitHub repo names (openclaw/openclaw should stay if referencing original)
 - Historical notes
 - Credits/acknowledgments
@@ -232,25 +262,29 @@ OpenClaw → GenSparx
 ---
 
 ### ✅ TASK 3.2: Update Configuration Schema
+
 **File:** `src/config/schema.ts`
 
 **Replace:**
+
 ```typescript
 // BEFORE
-title: "OpenClaw Configuration"
-description: "OpenClaw Gateway Configuration"
+title: "OpenClaw Configuration";
+description: "OpenClaw Gateway Configuration";
 
 // AFTER
-title: "GenSparx Configuration"
-description: "GenSparx Gateway Configuration"
+title: "GenSparx Configuration";
+description: "GenSparx Gateway Configuration";
 ```
 
 ---
 
 ### ✅ TASK 3.3: Update Workspace Templates
+
 **Files:** `docs/reference/templates/*.md`
 
 **Update:**
+
 - `AGENTS.md` template
 - `SOUL.md` template
 - Any references to "OpenClaw workspace"
@@ -260,7 +294,9 @@ description: "GenSparx Gateway Configuration"
 ## PHASE 4: LOW PRIORITY (Polish - 1 hour)
 
 ### ✅ TASK 4.1: Update App Display Names
+
 **Files:**
+
 - `apps/android/app/src/main/res/values/strings.xml`
 - iOS schemes naming
 - macOS app menu references
@@ -268,6 +304,7 @@ description: "GenSparx Gateway Configuration"
 ---
 
 ### ✅ TASK 4.2: Update Code Comments
+
 Replace comments mentioning "OpenClaw" with "GenSparx"
 
 ---
@@ -311,14 +348,14 @@ pnpm build
 
 ## 📊 EFFORT BREAKDOWN
 
-| Phase | Tasks | Time | Files |
-|-------|-------|------|-------|
-| **Phase 1** (Critical) | 5 tasks | 2 hrs | 15 files |
-| **Phase 2** (High) | 3 tasks | 2.5 hrs | 75 files |
-| **Phase 3** (Medium) | 3 tasks | 2 hrs | 50+ files |
-| **Phase 4** (Low) | 2 tasks | 1 hr | 100+ files |
-| **Testing** | Validation | 1.5 hrs | - |
-| **TOTAL** | 13 tasks | **8-9 hours** | 300+ |
+| Phase                  | Tasks      | Time          | Files      |
+| ---------------------- | ---------- | ------------- | ---------- |
+| **Phase 1** (Critical) | 5 tasks    | 2 hrs         | 15 files   |
+| **Phase 2** (High)     | 3 tasks    | 2.5 hrs       | 75 files   |
+| **Phase 3** (Medium)   | 3 tasks    | 2 hrs         | 50+ files  |
+| **Phase 4** (Low)      | 2 tasks    | 1 hr          | 100+ files |
+| **Testing**            | Validation | 1.5 hrs       | -          |
+| **TOTAL**              | 13 tasks   | **8-9 hours** | 300+       |
 
 ---
 
@@ -345,10 +382,11 @@ Before publishing to npm:
 
 ## 📝 SAMPLE CHANGELOG ENTRY
 
-```markdown
+````markdown
 ## [2026.2.x] - GenSparx Edition
 
 ### Changed
+
 - **BREAKING**: Renamed package from `openclaw` to `gensparx`
 - **BREAKING**: CLI command changed from `openclaw` to `gensparx`
 - **BREAKING**: Config directory moved from `~/.openclaw/` to `~/.gensparx/`
@@ -358,17 +396,22 @@ Before publishing to npm:
 - Updated all documentation with new command names
 
 ### Migration
+
 Users upgrading from OpenClaw should:
+
 ```bash
 mkdir -p ~/.gensparx
 cp -r ~/.openclaw/* ~/.gensparx/
 # Update any config files if needed
 ```
+````
 
 ### New
+
 - Professional system prompt identifying as "GenSparx"
 - Updated brand assets and logos
 - Full rebranding across all platforms
+
 ```
 
 ---
@@ -393,3 +436,4 @@ cp -r ~/.openclaw/* ~/.gensparx/
    - Don't change credits/acknowledgments
    - Keep test data references consistent
 
+```

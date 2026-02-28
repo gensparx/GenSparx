@@ -451,3 +451,6 @@ export function createOpenClawCodingTools(options?: {
   // on the wire and maps them back for tool dispatch.
   return withAbort;
 }
+
+// GenSparx branding alias (preferred going forward).
+export const createGenSparxCodingTools = createOpenClawCodingTools;

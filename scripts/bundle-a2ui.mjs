@@ -25,12 +25,16 @@ async function computeHash(inputs) {
     const st = await fs.stat(entry);
     if (st.isDirectory()) {
       const entries = await fs.readdir(entry);
-      for (const e of entries) await walk(path.join(entry, e));
+      for (const e of entries) {
+        await walk(path.join(entry, e));
+      }
       return;
     }
     files.push(entry);
   }
-  for (const input of inputs) await walk(input);
+  for (const input of inputs) {
+    await walk(input);
+  }
   function normalize(p) {
     return p.split(path.sep).join("/");
   }
@@ -46,7 +50,7 @@ async function computeHash(inputs) {
   return hash.digest("hex");
 }
 
-(async function main() {
+void (async function main() {
   if (!(await exists(A2UI_RENDERER_DIR)) || !(await exists(A2UI_APP_DIR))) {
     console.log("A2UI sources missing; keeping prebuilt bundle.");
     process.exit(0);
@@ -68,7 +72,7 @@ async function computeHash(inputs) {
         process.exit(0);
       }
     }
-  } catch (err) {
+  } catch {
     // continue
   }
 
@@ -79,7 +83,9 @@ async function computeHash(inputs) {
     ["-s", "exec", "tsc", "-p", path.join(A2UI_RENDERER_DIR, "tsconfig.json")],
     { stdio: "inherit", shell: true },
   );
-  if (tsc.status !== 0) process.exit(tsc.status || 1);
+  if (tsc.status !== 0) {
+    process.exit(tsc.status || 1);
+  }
 
   // Run rolldown (via pnpm exec to ensure correct platform binary)
   console.log("Running rolldown...");
@@ -88,7 +94,9 @@ async function computeHash(inputs) {
     ["-s", "exec", "rolldown", "-c", path.join(A2UI_APP_DIR, "rolldown.config.mjs")],
     { stdio: "inherit", shell: true },
   );
-  if (rolldown.status !== 0) process.exit(rolldown.status || 1);
+  if (rolldown.status !== 0) {
+    process.exit(rolldown.status || 1);
+  }
 
   await fs.writeFile(HASH_FILE, current_hash, "utf8");
   console.log("A2UI bundle complete.");

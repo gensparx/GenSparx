@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="yes"?>
 <rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
     <channel>
-        <title>OpenClaw</title>
+        <title>GenSparx</title>
         <item>
             <title>2026.2.3</title>
             <pubDate>Wed, 04 Feb 2026 17:47:10 -0800</pubDate>
@@ -9,7 +9,7 @@
             <sparkle:version>8900</sparkle:version>
             <sparkle:shortVersionString>2026.2.3</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <description><![CDATA[<h2>OpenClaw 2026.2.3</h2>
+            <description><![CDATA[<h2>GenSparx 2026.2.3</h2>
 <h3>Changes</h3>
 <ul>
 <li>Telegram: remove last <code>@ts-nocheck</code> from <code>bot-handlers.ts</code>, use Grammy types directly, deduplicate <code>StickerMetadata</code>. Zero <code>@ts-nocheck</code> remaining in <code>src/telegram/</code>. (#9206)</li>
@@ -59,7 +59,7 @@
             <sparkle:version>8809</sparkle:version>
             <sparkle:shortVersionString>2026.2.2</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <description><![CDATA[<h2>OpenClaw 2026.2.2</h2>
+            <description><![CDATA[<h2>GenSparx 2026.2.2</h2>
 <h3>Changes</h3>
 <ul>
 <li>Feishu: add Feishu/Lark plugin support + docs. (#7313) Thanks @jiulingyun (openclaw-cn).</li>
@@ -103,7 +103,7 @@
             <sparkle:version>8650</sparkle:version>
             <sparkle:shortVersionString>2026.2.1</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <description><![CDATA[<h2>OpenClaw 2026.2.1</h2>
+            <description><![CDATA[<h2>GenSparx 2026.2.1</h2>
 <h3>Changes</h3>
 <ul>
 <li>Docs: onboarding/install/i18n/exec-approvals/Control UI/exe.dev/cacheRetention updates + misc nav/typos. (#3050, #3461, #4064, #4675, #4729, #4763, #5003, #5402, #5446, #5474, #5663, #5689, #5694, #5967, #6270, #6300, #6311, #6416, #6487, #6550, #6789)</li>

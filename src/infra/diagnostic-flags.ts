@@ -1,6 +1,6 @@
 import type { OpenClawConfig } from "../config/config.js";
 
-const DIAGNOSTICS_ENV = "OPENCLAW_DIAGNOSTICS";
+const DIAGNOSTICS_ENVS = ["GENSPARX_DIAGNOSTICS", "OPENCLAW_DIAGNOSTICS"] as const;
 
 function normalizeFlag(value: string): string {
   return value.trim().toLowerCase();
@@ -46,7 +46,7 @@ export function resolveDiagnosticFlags(
   env: NodeJS.ProcessEnv = process.env,
 ): string[] {
   const configFlags = Array.isArray(cfg?.diagnostics?.flags) ? cfg?.diagnostics?.flags : [];
-  const envFlags = parseEnvFlags(env[DIAGNOSTICS_ENV]);
+  const envFlags = DIAGNOSTICS_ENVS.flatMap((key) => parseEnvFlags(env[key]));
   return uniqueFlags([...configFlags, ...envFlags]);
 }
 

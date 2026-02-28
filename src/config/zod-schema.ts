@@ -623,3 +623,6 @@ export const OpenClawSchema = z
       }
     }
   });
+
+// GenSparx alias for rebranded CLI/config consumers.
+export const GenSparxSchema = OpenClawSchema;

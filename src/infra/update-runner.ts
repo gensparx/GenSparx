@@ -76,8 +76,8 @@ const DEFAULT_TIMEOUT_MS = 20 * 60_000;
 const MAX_LOG_CHARS = 8000;
 const PREFLIGHT_MAX_COMMITS = 10;
 const START_DIRS = ["cwd", "argv1", "process"];
-const DEFAULT_PACKAGE_NAME = "openclaw";
-const CORE_PACKAGE_NAMES = new Set([DEFAULT_PACKAGE_NAME]);
+const DEFAULT_PACKAGE_NAME = "gensparx";
+const CORE_PACKAGE_NAMES = new Set([DEFAULT_PACKAGE_NAME, "openclaw"]);
 
 function normalizeDir(value?: string | null) {
   if (!value) {
@@ -351,11 +351,10 @@ function normalizeTag(tag?: string) {
   if (!trimmed) {
     return "latest";
   }
-  if (trimmed.startsWith("openclaw@")) {
-    return trimmed.slice("openclaw@".length);
-  }
-  if (trimmed.startsWith(`${DEFAULT_PACKAGE_NAME}@`)) {
-    return trimmed.slice(`${DEFAULT_PACKAGE_NAME}@`.length);
+  for (const prefix of [`${DEFAULT_PACKAGE_NAME}@`, "openclaw@"]) {
+    if (trimmed.startsWith(prefix)) {
+      return trimmed.slice(prefix.length);
+    }
   }
   return trimmed;
 }
@@ -409,7 +408,7 @@ export async function runGatewayUpdate(opts: UpdateRunnerOptions = {}): Promise<
       status: "error",
       mode: "unknown",
       root: gitRoot,
-      reason: "not-openclaw-root",
+      reason: "not-gensparx-root",
       steps: [],
       durationMs: Date.now() - startedAt,
     };
@@ -564,7 +563,7 @@ export async function runGatewayUpdate(opts: UpdateRunnerOptions = {}): Promise<
       }
 
       const manager = await detectPackageManager(gitRoot);
-      const preflightRoot = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-update-preflight-"));
+      const preflightRoot = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-update-preflight-"));
       const worktreeDir = path.join(preflightRoot, "worktree");
       const worktreeStep = await runStep(
         step(
@@ -759,10 +758,10 @@ export async function runGatewayUpdate(opts: UpdateRunnerOptions = {}): Promise<
 
     const doctorStep = await runStep(
       step(
-        "openclaw doctor",
-        managerScriptArgs(manager, "openclaw", ["doctor", "--non-interactive"]),
+        "gensparx doctor",
+        managerScriptArgs(manager, "gensparx", ["doctor", "--non-interactive"]),
         gitRoot,
-        { OPENCLAW_UPDATE_IN_PROGRESS: "1" },
+        { GENSPARX_UPDATE_IN_PROGRESS: "1", OPENCLAW_UPDATE_IN_PROGRESS: "1" },
       ),
     );
     steps.push(doctorStep);

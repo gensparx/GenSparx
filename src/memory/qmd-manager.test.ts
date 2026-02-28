@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { describeIfFts5 } from "./test-helpers.js";
 
 vi.mock("node:child_process", () => {
   const spawn = vi.fn((_cmd: string, _args: string[]) => {
@@ -30,17 +31,19 @@ vi.mock("node:child_process", () => {
 });
 
 import { spawn as mockedSpawn } from "node:child_process";
-import type { OpenClawConfig } from "../config/config.js";
+import type { GenSparxConfig } from "../config/config.js";
 import { resolveMemoryBackendConfig } from "./backend-config.js";
 import { QmdMemoryManager } from "./qmd-manager.js";
 
 const spawnMock = mockedSpawn as unknown as vi.Mock;
 
-describe("QmdMemoryManager", () => {
+const describeFts = describeIfFts5(describe);
+
+describeFts("QmdMemoryManager", () => {
   let tmpRoot: string;
   let workspaceDir: string;
   let stateDir: string;
-  let cfg: OpenClawConfig;
+  let cfg: GenSparxConfig;
   const agentId = "main";
 
   beforeEach(async () => {
@@ -50,7 +53,7 @@ describe("QmdMemoryManager", () => {
     await fs.mkdir(workspaceDir, { recursive: true });
     stateDir = path.join(tmpRoot, "state");
     await fs.mkdir(stateDir, { recursive: true });
-    process.env.OPENCLAW_STATE_DIR = stateDir;
+    process.env.GENSPARX_STATE_DIR = stateDir;
     cfg = {
       agents: {
         list: [{ id: agentId, default: true, workspace: workspaceDir }],
@@ -63,11 +66,11 @@ describe("QmdMemoryManager", () => {
           paths: [{ path: workspaceDir, pattern: "**/*.md", name: "workspace" }],
         },
       },
-    } as OpenClawConfig;
+    } as GenSparxConfig;
   });
 
   afterEach(async () => {
-    delete process.env.OPENCLAW_STATE_DIR;
+    delete process.env.GENSPARX_STATE_DIR;
     await fs.rm(tmpRoot, { recursive: true, force: true });
   });
 
@@ -112,7 +115,7 @@ describe("QmdMemoryManager", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as GenSparxConfig;
     const resolved = resolveMemoryBackendConfig({ cfg, agentId });
     const manager = await QmdMemoryManager.create({ cfg, agentId, resolved });
     expect(manager).toBeTruthy();

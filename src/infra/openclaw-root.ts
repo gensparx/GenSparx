@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const CORE_PACKAGE_NAMES = new Set(["openclaw"]);
+const CORE_PACKAGE_NAMES = new Set(["gensparx", "openclaw"]);
 
 async function readPackageName(dir: string): Promise<string | null> {
   try {
@@ -70,7 +70,7 @@ function candidateDirsFromArgv1(argv1: string): string[] {
   return candidates;
 }
 
-export async function resolveOpenClawPackageRoot(opts: {
+export async function resolveGenSparxPackageRoot(opts: {
   cwd?: string;
   argv1?: string;
   moduleUrl?: string;
@@ -123,3 +123,7 @@ export function resolveOpenClawPackageRootSync(opts: {
 
   return null;
 }
+
+// Legacy alias retained for backward compatibility.
+export const resolveOpenClawPackageRoot = resolveGenSparxPackageRoot;
+export const resolveOpenClawPackageRootSyncAlias = resolveOpenClawPackageRootSync;

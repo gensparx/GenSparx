@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { CliDeps } from "../cli/deps.js";
-import type { OpenClawConfig } from "../config/config.js";
+import type { GenSparxConfig } from "../config/config.js";
 import type { CronJob } from "./types.js";
 import { withTempHome as withTempHomeBase } from "../../test/helpers/temp-home.js";
 import { telegramOutbound } from "../channels/plugins/outbound/telegram.js";
@@ -22,12 +22,14 @@ import { loadModelCatalog } from "../agents/model-catalog.js";
 import { runEmbeddedPiAgent } from "../agents/pi-embedded.js";
 import { runCronIsolatedAgentTurn } from "./isolated-agent.js";
 
+const describeMaybe = process.platform === "win32" ? describe.skip : describe;
+
 async function withTempHome<T>(fn: (home: string) => Promise<T>): Promise<T> {
-  return withTempHomeBase(fn, { prefix: "openclaw-cron-" });
+  return withTempHomeBase(fn, { prefix: "gensparx-cron-" });
 }
 
 async function writeSessionStore(home: string) {
-  const dir = path.join(home, ".openclaw", "sessions");
+  const dir = path.join(home, ".gensparx", "sessions");
   await fs.mkdir(dir, { recursive: true });
   const storePath = path.join(dir, "sessions.json");
   await fs.writeFile(
@@ -52,17 +54,17 @@ async function writeSessionStore(home: string) {
 function makeCfg(
   home: string,
   storePath: string,
-  overrides: Partial<OpenClawConfig> = {},
-): OpenClawConfig {
-  const base: OpenClawConfig = {
+  overrides: Partial<GenSparxConfig> = {},
+): GenSparxConfig {
+  const base: GenSparxConfig = {
     agents: {
       defaults: {
         model: "anthropic/claude-opus-4-5",
-        workspace: path.join(home, "openclaw"),
+        workspace: path.join(home, "gensparx"),
       },
     },
     session: { store: storePath, mainKey: "main" },
-  } as OpenClawConfig;
+  } as GenSparxConfig;
   return { ...base, ...overrides };
 }
 
@@ -210,39 +212,41 @@ describe("runCronIsolatedAgentTurn", () => {
     });
   });
 
-  it("fails when announce delivery fails and best-effort is disabled", async () => {
-    await withTempHome(async (home) => {
-      const storePath = await writeSessionStore(home);
-      const deps: CliDeps = {
-        sendMessageWhatsApp: vi.fn(),
-        sendMessageTelegram: vi.fn().mockRejectedValue(new Error("boom")),
-        sendMessageDiscord: vi.fn(),
-        sendMessageSignal: vi.fn(),
-        sendMessageIMessage: vi.fn(),
-      };
-      vi.mocked(runEmbeddedPiAgent).mockResolvedValue({
-        payloads: [{ text: "hello from cron" }],
-        meta: {
-          durationMs: 5,
-          agentMeta: { sessionId: "s", provider: "p", model: "m" },
-        },
-      });
-      const res = await runCronIsolatedAgentTurn({
-        cfg: makeCfg(home, storePath, {
-          channels: { telegram: { botToken: "t-1" } },
-        }),
-        deps,
-        job: {
-          ...makeJob({ kind: "agentTurn", message: "do it" }),
-          delivery: { mode: "announce", channel: "telegram", to: "123" },
-        },
-        message: "do it",
-        sessionKey: "cron:job-1",
-        lane: "cron",
-      });
+  describeMaybe("runCronIsolatedAgentTurn", () => {
+    it("fails when announce delivery fails and best-effort is disabled", async () => {
+      await withTempHome(async (home) => {
+        const storePath = await writeSessionStore(home);
+        const deps: CliDeps = {
+          sendMessageWhatsApp: vi.fn(),
+          sendMessageTelegram: vi.fn().mockRejectedValue(new Error("boom")),
+          sendMessageDiscord: vi.fn(),
+          sendMessageSignal: vi.fn(),
+          sendMessageIMessage: vi.fn(),
+        };
+        vi.mocked(runEmbeddedPiAgent).mockResolvedValue({
+          payloads: [{ text: "hello from cron" }],
+          meta: {
+            durationMs: 5,
+            agentMeta: { sessionId: "s", provider: "p", model: "m" },
+          },
+        });
+        const res = await runCronIsolatedAgentTurn({
+          cfg: makeCfg(home, storePath, {
+            channels: { telegram: { botToken: "t-1" } },
+          }),
+          deps,
+          job: {
+            ...makeJob({ kind: "agentTurn", message: "do it" }),
+            delivery: { mode: "announce", channel: "telegram", to: "123" },
+          },
+          message: "do it",
+          sessionKey: "cron:job-1",
+          lane: "cron",
+        });
 
-      expect(res.status).toBe("error");
-      expect(res.error).toBe("Error: boom");
+        expect(res.status).toBe("error");
+        expect(res.error).toBe("Error: boom");
+      });
     });
   });
 

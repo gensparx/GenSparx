@@ -852,16 +852,6 @@ export function createExecTool(
       const maxOutput = DEFAULT_MAX_OUTPUT;
       const pendingMaxOutput = DEFAULT_PENDING_MAX_OUTPUT;
       const warnings: string[] = [];
-      const backgroundRequested = params.background === true;
-      const yieldRequested = typeof params.yieldMs === "number";
-      if (!allowBackground && (backgroundRequested || yieldRequested)) {
-        warnings.push("Warning: background execution is disabled; running synchronously.");
-      }
-      const yieldWindow = allowBackground
-        ? backgroundRequested
-          ? 0
-          : clampNumber(params.yieldMs ?? defaultBackgroundMs, defaultBackgroundMs, 10, 120_000)
-        : null;
       const elevatedDefaults = defaults?.elevated;
       const elevatedAllowed = Boolean(elevatedDefaults?.enabled && elevatedDefaults.allowed);
       const elevatedDefaultMode =
@@ -882,6 +872,17 @@ export function createExecTool(
             : "off"
           : effectiveDefaultMode;
       const elevatedRequested = elevatedMode !== "off";
+      const backgroundRequested = params.background === true;
+      const yieldRequested = typeof params.yieldMs === "number";
+      if (!allowBackground && (backgroundRequested || yieldRequested)) {
+        warnings.push("Warning: background execution is disabled; running synchronously.");
+      }
+      const yieldWindow =
+        allowBackground && elevatedAllowed
+          ? backgroundRequested
+            ? 0
+            : clampNumber(params.yieldMs ?? defaultBackgroundMs, defaultBackgroundMs, 10, 120_000)
+          : null;
       if (elevatedRequested) {
         if (!elevatedDefaults?.enabled || !elevatedDefaults.allowed) {
           const runtime = defaults?.sandbox ? "sandboxed" : "direct";

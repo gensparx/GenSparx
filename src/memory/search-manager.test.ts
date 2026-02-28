@@ -36,6 +36,9 @@ vi.mock("./manager.js", () => ({
 
 import { QmdMemoryManager } from "./qmd-manager.js";
 import { getMemorySearchManager } from "./search-manager.js";
+import { describeIfFts5 } from "./test-helpers.js";
+
+const describeFts = describeIfFts5(describe);
 
 beforeEach(() => {
   mockPrimary.search.mockClear();
@@ -48,7 +51,7 @@ beforeEach(() => {
   QmdMemoryManager.create.mockClear();
 });
 
-describe("getMemorySearchManager caching", () => {
+describeFts("getMemorySearchManager caching", () => {
   it("reuses the same QMD manager instance for repeated calls", async () => {
     const cfg = {
       memory: { backend: "qmd", qmd: {} },

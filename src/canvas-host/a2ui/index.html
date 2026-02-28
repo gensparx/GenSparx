@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>OpenClaw Canvas</title>
+    <title>GenSparx Canvas</title>
     <script>
       (() => {
         try {
@@ -233,6 +233,7 @@
       </div>
     </div>
     <openclaw-a2ui-host></openclaw-a2ui-host>
+    <gensparx-a2ui-host></gensparx-a2ui-host>
     <script src="a2ui.bundle.js"></script>
     <script>
       (() => {
@@ -302,6 +303,12 @@
           },
         };
       })();
+    </script>
+    <script>
+      // GenSparx alias bridge (keeps legacy OpenClaw handlers working)
+      if (!window.gensparxCanvasA2UIAction && window.openclawCanvasA2UIAction) {
+        window.gensparxCanvasA2UIAction = window.openclawCanvasA2UIAction;
+      }
     </script>
   </body>
 </html>

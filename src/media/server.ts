@@ -1,15 +1,14 @@
 import type { Server } from "node:http";
 import express, { type Express } from "express";
 import fs from "node:fs/promises";
+import path from "node:path";
 import { danger } from "../globals.js";
-import { SafeOpenError, openFileWithinRoot } from "../infra/fs-safe.js";
 import { defaultRuntime, type RuntimeEnv } from "../runtime.js";
 import { detectMime } from "./mime.js";
 import { cleanOldMedia, getMediaDir, MEDIA_MAX_BYTES } from "./store.js";
 
 const DEFAULT_TTL_MS = 2 * 60 * 1000;
 const MAX_MEDIA_ID_CHARS = 200;
-const MEDIA_ID_PATTERN = /^[\p{L}\p{N}._-]+$/u;
 const MAX_MEDIA_BYTES = MEDIA_MAX_BYTES;
 
 const isValidMediaId = (id: string) => {
@@ -22,7 +21,8 @@ const isValidMediaId = (id: string) => {
   if (id === "." || id === "..") {
     return false;
   }
-  return MEDIA_ID_PATTERN.test(id);
+  // Only allow simple filenames to avoid traversal/whitespace surprises.
+  return /^[A-Za-z0-9._-]+$/.test(id);
 };
 
 export function attachMediaRoutes(
@@ -39,23 +39,35 @@ export function attachMediaRoutes(
       return;
     }
     try {
-      const { handle, realPath, stat } = await openFileWithinRoot({
-        rootDir: mediaDir,
-        relativePath: id,
-      });
+      const rootReal = await fs.realpath(mediaDir);
+      const rootWithSep = rootReal.endsWith(path.sep) ? rootReal : `${rootReal}${path.sep}`;
+      const resolved = path.resolve(rootWithSep, id);
+      let realPath: string;
+      try {
+        realPath = await fs.realpath(resolved);
+      } catch {
+        res.status(404).send("not found");
+        return;
+      }
+      if (!realPath.startsWith(rootWithSep)) {
+        res.status(400).send("invalid path");
+        return;
+      }
+      const stat = await fs.stat(realPath);
+      if (!stat.isFile()) {
+        res.status(400).send("invalid path");
+        return;
+      }
       if (stat.size > MAX_MEDIA_BYTES) {
-        await handle.close().catch(() => {});
         res.status(413).send("too large");
         return;
       }
       if (Date.now() - stat.mtimeMs > ttlMs) {
-        await handle.close().catch(() => {});
         await fs.rm(realPath).catch(() => {});
         res.status(410).send("expired");
         return;
       }
-      const data = await handle.readFile();
-      await handle.close().catch(() => {});
+      const data = await fs.readFile(realPath);
       const mime = await detectMime({ buffer: data, filePath: realPath });
       if (mime) {
         res.type(mime);
@@ -67,17 +79,7 @@ export function attachMediaRoutes(
           fs.rm(realPath).catch(() => {});
         }, 50);
       });
-    } catch (err) {
-      if (err instanceof SafeOpenError) {
-        if (err.code === "invalid-path") {
-          res.status(400).send("invalid path");
-          return;
-        }
-        if (err.code === "not-found") {
-          res.status(404).send("not found");
-          return;
-        }
-      }
+    } catch {
       res.status(404).send("not found");
     }
   });

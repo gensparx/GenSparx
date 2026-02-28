@@ -18,7 +18,7 @@ import {
   type ChannelPlugin,
   type ChannelStatusIssue,
   type ResolvedFeishuAccount,
-} from "openclaw/plugin-sdk";
+} from "gensparx/plugin-sdk";
 import { FeishuConfigSchema } from "./config-schema.js";
 import { feishuOnboardingAdapter } from "./onboarding.js";
 

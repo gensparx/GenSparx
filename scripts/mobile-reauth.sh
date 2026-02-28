@@ -69,11 +69,16 @@ if claude setup-token; then
     echo ""
     "$SCRIPT_DIR/claude-auth-status.sh" full
 
-    # Restart openclaw service if running
-    if systemctl --user is-active openclaw >/dev/null 2>&1; then
+    # Restart gateway service if running
+    if systemctl --user is-active gensparx-gateway >/dev/null 2>&1; then
         echo ""
-        echo "Restarting openclaw service..."
-        systemctl --user restart openclaw
+        echo "Restarting gensparx-gateway service..."
+        systemctl --user restart gensparx-gateway
+        echo -e "${GREEN}Service restarted.${NC}"
+    elif systemctl --user is-active openclaw-gateway >/dev/null 2>&1; then
+        echo ""
+        echo "Restarting openclaw-gateway service..."
+        systemctl --user restart openclaw-gateway
         echo -e "${GREEN}Service restarted.${NC}"
     fi
 else

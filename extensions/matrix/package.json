@@ -11,9 +11,9 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "openclaw": "workspace:*"
+    "gensparx": "workspace:*"
   },
-  "openclaw": {
+  "gensparx": {
     "extensions": [
       "./index.ts"
     ],

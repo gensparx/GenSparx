@@ -7,7 +7,7 @@ import {
   logTypingFailure,
   resolveControlCommandGate,
   type RuntimeEnv,
-} from "openclaw/plugin-sdk";
+} from "gensparx/plugin-sdk";
 import type { CoreConfig, ReplyToMode } from "../../types.js";
 import type { MatrixRawEvent, RoomMessageEventContent } from "./types.js";
 import {
@@ -41,7 +41,7 @@ export type MatrixMonitorHandlerParams = {
     logging: {
       shouldLogVerbose: () => boolean;
     };
-    channel: (typeof import("openclaw/plugin-sdk"))["channel"];
+    channel: (typeof import("gensparx/plugin-sdk"))["channel"];
     system: {
       enqueueSystemEvent: (
         text: string,
@@ -63,7 +63,7 @@ export type MatrixMonitorHandlerParams = {
       : Record<string, unknown> | undefined
     : Record<string, unknown> | undefined;
   mentionRegexes: ReturnType<
-    (typeof import("openclaw/plugin-sdk"))["channel"]["mentions"]["buildMentionRegexes"]
+    (typeof import("gensparx/plugin-sdk"))["channel"]["mentions"]["buildMentionRegexes"]
   >;
   groupPolicy: "open" | "allowlist" | "disabled";
   replyToMode: ReplyToMode;

@@ -1,5 +1,4 @@
 import { spawn } from "node:child_process";
-import os from "node:os";
 
 const pnpm = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
 
@@ -20,7 +19,6 @@ const runs = [
 
 const children = new Set();
 const isCI = process.env.CI === "true" || process.env.GITHUB_ACTIONS === "true";
-const isMacOS = process.platform === "darwin" || process.env.RUNNER_OS === "macOS";
 const isWindows = process.platform === "win32" || process.env.RUNNER_OS === "Windows";
 const isWindowsCi = isCI && isWindows;
 const shardOverride = Number.parseInt(process.env.OPENCLAW_TEST_SHARDS ?? "", 10);
@@ -32,18 +30,8 @@ const shardCount = isWindowsCi
 const windowsCiArgs = isWindowsCi
   ? ["--no-file-parallelism", "--dangerouslyIgnoreUnhandledErrors"]
   : [];
-const overrideWorkers = Number.parseInt(process.env.OPENCLAW_TEST_WORKERS ?? "", 10);
-const resolvedOverride =
-  Number.isFinite(overrideWorkers) && overrideWorkers > 0 ? overrideWorkers : null;
 const parallelRuns = isWindowsCi ? [] : runs.filter((entry) => entry.name !== "gateway");
 const serialRuns = isWindowsCi ? runs : runs.filter((entry) => entry.name === "gateway");
-const localWorkers = Math.max(4, Math.min(16, os.cpus().length));
-const parallelCount = Math.max(1, parallelRuns.length);
-const perRunWorkers = Math.max(1, Math.floor(localWorkers / parallelCount));
-const macCiWorkers = isCI && isMacOS ? 1 : perRunWorkers;
-// Keep worker counts predictable for local runs; trim macOS CI workers to avoid worker crashes/OOM.
-// In CI on linux/windows, prefer Vitest defaults to avoid cross-test interference from lower worker counts.
-const maxWorkers = resolvedOverride ?? (isCI && !isMacOS ? null : macCiWorkers);
 
 const WARNING_SUPPRESSION_FLAGS = [
   "--disable-warning=ExperimentalWarning",
@@ -53,9 +41,7 @@ const WARNING_SUPPRESSION_FLAGS = [
 
 const runOnce = (entry, extraArgs = []) =>
   new Promise((resolve) => {
-    const args = maxWorkers
-      ? [...entry.args, "--maxWorkers", String(maxWorkers), ...windowsCiArgs, ...extraArgs]
-      : [...entry.args, ...windowsCiArgs, ...extraArgs];
+    const args = [...entry.args, ...windowsCiArgs, ...extraArgs];
     const nodeOptions = process.env.NODE_OPTIONS ?? "";
     const nextNodeOptions = WARNING_SUPPRESSION_FLAGS.reduce(
       (acc, flag) => (acc.includes(flag) ? acc : `${acc} ${flag}`.trim()),

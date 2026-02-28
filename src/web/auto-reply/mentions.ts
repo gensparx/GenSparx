@@ -60,7 +60,8 @@ export function isBotMentionedFromTargets(
     // Self-chat mode: ignore WhatsApp @mention JIDs, otherwise @mentioning the owner in group chats triggers the bot.
   }
   const bodyClean = clean(msg.body);
-  if (mentionCfg.mentionRegexes.some((re) => re.test(bodyClean))) {
+  const bodyPadded = ` ${bodyClean}`;
+  if (mentionCfg.mentionRegexes.some((re) => re.test(bodyClean) || re.test(bodyPadded))) {
     return true;
   }
 

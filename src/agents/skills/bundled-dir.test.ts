@@ -15,21 +15,21 @@ async function writeSkill(dir: string, name: string) {
 }
 
 describe("resolveBundledSkillsDir", () => {
-  const originalOverride = process.env.OPENCLAW_BUNDLED_SKILLS_DIR;
+  const originalOverride = process.env.GENSPARX_BUNDLED_SKILLS_DIR;
 
   afterEach(() => {
     if (originalOverride === undefined) {
-      delete process.env.OPENCLAW_BUNDLED_SKILLS_DIR;
+      delete process.env.GENSPARX_BUNDLED_SKILLS_DIR;
     } else {
-      process.env.OPENCLAW_BUNDLED_SKILLS_DIR = originalOverride;
+      process.env.GENSPARX_BUNDLED_SKILLS_DIR = originalOverride;
     }
   });
 
   it("resolves bundled skills under a flattened dist layout", async () => {
-    delete process.env.OPENCLAW_BUNDLED_SKILLS_DIR;
+    delete process.env.GENSPARX_BUNDLED_SKILLS_DIR;
 
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-bundled-"));
-    await fs.writeFile(path.join(root, "package.json"), JSON.stringify({ name: "openclaw" }));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-bundled-"));
+    await fs.writeFile(path.join(root, "package.json"), JSON.stringify({ name: "gensparx" }));
 
     await writeSkill(path.join(root, "skills", "peekaboo"), "peekaboo");
 

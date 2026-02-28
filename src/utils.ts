@@ -239,7 +239,8 @@ export function resolveUserPath(input: string): string {
     return trimmed;
   }
   if (trimmed.startsWith("~")) {
-    const expanded = trimmed.replace(/^~(?=$|[\\/])/, os.homedir());
+    const home = resolveHomeDir() ?? os.homedir();
+    const expanded = trimmed.replace(/^~(?=$|[\\/])/, home);
     return path.resolve(expanded);
   }
   return path.resolve(trimmed);
@@ -247,7 +248,7 @@ export function resolveUserPath(input: string): string {
 
 export function resolveConfigDir(
   env: NodeJS.ProcessEnv = process.env,
-  homedir: () => string = os.homedir,
+  homedir: () => string = () => resolveHomeDir() ?? os.homedir(),
 ): string {
   const override =
     env.GENSPARX_STATE_DIR?.trim() ||
@@ -276,6 +277,11 @@ export function resolveHomeDir(): string | undefined {
   const envProfile = process.env.USERPROFILE?.trim();
   if (envProfile) {
     return envProfile;
+  }
+  const homeDrive = process.env.HOMEDRIVE?.trim();
+  const homePath = process.env.HOMEPATH?.trim();
+  if (homeDrive && homePath) {
+    return `${homeDrive}${homePath}`;
   }
   try {
     const home = os.homedir();

@@ -72,11 +72,11 @@ function validatePluginId(pluginId: string): string | null {
 async function ensureOpenClawExtensions(manifest: PackageManifest) {
   const extensions = manifest[MANIFEST_KEY]?.extensions;
   if (!Array.isArray(extensions)) {
-    throw new Error("package.json missing openclaw.extensions");
+    throw new Error(`package.json missing ${MANIFEST_KEY}.extensions`);
   }
   const list = extensions.map((e) => (typeof e === "string" ? e.trim() : "")).filter(Boolean);
   if (list.length === 0) {
-    throw new Error("package.json openclaw.extensions is empty");
+    throw new Error(`package.json ${MANIFEST_KEY}.extensions is empty`);
   }
   return list;
 }

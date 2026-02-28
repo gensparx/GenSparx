@@ -57,10 +57,13 @@ export function extractHookToken(req: IncomingMessage, url: URL): HookTokenResul
       return { token, fromQuery: false };
     }
   }
-  const headerToken =
-    typeof req.headers["x-openclaw-token"] === "string"
-      ? req.headers["x-openclaw-token"].trim()
-      : "";
+  const headerTokenRaw =
+    typeof req.headers["x-gensparx-token"] === "string"
+      ? req.headers["x-gensparx-token"]
+      : typeof req.headers["x-openclaw-token"] === "string"
+        ? req.headers["x-openclaw-token"]
+        : "";
+  const headerToken = headerTokenRaw.trim();
   if (headerToken) {
     return { token: headerToken, fromQuery: false };
   }

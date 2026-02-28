@@ -26,7 +26,10 @@ export type GatewayBonjourAdvertiseOpts = {
 };
 
 function isDisabledByEnv() {
-  if (isTruthyEnvValue(process.env.OPENCLAW_DISABLE_BONJOUR)) {
+  if (
+    isTruthyEnvValue(process.env.GENSPARX_DISABLE_BONJOUR) ||
+    isTruthyEnvValue(process.env.OPENCLAW_DISABLE_BONJOUR)
+  ) {
     return true;
   }
   if (process.env.NODE_ENV === "test") {
@@ -40,12 +43,17 @@ function isDisabledByEnv() {
 
 function safeServiceName(name: string) {
   const trimmed = name.trim();
-  return trimmed.length > 0 ? trimmed : "OpenClaw";
+  return trimmed.length > 0 ? trimmed : "GenSparx";
 }
 
 function prettifyInstanceName(name: string) {
   const normalized = name.trim().replace(/\s+/g, " ");
-  return normalized.replace(/\s+\(OpenClaw\)\s*$/i, "").trim() || normalized;
+  return (
+    normalized
+      .replace(/\s+\(OpenClaw\)\s*$/i, "")
+      .replace(/\s+\(GenSparx\)\s*$/i, "")
+      .trim() || normalized
+  );
 }
 
 type BonjourService = {
@@ -95,18 +103,19 @@ export async function startGatewayBonjourAdvertiser(
   // `Mac.localdomain`) can confuse some resolvers/browsers and break discovery.
   // Keep only the first label and normalize away a trailing `.local`.
   const hostnameRaw =
+    process.env.GENSPARX_MDNS_HOSTNAME?.trim() ||
     process.env.OPENCLAW_MDNS_HOSTNAME?.trim() ||
     process.env.CLAWDBOT_MDNS_HOSTNAME?.trim() ||
-    "openclaw";
+    "gensparx";
   const hostname =
     hostnameRaw
       .replace(/\.local$/i, "")
       .split(".")[0]
-      .trim() || "openclaw";
+      .trim() || "gensparx";
   const instanceName =
     typeof opts.instanceName === "string" && opts.instanceName.trim()
       ? opts.instanceName.trim()
-      : `${hostname} (OpenClaw)`;
+      : `${hostname} (GenSparx)`;
   const displayName = prettifyInstanceName(instanceName);
 
   const txtBase: Record<string, string> = {
@@ -147,7 +156,7 @@ export async function startGatewayBonjourAdvertiser(
 
   const gateway = responder.createService({
     name: safeServiceName(instanceName),
-    type: "openclaw-gw",
+    type: "gensparx-gw",
     protocol: Protocol.TCP,
     port: opts.gatewayPort,
     domain: "local",

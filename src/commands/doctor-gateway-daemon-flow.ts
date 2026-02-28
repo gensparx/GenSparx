@@ -217,18 +217,22 @@ export async function maybeRepairGatewayDaemon(params: {
       initialValue: true,
     });
     if (start) {
-      await service.restart({
-        env: process.env,
-        stdout: process.stdout,
-      });
-      await sleep(1500);
+      try {
+        await service.restart({
+          env: process.env,
+          stdout: process.stdout,
+        });
+        await sleep(1500);
+      } catch (err) {
+        params.runtime.error?.(`Gateway restart failed: ${String(err)}`);
+      }
     }
   }
 
   if (process.platform === "darwin") {
     const label = resolveGatewayLaunchAgentLabel(process.env.OPENCLAW_PROFILE);
     note(
-      `LaunchAgent loaded; stopping requires "${formatCliCommand("openclaw gateway stop")}" or launchctl bootout gui/$UID/${label}.`,
+      `LaunchAgent loaded; stopping requires "${formatCliCommand("gensparx gateway stop")}" or launchctl bootout gui/$UID/${label}.`,
       "Gateway",
     );
   }
@@ -239,11 +243,15 @@ export async function maybeRepairGatewayDaemon(params: {
       initialValue: true,
     });
     if (restart) {
-      await service.restart({
-        env: process.env,
-        stdout: process.stdout,
-      });
-      await sleep(1500);
+      try {
+        await service.restart({
+          env: process.env,
+          stdout: process.stdout,
+        });
+        await sleep(1500);
+      } catch (err) {
+        params.runtime.error?.(`Gateway restart failed: ${String(err)}`);
+      }
       try {
         await healthCommand({ json: false, timeoutMs: 10_000 }, params.runtime);
       } catch (err) {

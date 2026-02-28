@@ -24,10 +24,10 @@ async function withTempHome<T>(fn: (home: string) => Promise<T>): Promise<T> {
     },
     {
       env: {
-        OPENCLAW_AGENT_DIR: (home) => path.join(home, ".openclaw", "agent"),
-        PI_CODING_AGENT_DIR: (home) => path.join(home, ".openclaw", "agent"),
+        GENSPARX_AGENT_DIR: (home) => path.join(home, ".gensparx", "agent"),
+        PI_CODING_AGENT_DIR: (home) => path.join(home, ".gensparx", "agent"),
       },
-      prefix: "openclaw-rawbody-",
+      prefix: "gensparx-rawbody-",
     },
   );
 }
@@ -64,7 +64,7 @@ describe("RawBody directive parsing", () => {
           agents: {
             defaults: {
               model: "anthropic/claude-opus-4-5",
-              workspace: path.join(home, "openclaw"),
+              workspace: path.join(home, "gensparx"),
             },
           },
           channels: { whatsapp: { allowFrom: ["*"] } },
@@ -98,7 +98,7 @@ describe("RawBody directive parsing", () => {
           agents: {
             defaults: {
               model: "anthropic/claude-opus-4-5",
-              workspace: path.join(home, "openclaw"),
+              workspace: path.join(home, "gensparx"),
               models: {
                 "anthropic/claude-opus-4-5": {},
               },
@@ -135,7 +135,7 @@ describe("RawBody directive parsing", () => {
           agents: {
             defaults: {
               model: "anthropic/claude-opus-4-5",
-              workspace: path.join(home, "openclaw"),
+              workspace: path.join(home, "gensparx"),
             },
           },
           channels: { whatsapp: { allowFrom: ["*"] } },
@@ -173,7 +173,7 @@ describe("RawBody directive parsing", () => {
           agents: {
             defaults: {
               model: "anthropic/claude-opus-4-5",
-              workspace: path.join(home, "openclaw"),
+              workspace: path.join(home, "gensparx"),
             },
           },
           channels: { whatsapp: { allowFrom: ["+1222"] } },
@@ -221,7 +221,7 @@ describe("RawBody directive parsing", () => {
           agents: {
             defaults: {
               model: "anthropic/claude-opus-4-5",
-              workspace: path.join(home, "openclaw"),
+              workspace: path.join(home, "gensparx"),
             },
           },
           channels: { whatsapp: { allowFrom: ["*"] } },

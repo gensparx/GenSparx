@@ -12,6 +12,8 @@ type EnsureOpenClawPathOpts = {
   pathEnv?: string;
 };
 
+type EnsureGenSparxPathOpts = EnsureOpenClawPathOpts;
+
 function isExecutable(filePath: string): boolean {
   try {
     fs.accessSync(filePath, fs.constants.X_OK);
@@ -109,6 +111,70 @@ export function ensureOpenClawCliOnPath(opts: EnsureOpenClawPathOpts = {}) {
 
   const existing = opts.pathEnv ?? process.env.PATH ?? "";
   const prepend = candidateBinDirs(opts);
+  if (prepend.length === 0) {
+    return;
+  }
+
+  const merged = mergePath({ existing, prepend });
+  if (merged) {
+    process.env.PATH = merged;
+  }
+}
+
+function candidateBinDirsGenSparx(opts: EnsureGenSparxPathOpts): string[] {
+  const execPath = opts.execPath ?? process.execPath;
+  const cwd = opts.cwd ?? process.cwd();
+  const homeDir = opts.homeDir ?? os.homedir();
+  const platform = opts.platform ?? process.platform;
+
+  const candidates: string[] = [];
+
+  try {
+    const execDir = path.dirname(execPath);
+    const siblingCli = path.join(execDir, "gensparx");
+    if (isExecutable(siblingCli)) {
+      candidates.push(execDir);
+    }
+  } catch {
+    // ignore
+  }
+
+  const localBinDir = path.join(cwd, "node_modules", ".bin");
+  if (isExecutable(path.join(localBinDir, "gensparx"))) {
+    candidates.push(localBinDir);
+  }
+
+  const miseDataDir = process.env.MISE_DATA_DIR ?? path.join(homeDir, ".local", "share", "mise");
+  const miseShims = path.join(miseDataDir, "shims");
+  if (isDirectory(miseShims)) {
+    candidates.push(miseShims);
+  }
+
+  candidates.push(...resolveBrewPathDirs({ homeDir }));
+
+  if (platform === "darwin") {
+    candidates.push(path.join(homeDir, "Library", "pnpm"));
+  }
+  if (process.env.XDG_BIN_HOME) {
+    candidates.push(process.env.XDG_BIN_HOME);
+  }
+  candidates.push(path.join(homeDir, ".local", "bin"));
+  candidates.push(path.join(homeDir, ".local", "share", "pnpm"));
+  candidates.push(path.join(homeDir, ".bun", "bin"));
+  candidates.push(path.join(homeDir, ".yarn", "bin"));
+  candidates.push("/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", "/bin");
+
+  return candidates.filter(isDirectory);
+}
+
+export function ensureGenSparxCliOnPath(opts: EnsureGenSparxPathOpts = {}) {
+  if (isTruthyEnvValue(process.env.GENSPARX_PATH_BOOTSTRAPPED)) {
+    return;
+  }
+  process.env.GENSPARX_PATH_BOOTSTRAPPED = "1";
+
+  const existing = opts.pathEnv ?? process.env.PATH ?? "";
+  const prepend = candidateBinDirsGenSparx(opts);
   if (prepend.length === 0) {
     return;
   }

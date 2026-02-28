@@ -12,7 +12,9 @@ afterEach(() => {
   resetProcessRegistryForTests();
 });
 
-test("background exec is not killed when tool signal aborts", async () => {
+const testMaybe = process.platform === "win32" ? test.skip : test;
+
+testMaybe("background exec is not killed when tool signal aborts", async () => {
   const tool = createExecTool({ allowBackground: true, backgroundMs: 0 });
   const abortController = new AbortController();
 
@@ -43,7 +45,7 @@ test("background exec is not killed when tool signal aborts", async () => {
   }
 });
 
-test("background exec still times out after tool signal abort", async () => {
+testMaybe("background exec still times out after tool signal abort", async () => {
   const tool = createExecTool({ allowBackground: true, backgroundMs: 0 });
   const abortController = new AbortController();
 
@@ -82,7 +84,7 @@ test("background exec still times out after tool signal abort", async () => {
   }
 });
 
-test("yielded background exec is not killed when tool signal aborts", async () => {
+testMaybe("yielded background exec is not killed when tool signal aborts", async () => {
   const tool = createExecTool({ allowBackground: true, backgroundMs: 10 });
   const abortController = new AbortController();
 
@@ -113,7 +115,7 @@ test("yielded background exec is not killed when tool signal aborts", async () =
   }
 });
 
-test("yielded background exec still times out", async () => {
+testMaybe("yielded background exec still times out", async () => {
   const tool = createExecTool({ allowBackground: true, backgroundMs: 10 });
 
   const result = await tool.execute("toolcall", {

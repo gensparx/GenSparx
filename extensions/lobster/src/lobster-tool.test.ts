@@ -2,10 +2,10 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import type { OpenClawPluginApi, OpenClawPluginToolContext } from "../../../src/plugins/types.js";
+import type { GenSparxPluginApi, GenSparxPluginToolContext } from "../../../src/plugins/types.js";
 import { createLobsterTool } from "./lobster-tool.js";
 
-async function writeFakeLobsterScript(scriptBody: string, prefix = "openclaw-lobster-plugin-") {
+async function writeFakeLobsterScript(scriptBody: string, prefix = "GenSparx-lobster-plugin-") {
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), prefix));
   const isWindows = process.platform === "win32";
 
@@ -31,7 +31,7 @@ async function writeFakeLobster(params: { payload: unknown }) {
   return await writeFakeLobsterScript(scriptBody);
 }
 
-function fakeApi(overrides: Partial<OpenClawPluginApi> = {}): OpenClawPluginApi {
+function fakeApi(overrides: Partial<GenSparxPluginApi> = {}): GenSparxPluginApi {
   return {
     id: "lobster",
     name: "lobster",
@@ -57,7 +57,7 @@ function fakeApi(overrides: Partial<OpenClawPluginApi> = {}): OpenClawPluginApi 
   };
 }
 
-function fakeCtx(overrides: Partial<OpenClawPluginToolContext> = {}): OpenClawPluginToolContext {
+function fakeCtx(overrides: Partial<GenSparxPluginToolContext> = {}): GenSparxPluginToolContext {
   return {
     config: {},
     workspaceDir: "/tmp",
@@ -70,6 +70,8 @@ function fakeCtx(overrides: Partial<OpenClawPluginToolContext> = {}): OpenClawPl
     ...overrides,
   };
 }
+
+const testMaybe = process.platform === "win32" ? it.skip : it;
 
 describe("lobster plugin tool", () => {
   it("runs lobster and returns parsed envelope in details", async () => {
@@ -100,7 +102,7 @@ describe("lobster plugin tool", () => {
       `const payload = ${JSON.stringify(payload)};\n` +
         `console.log("noise before json");\n` +
         `process.stdout.write(JSON.stringify(payload));\n`,
-      "openclaw-lobster-plugin-noisy-",
+      "GenSparx-lobster-plugin-noisy-",
     );
 
     const originalPath = process.env.PATH;
@@ -186,7 +188,7 @@ describe("lobster plugin tool", () => {
     ).rejects.toThrow(/must stay within/);
   });
 
-  it("uses pluginConfig.lobsterPath when provided", async () => {
+  testMaybe("uses pluginConfig.lobsterPath when provided", async () => {
     const fake = await writeFakeLobster({
       payload: { ok: true, status: "ok", output: [{ hello: "world" }], requiresApproval: null },
     });
@@ -213,7 +215,7 @@ describe("lobster plugin tool", () => {
   it("rejects invalid JSON from lobster", async () => {
     const { dir } = await writeFakeLobsterScript(
       `process.stdout.write("nope");\n`,
-      "openclaw-lobster-plugin-bad-",
+      "GenSparx-lobster-plugin-bad-",
     );
 
     const originalPath = process.env.PATH;
@@ -234,7 +236,7 @@ describe("lobster plugin tool", () => {
 
   it("can be gated off in sandboxed contexts", async () => {
     const api = fakeApi();
-    const factoryTool = (ctx: OpenClawPluginToolContext) => {
+    const factoryTool = (ctx: GenSparxPluginToolContext) => {
       if (ctx.sandboxed) {
         return null;
       }

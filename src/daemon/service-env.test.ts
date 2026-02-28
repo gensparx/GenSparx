@@ -223,25 +223,25 @@ describe("buildServiceEnvironment", () => {
     } else {
       expect(env.PATH).toContain("/usr/bin");
     }
-    expect(env.OPENCLAW_GATEWAY_PORT).toBe("18789");
-    expect(env.OPENCLAW_GATEWAY_TOKEN).toBe("secret");
-    expect(env.OPENCLAW_SERVICE_MARKER).toBe("openclaw");
-    expect(env.OPENCLAW_SERVICE_KIND).toBe("gateway");
-    expect(typeof env.OPENCLAW_SERVICE_VERSION).toBe("string");
-    expect(env.OPENCLAW_SYSTEMD_UNIT).toBe("openclaw-gateway.service");
+    expect(env.GENSPARX_GATEWAY_PORT).toBe("18789");
+    expect(env.GENSPARX_GATEWAY_TOKEN).toBe("secret");
+    expect(env.GENSPARX_SERVICE_MARKER).toBe("gensparx");
+    expect(env.GENSPARX_SERVICE_KIND).toBe("gateway");
+    expect(typeof env.GENSPARX_SERVICE_VERSION).toBe("string");
+    expect(env.GENSPARX_SYSTEMD_UNIT).toBe("gensparx-gateway.service");
     if (process.platform === "darwin") {
-      expect(env.OPENCLAW_LAUNCHD_LABEL).toBe("ai.openclaw.gateway");
+      expect(env.GENSPARX_LAUNCHD_LABEL).toBe("ai.gensparx.gateway");
     }
   });
 
   it("uses profile-specific unit and label", () => {
     const env = buildServiceEnvironment({
-      env: { HOME: "/home/user", OPENCLAW_PROFILE: "work" },
+      env: { HOME: "/home/user", GENSPARX_PROFILE: "work" },
       port: 18789,
     });
-    expect(env.OPENCLAW_SYSTEMD_UNIT).toBe("openclaw-gateway-work.service");
+    expect(env.GENSPARX_SYSTEMD_UNIT).toBe("gensparx-gateway-work.service");
     if (process.platform === "darwin") {
-      expect(env.OPENCLAW_LAUNCHD_LABEL).toBe("ai.openclaw.work");
+      expect(env.GENSPARX_LAUNCHD_LABEL).toBe("ai.gensparx.work");
     }
   });
 });

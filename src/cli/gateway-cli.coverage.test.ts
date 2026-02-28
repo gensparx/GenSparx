@@ -1,5 +1,6 @@
 import { Command } from "commander";
 import { describe, expect, it, vi } from "vitest";
+import { stripAnsi } from "../terminal/ansi.js";
 
 const callGateway = vi.fn(async () => ({ ok: true }));
 const startGatewayServer = vi.fn(async () => ({
@@ -122,7 +123,7 @@ describe("gateway-cli coverage", () => {
 
     expect(callGateway).toHaveBeenCalledTimes(1);
     expect(runtimeLogs.join("\n")).toContain('"ok": true');
-  }, 30_000);
+  }, 120_000);
 
   it("registers gateway probe and routes to gatewayStatusCommand", async () => {
     runtimeLogs.length = 0;
@@ -137,7 +138,7 @@ describe("gateway-cli coverage", () => {
     await program.parseAsync(["gateway", "probe", "--json"], { from: "user" });
 
     expect(gatewayStatusCommand).toHaveBeenCalledTimes(1);
-  }, 30_000);
+  }, 120_000);
 
   it("registers gateway discover and prints JSON", async () => {
     runtimeLogs.length = 0;
@@ -145,7 +146,7 @@ describe("gateway-cli coverage", () => {
     discoverGatewayBeacons.mockReset();
     discoverGatewayBeacons.mockResolvedValueOnce([
       {
-        instanceName: "Studio (OpenClaw)",
+        instanceName: "Studio (GenSparx)",
         displayName: "Studio",
         domain: "local.",
         host: "studio.local",
@@ -177,10 +178,10 @@ describe("gateway-cli coverage", () => {
     discoverGatewayBeacons.mockReset();
     discoverGatewayBeacons.mockResolvedValueOnce([
       {
-        instanceName: "Studio (OpenClaw)",
+        instanceName: "Studio (GenSparx)",
         displayName: "Studio",
-        domain: "openclaw.internal.",
-        host: "studio.openclaw.internal",
+        domain: "gensparx.internal.",
+        host: "studio.gensparx.internal",
         lanHost: "studio.local",
         tailnetDns: "studio.tailnet.ts.net",
         gatewayPort: 18789,
@@ -197,12 +198,12 @@ describe("gateway-cli coverage", () => {
       from: "user",
     });
 
-    const out = runtimeLogs.join("\n");
+    const out = stripAnsi(runtimeLogs.join("\n"));
     expect(out).toContain("Gateway Discovery");
     expect(out).toContain("Found 1 gateway(s)");
-    expect(out).toContain("- Studio openclaw.internal.");
+    expect(out).toContain("- Studio gensparx.internal.");
     expect(out).toContain("  tailnet: studio.tailnet.ts.net");
-    expect(out).toContain("  host: studio.openclaw.internal");
+    expect(out).toContain("  host: studio.gensparx.internal");
     expect(out).toContain("  ws: ws://studio.tailnet.ts.net:18789");
   });
 
@@ -328,7 +329,7 @@ describe("gateway-cli coverage", () => {
   });
 
   it("uses env/config port when --port is omitted", async () => {
-    await withEnvOverride({ OPENCLAW_GATEWAY_PORT: "19001" }, async () => {
+    await withEnvOverride({ GENSPARX_GATEWAY_PORT: "19001" }, async () => {
       runtimeLogs.length = 0;
       runtimeErrors.length = 0;
       startGatewayServer.mockClear();

@@ -60,8 +60,8 @@ const DEFAULT_SECURITY: ExecSecurity = "deny";
 const DEFAULT_ASK: ExecAsk = "on-miss";
 const DEFAULT_ASK_FALLBACK: ExecSecurity = "deny";
 const DEFAULT_AUTO_ALLOW_SKILLS = false;
-const DEFAULT_SOCKET = "~/.openclaw/exec-approvals.sock";
-const DEFAULT_FILE = "~/.openclaw/exec-approvals.json";
+const DEFAULT_SOCKET = "~/.gensparx/exec-approvals.sock";
+const DEFAULT_FILE = "~/.gensparx/exec-approvals.json";
 export const DEFAULT_SAFE_BINS = ["jq", "grep", "cut", "sort", "uniq", "head", "tail", "tr", "wc"];
 
 function hashExecApprovalsRaw(raw: string | null): string {
@@ -85,11 +85,21 @@ function expandHome(value: string): string {
 }
 
 export function resolveExecApprovalsPath(): string {
-  return expandHome(DEFAULT_FILE);
+  const primary = expandHome(DEFAULT_FILE);
+  if (fs.existsSync(primary)) {
+    return primary;
+  }
+  const legacy = expandHome("~/.openclaw/exec-approvals.json");
+  return legacy;
 }
 
 export function resolveExecApprovalsSocketPath(): string {
-  return expandHome(DEFAULT_SOCKET);
+  const primary = expandHome(DEFAULT_SOCKET);
+  if (fs.existsSync(primary)) {
+    return primary;
+  }
+  const legacy = expandHome("~/.openclaw/exec-approvals.sock");
+  return legacy;
 }
 
 function normalizeAllowlistPattern(value: string | undefined): string | null {

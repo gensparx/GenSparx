@@ -1,12 +1,12 @@
-import type { OpenClawConfig, WizardPrompter } from "openclaw/plugin-sdk";
-import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "openclaw/plugin-sdk";
+import type { GenSparxConfig, WizardPrompter } from "gensparx/plugin-sdk";
+import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "gensparx/plugin-sdk";
 
 type PromptAccountIdParams = {
-  cfg: OpenClawConfig;
+  cfg: GenSparxConfig;
   prompter: WizardPrompter;
   label: string;
   currentId?: string;
-  listAccountIds: (cfg: OpenClawConfig) => string[];
+  listAccountIds: (cfg: GenSparxConfig) => string[];
   defaultAccountId: string;
 };
 

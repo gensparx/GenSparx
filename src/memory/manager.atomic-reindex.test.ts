@@ -3,6 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getMemorySearchManager, type MemoryIndexManager } from "./index.js";
+import { describeIfFts5 } from "./test-helpers.js";
 
 let shouldFail = false;
 
@@ -34,14 +35,16 @@ vi.mock("./embeddings.js", () => {
   };
 });
 
-describe("memory manager atomic reindex", () => {
+const describeFts = describeIfFts5(describe);
+
+describeFts("memory manager atomic reindex", () => {
   let workspaceDir: string;
   let indexPath: string;
   let manager: MemoryIndexManager | null = null;
 
   beforeEach(async () => {
     shouldFail = false;
-    workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-mem-"));
+    workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-mem-"));
     indexPath = path.join(workspaceDir, "index.sqlite");
     await fs.mkdir(path.join(workspaceDir, "memory"));
     await fs.writeFile(path.join(workspaceDir, "MEMORY.md"), "Hello memory.");

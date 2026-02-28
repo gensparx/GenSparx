@@ -148,26 +148,37 @@ export function buildServiceEnvironment(params: {
   launchdLabel?: string;
 }): Record<string, string | undefined> {
   const { env, port, token, launchdLabel } = params;
-  const profile = env.OPENCLAW_PROFILE;
+  const profile = env.GENSPARX_PROFILE ?? env.OPENCLAW_PROFILE;
   const resolvedLaunchdLabel =
     launchdLabel ||
     (process.platform === "darwin" ? resolveGatewayLaunchAgentLabel(profile) : undefined);
   const systemdUnit = `${resolveGatewaySystemdServiceName(profile)}.service`;
-  const stateDir = env.OPENCLAW_STATE_DIR;
-  const configPath = env.OPENCLAW_CONFIG_PATH;
+  const stateDir = env.GENSPARX_STATE_DIR ?? env.OPENCLAW_STATE_DIR;
+  const configPath = env.GENSPARX_CONFIG_PATH ?? env.OPENCLAW_CONFIG_PATH;
   return {
     HOME: env.HOME,
     PATH: buildMinimalServicePath({ env }),
-    OPENCLAW_PROFILE: profile,
-    OPENCLAW_STATE_DIR: stateDir,
-    OPENCLAW_CONFIG_PATH: configPath,
-    OPENCLAW_GATEWAY_PORT: String(port),
-    OPENCLAW_GATEWAY_TOKEN: token,
-    OPENCLAW_LAUNCHD_LABEL: resolvedLaunchdLabel,
-    OPENCLAW_SYSTEMD_UNIT: systemdUnit,
-    OPENCLAW_SERVICE_MARKER: GATEWAY_SERVICE_MARKER,
-    OPENCLAW_SERVICE_KIND: GATEWAY_SERVICE_KIND,
-    OPENCLAW_SERVICE_VERSION: VERSION,
+    GENSPARX_PROFILE: profile,
+    GENSPARX_STATE_DIR: stateDir,
+    GENSPARX_CONFIG_PATH: configPath,
+    GENSPARX_GATEWAY_PORT: String(port),
+    GENSPARX_GATEWAY_TOKEN: token,
+    GENSPARX_LAUNCHD_LABEL: resolvedLaunchdLabel,
+    GENSPARX_SYSTEMD_UNIT: systemdUnit,
+    GENSPARX_SERVICE_MARKER: GATEWAY_SERVICE_MARKER,
+    GENSPARX_SERVICE_KIND: GATEWAY_SERVICE_KIND,
+    GENSPARX_SERVICE_VERSION: VERSION,
+    // legacy keys for compatibility
+    OPENCLAW_PROFILE: env.OPENCLAW_PROFILE ?? profile,
+    OPENCLAW_STATE_DIR: env.OPENCLAW_STATE_DIR ?? stateDir,
+    OPENCLAW_CONFIG_PATH: env.OPENCLAW_CONFIG_PATH ?? configPath,
+    OPENCLAW_GATEWAY_PORT: env.OPENCLAW_GATEWAY_PORT ?? String(port),
+    OPENCLAW_GATEWAY_TOKEN: env.OPENCLAW_GATEWAY_TOKEN ?? token,
+    OPENCLAW_LAUNCHD_LABEL: env.OPENCLAW_LAUNCHD_LABEL ?? resolvedLaunchdLabel,
+    OPENCLAW_SYSTEMD_UNIT: env.OPENCLAW_SYSTEMD_UNIT ?? systemdUnit,
+    OPENCLAW_SERVICE_MARKER: env.OPENCLAW_SERVICE_MARKER ?? GATEWAY_SERVICE_MARKER,
+    OPENCLAW_SERVICE_KIND: env.OPENCLAW_SERVICE_KIND ?? GATEWAY_SERVICE_KIND,
+    OPENCLAW_SERVICE_VERSION: env.OPENCLAW_SERVICE_VERSION ?? VERSION,
   };
 }
 
@@ -175,20 +186,31 @@ export function buildNodeServiceEnvironment(params: {
   env: Record<string, string | undefined>;
 }): Record<string, string | undefined> {
   const { env } = params;
-  const stateDir = env.OPENCLAW_STATE_DIR;
-  const configPath = env.OPENCLAW_CONFIG_PATH;
+  const stateDir = env.GENSPARX_STATE_DIR ?? env.OPENCLAW_STATE_DIR;
+  const configPath = env.GENSPARX_CONFIG_PATH ?? env.OPENCLAW_CONFIG_PATH;
   return {
     HOME: env.HOME,
     PATH: buildMinimalServicePath({ env }),
-    OPENCLAW_STATE_DIR: stateDir,
-    OPENCLAW_CONFIG_PATH: configPath,
-    OPENCLAW_LAUNCHD_LABEL: resolveNodeLaunchAgentLabel(),
-    OPENCLAW_SYSTEMD_UNIT: resolveNodeSystemdServiceName(),
-    OPENCLAW_WINDOWS_TASK_NAME: resolveNodeWindowsTaskName(),
-    OPENCLAW_TASK_SCRIPT_NAME: NODE_WINDOWS_TASK_SCRIPT_NAME,
-    OPENCLAW_LOG_PREFIX: "node",
-    OPENCLAW_SERVICE_MARKER: NODE_SERVICE_MARKER,
-    OPENCLAW_SERVICE_KIND: NODE_SERVICE_KIND,
-    OPENCLAW_SERVICE_VERSION: VERSION,
+    GENSPARX_STATE_DIR: stateDir,
+    GENSPARX_CONFIG_PATH: configPath,
+    GENSPARX_LAUNCHD_LABEL: resolveNodeLaunchAgentLabel(),
+    GENSPARX_SYSTEMD_UNIT: resolveNodeSystemdServiceName(),
+    GENSPARX_WINDOWS_TASK_NAME: resolveNodeWindowsTaskName(),
+    GENSPARX_TASK_SCRIPT_NAME: NODE_WINDOWS_TASK_SCRIPT_NAME,
+    GENSPARX_LOG_PREFIX: "node",
+    GENSPARX_SERVICE_MARKER: NODE_SERVICE_MARKER,
+    GENSPARX_SERVICE_KIND: NODE_SERVICE_KIND,
+    GENSPARX_SERVICE_VERSION: VERSION,
+    // legacy keys for compatibility
+    OPENCLAW_STATE_DIR: env.OPENCLAW_STATE_DIR ?? stateDir,
+    OPENCLAW_CONFIG_PATH: env.OPENCLAW_CONFIG_PATH ?? configPath,
+    OPENCLAW_LAUNCHD_LABEL: env.OPENCLAW_LAUNCHD_LABEL ?? resolveNodeLaunchAgentLabel(),
+    OPENCLAW_SYSTEMD_UNIT: env.OPENCLAW_SYSTEMD_UNIT ?? resolveNodeSystemdServiceName(),
+    OPENCLAW_WINDOWS_TASK_NAME: env.OPENCLAW_WINDOWS_TASK_NAME ?? resolveNodeWindowsTaskName(),
+    OPENCLAW_TASK_SCRIPT_NAME: env.OPENCLAW_TASK_SCRIPT_NAME ?? NODE_WINDOWS_TASK_SCRIPT_NAME,
+    OPENCLAW_LOG_PREFIX: env.OPENCLAW_LOG_PREFIX ?? "node",
+    OPENCLAW_SERVICE_MARKER: env.OPENCLAW_SERVICE_MARKER ?? NODE_SERVICE_MARKER,
+    OPENCLAW_SERVICE_KIND: env.OPENCLAW_SERVICE_KIND ?? NODE_SERVICE_KIND,
+    OPENCLAW_SERVICE_VERSION: env.OPENCLAW_SERVICE_VERSION ?? VERSION,
   };
 }

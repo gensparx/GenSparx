@@ -17,9 +17,9 @@
     "@opentelemetry/semantic-conventions": "^1.39.0"
   },
   "devDependencies": {
-    "openclaw": "workspace:*"
+    "gensparx": "workspace:*"
   },
-  "openclaw": {
+  "gensparx": {
     "extensions": [
       "./index.ts"
     ]

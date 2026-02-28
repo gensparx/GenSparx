@@ -59,8 +59,10 @@ export function buildMentionRegexes(cfg: OpenClawConfig | undefined, agentId?: s
   const patterns = normalizeMentionPatterns(resolveMentionPatterns(cfg, agentId));
   return patterns
     .map((pattern) => {
+      // Trim a literal leading "." whether or not it was escaped in config
+      const normalizedPattern = pattern.replace(/^\\?\./, "");
       try {
-        return new RegExp(pattern, "i");
+        return new RegExp(normalizedPattern, "i");
       } catch {
         return null;
       }
@@ -69,7 +71,11 @@ export function buildMentionRegexes(cfg: OpenClawConfig | undefined, agentId?: s
 }
 
 export function normalizeMentionText(text: string): string {
-  return (text ?? "").replace(/[\u200b-\u200f\u202a-\u202e\u2060-\u206f]/g, "").toLowerCase();
+  const cleaned = (text ?? "")
+    .replace(/[\u200b-\u200f\u202a-\u202e\u2060-\u206f]/g, "")
+    .replace(/^\.+/, "")
+    .toLowerCase();
+  return cleaned.replace(/openclaw/g, "gensparx");
 }
 
 export function matchesMentionPatterns(text: string, mentionRegexes: RegExp[]): boolean {
@@ -95,16 +101,17 @@ export function matchesMentionWithExplicit(params: {
   explicit?: ExplicitMentionSignal;
 }): boolean {
   const cleaned = normalizeMentionText(params.text ?? "");
+  const padded = ` ${cleaned}`;
   const explicit = params.explicit?.isExplicitlyMentioned === true;
   const explicitAvailable = params.explicit?.canResolveExplicit === true;
   const hasAnyMention = params.explicit?.hasAnyMention === true;
   if (hasAnyMention && explicitAvailable) {
-    return explicit || params.mentionRegexes.some((re) => re.test(cleaned));
+    return explicit || params.mentionRegexes.some((re) => re.test(cleaned) || re.test(padded));
   }
   if (!cleaned) {
     return explicit;
   }
-  return explicit || params.mentionRegexes.some((re) => re.test(cleaned));
+  return explicit || params.mentionRegexes.some((re) => re.test(cleaned) || re.test(padded));
 }
 
 export function stripStructuralPrefixes(text: string): string {

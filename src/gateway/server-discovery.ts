@@ -14,12 +14,12 @@ export type ResolveBonjourCliPathOptions = {
 export function formatBonjourInstanceName(displayName: string) {
   const trimmed = displayName.trim();
   if (!trimmed) {
-    return "OpenClaw";
+    return "GenSparx";
   }
-  if (/openclaw/i.test(trimmed)) {
+  if (/(openclaw|gensparx)/i.test(trimmed)) {
     return trimmed;
   }
-  return `${trimmed} (OpenClaw)`;
+  return `${trimmed} (GenSparx)`;
 }
 
 export function resolveBonjourCliPath(opts: ResolveBonjourCliPathOptions = {}): string | undefined {
@@ -40,6 +40,10 @@ export function resolveBonjourCliPath(opts: ResolveBonjourCliPathOptions = {}): 
 
   const execPath = opts.execPath ?? process.execPath;
   const execDir = path.dirname(execPath);
+  const siblingGenSparx = path.join(execDir, "gensparx");
+  if (isFile(siblingGenSparx)) {
+    return siblingGenSparx;
+  }
   const siblingCli = path.join(execDir, "openclaw");
   if (isFile(siblingCli)) {
     return siblingCli;
@@ -56,6 +60,10 @@ export function resolveBonjourCliPath(opts: ResolveBonjourCliPathOptions = {}): 
   if (isFile(distCli)) {
     return distCli;
   }
+  const binGenSparx = path.join(cwd, "bin", "gensparx");
+  if (isFile(binGenSparx)) {
+    return binGenSparx;
+  }
   const binCli = path.join(cwd, "bin", "openclaw");
   if (isFile(binCli)) {
     return binCli;
@@ -70,7 +78,7 @@ export async function resolveTailnetDnsHint(opts?: {
   enabled?: boolean;
 }): Promise<string | undefined> {
   const env = opts?.env ?? process.env;
-  const envRaw = env.OPENCLAW_TAILNET_DNS?.trim();
+  const envRaw = (env.GENSPARX_TAILNET_DNS ?? env.OPENCLAW_TAILNET_DNS)?.trim();
   const envValue = envRaw && envRaw.length > 0 ? envRaw.replace(/\.$/, "") : "";
   if (envValue) {
     return envValue;

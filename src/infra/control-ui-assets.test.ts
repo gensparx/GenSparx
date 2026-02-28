@@ -11,7 +11,7 @@ import {
 
 describe("control UI assets helpers", () => {
   it("resolves repo root from src argv1", async () => {
-    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-ui-"));
+    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-ui-"));
     try {
       await fs.mkdir(path.join(tmp, "ui"), { recursive: true });
       await fs.writeFile(path.join(tmp, "ui", "vite.config.ts"), "export {};\n");
@@ -26,7 +26,7 @@ describe("control UI assets helpers", () => {
   });
 
   it("resolves repo root from dist argv1", async () => {
-    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-ui-"));
+    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-ui-"));
     try {
       await fs.mkdir(path.join(tmp, "ui"), { recursive: true });
       await fs.writeFile(path.join(tmp, "ui", "vite.config.ts"), "export {};\n");
@@ -49,7 +49,7 @@ describe("control UI assets helpers", () => {
   });
 
   it("resolves control-ui root for dist bundle argv1", async () => {
-    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-ui-"));
+    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-ui-"));
     try {
       await fs.mkdir(path.join(tmp, "dist", "control-ui"), { recursive: true });
       await fs.writeFile(path.join(tmp, "dist", "bundle.js"), "export {};\n");
@@ -64,9 +64,9 @@ describe("control UI assets helpers", () => {
   });
 
   it("resolves control-ui root for dist/gateway bundle argv1", async () => {
-    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-ui-"));
+    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-ui-"));
     try {
-      await fs.writeFile(path.join(tmp, "package.json"), JSON.stringify({ name: "openclaw" }));
+      await fs.writeFile(path.join(tmp, "package.json"), JSON.stringify({ name: "gensparx" }));
       await fs.mkdir(path.join(tmp, "dist", "gateway"), { recursive: true });
       await fs.mkdir(path.join(tmp, "dist", "control-ui"), { recursive: true });
       await fs.writeFile(path.join(tmp, "dist", "gateway", "control-ui.js"), "export {};\n");
@@ -81,7 +81,7 @@ describe("control UI assets helpers", () => {
   });
 
   it("resolves control-ui root from override directory or index.html", async () => {
-    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-ui-"));
+    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-ui-"));
     try {
       const uiDir = path.join(tmp, "dist", "control-ui");
       await fs.mkdir(uiDir, { recursive: true });
@@ -96,14 +96,14 @@ describe("control UI assets helpers", () => {
   });
 
   it("resolves dist control-ui index path from package root argv1", async () => {
-    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-ui-"));
+    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-ui-"));
     try {
-      await fs.writeFile(path.join(tmp, "package.json"), JSON.stringify({ name: "openclaw" }));
-      await fs.writeFile(path.join(tmp, "openclaw.mjs"), "export {};\n");
+      await fs.writeFile(path.join(tmp, "package.json"), JSON.stringify({ name: "gensparx" }));
+      await fs.writeFile(path.join(tmp, "gensparx.mjs"), "export {};\n");
       await fs.mkdir(path.join(tmp, "dist", "control-ui"), { recursive: true });
       await fs.writeFile(path.join(tmp, "dist", "control-ui", "index.html"), "<html></html>\n");
 
-      expect(await resolveControlUiDistIndexPath(path.join(tmp, "openclaw.mjs"))).toBe(
+      expect(await resolveControlUiDistIndexPath(path.join(tmp, "gensparx.mjs"))).toBe(
         path.join(tmp, "dist", "control-ui", "index.html"),
       );
     } finally {
@@ -112,14 +112,14 @@ describe("control UI assets helpers", () => {
   });
 
   it("resolves control-ui root for package entrypoint argv1", async () => {
-    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-ui-"));
+    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-ui-"));
     try {
-      await fs.writeFile(path.join(tmp, "package.json"), JSON.stringify({ name: "openclaw" }));
-      await fs.writeFile(path.join(tmp, "openclaw.mjs"), "export {};\n");
+      await fs.writeFile(path.join(tmp, "package.json"), JSON.stringify({ name: "gensparx" }));
+      await fs.writeFile(path.join(tmp, "gensparx.mjs"), "export {};\n");
       await fs.mkdir(path.join(tmp, "dist", "control-ui"), { recursive: true });
       await fs.writeFile(path.join(tmp, "dist", "control-ui", "index.html"), "<html></html>\n");
 
-      expect(resolveControlUiRootSync({ argv1: path.join(tmp, "openclaw.mjs") })).toBe(
+      expect(resolveControlUiRootSync({ argv1: path.join(tmp, "gensparx.mjs") })).toBe(
         path.join(tmp, "dist", "control-ui"),
       );
     } finally {
@@ -128,17 +128,17 @@ describe("control UI assets helpers", () => {
   });
 
   it("resolves dist control-ui index path from .bin argv1", async () => {
-    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-ui-"));
+    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-ui-"));
     try {
       const binDir = path.join(tmp, "node_modules", ".bin");
-      const pkgRoot = path.join(tmp, "node_modules", "openclaw");
+      const pkgRoot = path.join(tmp, "node_modules", "gensparx");
       await fs.mkdir(binDir, { recursive: true });
       await fs.mkdir(path.join(pkgRoot, "dist", "control-ui"), { recursive: true });
-      await fs.writeFile(path.join(binDir, "openclaw"), "#!/usr/bin/env node\n");
-      await fs.writeFile(path.join(pkgRoot, "package.json"), JSON.stringify({ name: "openclaw" }));
+      await fs.writeFile(path.join(binDir, "gensparx"), "#!/usr/bin/env node\n");
+      await fs.writeFile(path.join(pkgRoot, "package.json"), JSON.stringify({ name: "gensparx" }));
       await fs.writeFile(path.join(pkgRoot, "dist", "control-ui", "index.html"), "<html></html>\n");
 
-      expect(await resolveControlUiDistIndexPath(path.join(binDir, "openclaw"))).toBe(
+      expect(await resolveControlUiDistIndexPath(path.join(binDir, "gensparx"))).toBe(
         path.join(pkgRoot, "dist", "control-ui", "index.html"),
       );
     } finally {

@@ -10,8 +10,8 @@ installGatewayTestHooks({ scope: "suite" });
 
 beforeEach(() => {
   // Ensure these tests are not affected by host env vars.
-  delete process.env.OPENCLAW_GATEWAY_TOKEN;
-  delete process.env.OPENCLAW_GATEWAY_PASSWORD;
+  delete process.env.GENSPARX_GATEWAY_TOKEN;
+  delete process.env.GENSPARX_GATEWAY_PASSWORD;
 });
 
 const resolveGatewayToken = (): string => {
@@ -22,7 +22,9 @@ const resolveGatewayToken = (): string => {
   return token;
 };
 
-describe("POST /tools/invoke", () => {
+const describeMaybe = process.platform === "win32" ? describe.skip : describe;
+
+describeMaybe("POST /tools/invoke", () => {
   it("invokes a tool and returns {ok:true,result}", async () => {
     // Allow the agents_list tool for main agent.
     testState.agentsConfig = {

@@ -1,10 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
 import type { PluginConfigUiHint, PluginKind } from "./types.js";
-import { MANIFEST_KEY } from "../compat/legacy-names.js";
+import { LEGACY_MANIFEST_KEYS, MANIFEST_KEY } from "../compat/legacy-names.js";
 
-export const PLUGIN_MANIFEST_FILENAME = "openclaw.plugin.json";
-export const PLUGIN_MANIFEST_FILENAMES = [PLUGIN_MANIFEST_FILENAME] as const;
+export const PLUGIN_MANIFEST_FILENAME = `${MANIFEST_KEY}.plugin.json`;
+export const PLUGIN_MANIFEST_FILENAMES = [
+  `${MANIFEST_KEY}.plugin.json`,
+  "openclaw.plugin.json",
+] as const;
 
 export type PluginManifest = {
   id: string;
@@ -136,7 +139,7 @@ export type OpenClawPackageManifest = {
   install?: PluginPackageInstall;
 };
 
-export type ManifestKey = typeof MANIFEST_KEY;
+export type ManifestKey = typeof MANIFEST_KEY | (typeof LEGACY_MANIFEST_KEYS)[number];
 
 export type PackageManifest = {
   name?: string;
@@ -150,5 +153,12 @@ export function getPackageManifestMetadata(
   if (!manifest) {
     return undefined;
   }
-  return manifest[MANIFEST_KEY];
+  const keys: ManifestKey[] = [MANIFEST_KEY, ...LEGACY_MANIFEST_KEYS];
+  for (const key of keys) {
+    const data = manifest[key];
+    if (data && typeof data === "object") {
+      return data;
+    }
+  }
+  return undefined;
 }

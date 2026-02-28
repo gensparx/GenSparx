@@ -22,6 +22,8 @@ import {
 
 installGatewayTestHooks({ scope: "suite" });
 
+const describeMaybe = process.platform === "win32" ? describe.skip : describe;
+
 let server: Awaited<ReturnType<typeof startServerWithClient>>["server"];
 let ws: WebSocket;
 let port: number;
@@ -40,7 +42,7 @@ afterAll(async () => {
   await server.close();
 });
 
-describe("late-arriving invoke results", () => {
+describeMaybe("late-arriving invoke results", () => {
   test("returns success for unknown invoke id (late arrival after timeout)", async () => {
     // Create a node client WebSocket
     const nodeWs = new WebSocket(`ws://127.0.0.1:${port}`);

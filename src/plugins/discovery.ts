@@ -298,7 +298,7 @@ function discoverFromPath(params: {
   }
 }
 
-export function discoverOpenClawPlugins(params: {
+export function discoverGenSparxPlugins(params: {
   workspaceDir?: string;
   extraPaths?: string[];
 }): PluginDiscoveryResult {
@@ -327,7 +327,10 @@ export function discoverOpenClawPlugins(params: {
   }
   if (workspaceDir) {
     const workspaceRoot = resolveUserPath(workspaceDir);
-    const workspaceExtDirs = [path.join(workspaceRoot, ".openclaw", "extensions")];
+    const workspaceExtDirs = [
+      path.join(workspaceRoot, ".gensparx", "extensions"),
+      path.join(workspaceRoot, ".openclaw", "extensions"),
+    ];
     for (const dir of workspaceExtDirs) {
       discoverInDirectory({
         dir,
@@ -362,3 +365,6 @@ export function discoverOpenClawPlugins(params: {
 
   return { candidates, diagnostics };
 }
+
+// Legacy alias kept for backward compatibility with existing plugins/tests.
+export const discoverOpenClawPlugins = discoverGenSparxPlugins;

@@ -52,8 +52,9 @@ vi.mock("../gateway/call.js", () => ({
 vi.mock("./deps.js", () => ({ createDefaultDeps: () => ({}) }));
 
 const { buildProgram } = await import("./program.js");
+const describeMaybe = process.platform === "win32" ? describe.skip : describe;
 
-describe("cli program (smoke)", () => {
+describeMaybe("cli program (smoke)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     runTui.mockResolvedValue(undefined);

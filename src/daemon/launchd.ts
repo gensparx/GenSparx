@@ -26,11 +26,13 @@ const formatLine = (label: string, value: string) => {
 };
 
 function resolveLaunchAgentLabel(args?: { env?: Record<string, string | undefined> }): string {
-  const envLabel = args?.env?.OPENCLAW_LAUNCHD_LABEL?.trim();
+  const env = args?.env ?? {};
+  const envLabel = env.GENSPARX_LAUNCHD_LABEL?.trim() || env.OPENCLAW_LAUNCHD_LABEL?.trim();
   if (envLabel) {
     return envLabel;
   }
-  return resolveGatewayLaunchAgentLabel(args?.env?.OPENCLAW_PROFILE);
+  const profile = env.GENSPARX_PROFILE?.trim() || env.OPENCLAW_PROFILE?.trim();
+  return resolveGatewayLaunchAgentLabel(profile);
 }
 
 function resolveLaunchAgentPlistPathForLabel(

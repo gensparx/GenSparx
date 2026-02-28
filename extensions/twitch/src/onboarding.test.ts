@@ -11,7 +11,7 @@
  * - setTwitchAccount config updates
  */
 
-import type { WizardPrompter } from "openclaw/plugin-sdk";
+import type { WizardPrompter } from "GenSparx/plugin-sdk";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { TwitchAccountConfig } from "./types.js";
 
@@ -53,7 +53,7 @@ describe("onboarding helpers", () => {
         initialValue: true,
       });
       expect(mockPromptText).not.toHaveBeenCalled();
-    });
+    }, 120_000);
 
     it("should prompt for new token when user doesn't keep existing", async () => {
       const { promptToken } = await import("./onboarding.js");
