@@ -14,11 +14,6 @@ title: "GenSparx"
 
 > _""F_\*\* the limitations. GenSparx does what AI always promised."
 
-<p align="center">
-  <strong>Any OS gateway for AI agents across WhatsApp, Telegram, Discord, iMessage, and more.</strong><br />
-  Send a message, get an agent response from your pocket. Plugins add Mattermost and more.
-</p>
-
 <Columns cols={2}>
   <Card icon="rocket" href="/start/getting-started" title="Get Started">
     Install GenSparx and bring up the Gateway in minutes.
