@@ -1,42 +1,32 @@
 ---
 summary: "GenSparx is a multi-channel gateway for AI agents that runs on any OS."
-read_when:
-  - Introducing GenSparx to newcomers
+read_when: ["Introducing GenSparx to newcomers"]
 title: "GenSparx"
 ---
 
-# GenSparx 🦞
+# GenSparx
 
 <p align="center">
-    <img
-        src="/assets/openclaw-logo-text-dark.png"
-        alt="GenSparx"
-        width="500"
-        class="dark:hidden"
-    />
-    <img
-        src="/assets/openclaw-logo-text.png"
-        alt="GenSparx"
-        width="500"
-        class="hidden dark:block"
-    />
+  <img src="/assets/openclaw-logo-text-dark.png" alt="GenSparx" width="500" class="dark:hidden" />
+
+  <img src="/assets/openclaw-logo-text.png" alt="GenSparx" width="500" class="hidden dark:block" />
 </p>
 
-> _"EXFOLIATE! EXFOLIATE!"_ — A space lobster, probably
+> _"FUCK IT" ITS GONNA FUCK AI_
 
 <p align="center">
   <strong>Any OS gateway for AI agents across WhatsApp, Telegram, Discord, iMessage, and more.</strong><br />
   Send a message, get an agent response from your pocket. Plugins add Mattermost and more.
 </p>
 
-<Columns>
-  <Card title="Get Started" href="/start/getting-started" icon="rocket">
+<Columns cols={2}>
+  <Card icon="rocket" href="/start/getting-started" title="Get Started">
     Install GenSparx and bring up the Gateway in minutes.
   </Card>
-  <Card title="Run the Wizard" href="/start/wizard" icon="sparkles">
+  <Card icon="sparkles" href="/start/wizard" title="Run the Wizard">
     Guided setup with `gensparx onboard` and pairing flows.
   </Card>
-  <Card title="Open the Control UI" href="/web/control-ui" icon="layout-dashboard">
+  <Card icon="layout-dashboard" href="/web/control-ui" title="Open the Control UI">
     Launch the browser dashboard for chat, config, and sessions.
   </Card>
 </Columns>
@@ -59,23 +49,23 @@ The Gateway is the single source of truth for sessions, routing, and channel con
 
 ## Key capabilities
 
-<Columns>
-  <Card title="Multi-channel gateway" icon="network">
+<Columns cols={2}>
+  <Card icon="network" title="Multi-channel gateway">
     WhatsApp, Telegram, Discord, and iMessage with a single Gateway process.
   </Card>
-  <Card title="Plugin channels" icon="plug">
+  <Card icon="plug" title="Plugin channels">
     Add Mattermost and more with extension packages.
   </Card>
-  <Card title="Multi-agent routing" icon="route">
+  <Card icon="route" title="Multi-agent routing">
     Isolated sessions per agent, workspace, or sender.
   </Card>
-  <Card title="Media support" icon="image">
+  <Card icon="image" title="Media support">
     Send and receive images, audio, and documents.
   </Card>
-  <Card title="Web Control UI" icon="monitor">
+  <Card icon="monitor" title="Web Control UI">
     Browser dashboard for chat, config, sessions, and nodes.
   </Card>
-  <Card title="Mobile nodes" icon="smartphone">
+  <Card icon="smartphone" title="Mobile nodes">
     Pair iOS and Android nodes with Canvas support.
   </Card>
 </Columns>
@@ -137,45 +127,43 @@ Example:
 
 ## Start here
 
-<Columns>
-  <Card title="Docs hubs" href="/start/hubs" icon="book-open">
+<Columns cols={2}>
+  <Card icon="book-open" href="/start/hubs" title="Docs hubs">
     All docs and guides, organized by use case.
   </Card>
-  <Card title="Configuration" href="/gateway/configuration" icon="settings">
+  <Card icon="settings" href="/gateway/configuration" title="Configuration">
     Core Gateway settings, tokens, and provider config.
   </Card>
-  <Card title="Remote access" href="/gateway/remote" icon="globe">
+  <Card icon="globe" href="/gateway/remote" title="Remote access">
     SSH and tailnet access patterns.
   </Card>
-  <Card title="Channels" href="/channels/telegram" icon="message-square">
+  <Card icon="message-square" href="/channels/telegram" title="Channels">
     Channel-specific setup for WhatsApp, Telegram, Discord, and more.
   </Card>
-  <Card title="Nodes" href="/nodes" icon="smartphone">
+  <Card icon="smartphone" href="/nodes" title="Nodes">
     iOS and Android nodes with pairing and Canvas.
   </Card>
-  <Card title="Help" href="/help" icon="life-buoy">
+  <Card icon="life-buoy" href="/help" title="Help">
     Common fixes and troubleshooting entry point.
   </Card>
 </Columns>
 
 ## Learn more
 
-<Columns>
-  <Card title="Full feature list" href="/concepts/features" icon="list">
+<Columns cols={2}>
+  <Card icon="list" href="/concepts/features" title="Full feature list">
     Complete channel, routing, and media capabilities.
   </Card>
-  <Card title="Multi-agent routing" href="/concepts/multi-agent" icon="route">
+  <Card icon="route" href="/concepts/multi-agent" title="Multi-agent routing">
     Workspace isolation and per-agent sessions.
   </Card>
-  <Card title="Security" href="/gateway/security" icon="shield">
+  <Card icon="shield" href="/gateway/security" title="Security">
     Tokens, allowlists, and safety controls.
   </Card>
-  <Card title="Troubleshooting" href="/gateway/troubleshooting" icon="wrench">
+  <Card icon="wrench" href="/gateway/troubleshooting" title="Troubleshooting">
     Gateway diagnostics and common errors.
   </Card>
-  <Card title="About and credits" href="/reference/credits" icon="info">
+  <Card icon="info" href="/reference/credits" title="About and credits">
     Project origins, contributors, and license.
   </Card>
 </Columns>
-
-
