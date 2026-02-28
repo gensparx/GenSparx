@@ -12,7 +12,7 @@ title: "GenSparx"
   <img src="/assets/openclaw-logo-text.png" alt="GenSparx" width="500" class="hidden dark:block" />
 </p>
 
-> _"FUCK IT" ITS GONNA FUCK AI_
+> _""F_\*\* the limitations. GenSparx does what AI always promised."
 
 <p align="center">
   <strong>Any OS gateway for AI agents across WhatsApp, Telegram, Discord, iMessage, and more.</strong><br />
@@ -99,10 +99,6 @@ Open the browser Control UI after the Gateway starts.
 
 - Local default: http://127.0.0.1:18789/
 - Remote access: [Web surfaces](/web) and [Tailscale](/gateway/tailscale)
-
-<p align="center">
-  <img src="whatsapp-openclaw.jpg" alt="GenSparx" width="420" />
-</p>
 
 ## Configuration (optional)
 
