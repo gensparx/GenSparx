@@ -112,6 +112,7 @@ describe("resolveSessionAgentIds", () => {
     expect(defaultAgentId).toBe("beta");
     expect(sessionAgentId).toBe("beta");
   });
+
   it("falls back to the configured default when sessionKey is non-agent", () => {
     const { sessionAgentId } = resolveSessionAgentIds({
       sessionKey: "telegram:slash:123",
@@ -119,6 +120,7 @@ describe("resolveSessionAgentIds", () => {
     });
     expect(sessionAgentId).toBe("beta");
   });
+
   it("falls back to the configured default for global sessions", () => {
     const { sessionAgentId } = resolveSessionAgentIds({
       sessionKey: "global",
@@ -126,6 +128,7 @@ describe("resolveSessionAgentIds", () => {
     });
     expect(sessionAgentId).toBe("beta");
   });
+
   it("keeps the agent id for provider-qualified agent sessions", () => {
     const { sessionAgentId } = resolveSessionAgentIds({
       sessionKey: "agent:beta:slack:channel:c1",
@@ -133,9 +136,27 @@ describe("resolveSessionAgentIds", () => {
     });
     expect(sessionAgentId).toBe("beta");
   });
+
   it("uses the agent id from agent session keys", () => {
     const { sessionAgentId } = resolveSessionAgentIds({
       sessionKey: "agent:main:main",
+      config: cfg,
+    });
+    expect(sessionAgentId).toBe("main");
+  });
+
+  it("uses explicit agentId when sessionKey is missing", () => {
+    const { sessionAgentId } = resolveSessionAgentIds({
+      agentId: "main",
+      config: cfg,
+    });
+    expect(sessionAgentId).toBe("main");
+  });
+
+  it("prefers explicit agentId over non-agent session keys", () => {
+    const { sessionAgentId } = resolveSessionAgentIds({
+      sessionKey: "telegram:slash:123",
+      agentId: "main",
       config: cfg,
     });
     expect(sessionAgentId).toBe("main");

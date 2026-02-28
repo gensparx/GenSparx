@@ -1,42 +1,36 @@
 import type { Command } from "commander";
 import { resolveAgentWorkspaceDir, resolveDefaultAgentId } from "../agents/agent-scope.js";
-import {
-  buildWorkspaceSkillStatus,
-  type SkillStatusEntry,
-  type SkillStatusReport,
-} from "../agents/skills-status.js";
 import { loadConfig } from "../config/config.js";
 import { defaultRuntime } from "../runtime.js";
 import { formatDocsLink } from "../terminal/links.js";
-import { renderTable } from "../terminal/table.js";
 import { theme } from "../terminal/theme.js";
-import { shortenHomePath } from "../utils.js";
-import { formatCliCommand } from "./command-format.js";
+import { formatSkillInfo, formatSkillsCheck, formatSkillsList } from "./skills-cli.format.js";
 
-export type SkillsListOptions = {
-  json?: boolean;
-  eligible?: boolean;
-  verbose?: boolean;
-};
+export type {
+  SkillInfoOptions,
+  SkillsCheckOptions,
+  SkillsListOptions,
+} from "./skills-cli.format.js";
+export { formatSkillInfo, formatSkillsCheck, formatSkillsList } from "./skills-cli.format.js";
 
-export type SkillInfoOptions = {
-  json?: boolean;
-};
+type SkillStatusReport = Awaited<
+  ReturnType<(typeof import("../agents/skills-status.js"))["buildWorkspaceSkillStatus"]>
+>;
 
-export type SkillsCheckOptions = {
-  json?: boolean;
-};
-
-function appendClawHubHint(output: string, json?: boolean): string {
-  if (json) {
-    return output;
-  }
-  return `${output}\n\nTip: use \`npx clawhub\` to search, install, and sync skills.`;
+async function loadSkillsStatusReport(): Promise<SkillStatusReport> {
+  const config = loadConfig();
+  const workspaceDir = resolveAgentWorkspaceDir(config, resolveDefaultAgentId(config));
+  const { buildWorkspaceSkillStatus } = await import("../agents/skills-status.js");
+  return buildWorkspaceSkillStatus(workspaceDir, { config });
 }
 
-function formatSkillStatus(skill: SkillStatusEntry): string {
-  if (skill.eligible) {
-    return theme.success("✓ ready");
+async function runSkillsAction(render: (report: SkillStatusReport) => string): Promise<void> {
+  try {
+    const report = await loadSkillsStatusReport();
+    defaultRuntime.log(render(report));
+  } catch (err) {
+    defaultRuntime.error(String(err));
+    defaultRuntime.exit(1);
   }
   if (skill.disabled) {
     return theme.warn("⏸ disabled");
@@ -356,15 +350,7 @@ export function registerSkillsCli(program: Command) {
     .option("--eligible", "Show only eligible (ready to use) skills", false)
     .option("-v, --verbose", "Show more details including missing requirements", false)
     .action(async (opts) => {
-      try {
-        const config = loadConfig();
-        const workspaceDir = resolveAgentWorkspaceDir(config, resolveDefaultAgentId(config));
-        const report = buildWorkspaceSkillStatus(workspaceDir, { config });
-        defaultRuntime.log(formatSkillsList(report, opts));
-      } catch (err) {
-        defaultRuntime.error(String(err));
-        defaultRuntime.exit(1);
-      }
+      await runSkillsAction((report) => formatSkillsList(report, opts));
     });
 
   skills
@@ -373,15 +359,7 @@ export function registerSkillsCli(program: Command) {
     .argument("<name>", "Skill name")
     .option("--json", "Output as JSON", false)
     .action(async (name, opts) => {
-      try {
-        const config = loadConfig();
-        const workspaceDir = resolveAgentWorkspaceDir(config, resolveDefaultAgentId(config));
-        const report = buildWorkspaceSkillStatus(workspaceDir, { config });
-        defaultRuntime.log(formatSkillInfo(report, name, opts));
-      } catch (err) {
-        defaultRuntime.error(String(err));
-        defaultRuntime.exit(1);
-      }
+      await runSkillsAction((report) => formatSkillInfo(report, name, opts));
     });
 
   skills
@@ -389,27 +367,11 @@ export function registerSkillsCli(program: Command) {
     .description("Check which skills are ready vs missing requirements")
     .option("--json", "Output as JSON", false)
     .action(async (opts) => {
-      try {
-        const config = loadConfig();
-        const workspaceDir = resolveAgentWorkspaceDir(config, resolveDefaultAgentId(config));
-        const report = buildWorkspaceSkillStatus(workspaceDir, { config });
-        defaultRuntime.log(formatSkillsCheck(report, opts));
-      } catch (err) {
-        defaultRuntime.error(String(err));
-        defaultRuntime.exit(1);
-      }
+      await runSkillsAction((report) => formatSkillsCheck(report, opts));
     });
 
   // Default action (no subcommand) - show list
   skills.action(async () => {
-    try {
-      const config = loadConfig();
-      const workspaceDir = resolveAgentWorkspaceDir(config, resolveDefaultAgentId(config));
-      const report = buildWorkspaceSkillStatus(workspaceDir, { config });
-      defaultRuntime.log(formatSkillsList(report, {}));
-    } catch (err) {
-      defaultRuntime.error(String(err));
-      defaultRuntime.exit(1);
-    }
+    await runSkillsAction((report) => formatSkillsList(report, {}));
   });
 }

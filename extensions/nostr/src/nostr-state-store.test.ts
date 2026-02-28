@@ -2,6 +2,7 @@ import type { PluginRuntime } from "GenSparx/plugin-sdk";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import type { PluginRuntime } from "openclaw/plugin-sdk";
 import { describe, expect, it } from "vitest";
 import {
   readNostrBusState,
@@ -91,7 +92,7 @@ describe("computeSinceTimestamp", () => {
   });
 
   it("uses lastProcessedAt when available", () => {
-    const state = {
+    const state: Parameters<typeof computeSinceTimestamp>[0] = {
       version: 2,
       lastProcessedAt: 1699999000,
       gatewayStartedAt: null,
@@ -101,7 +102,7 @@ describe("computeSinceTimestamp", () => {
   });
 
   it("uses gatewayStartedAt when lastProcessedAt is null", () => {
-    const state = {
+    const state: Parameters<typeof computeSinceTimestamp>[0] = {
       version: 2,
       lastProcessedAt: null,
       gatewayStartedAt: 1699998000,
@@ -111,7 +112,7 @@ describe("computeSinceTimestamp", () => {
   });
 
   it("uses the max of both timestamps", () => {
-    const state = {
+    const state: Parameters<typeof computeSinceTimestamp>[0] = {
       version: 2,
       lastProcessedAt: 1699999000,
       gatewayStartedAt: 1699998000,
@@ -121,7 +122,7 @@ describe("computeSinceTimestamp", () => {
   });
 
   it("falls back to now if both are null", () => {
-    const state = {
+    const state: Parameters<typeof computeSinceTimestamp>[0] = {
       version: 2,
       lastProcessedAt: null,
       gatewayStartedAt: null,

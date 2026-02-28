@@ -51,6 +51,21 @@ describe("resolveGenSparxAgentDir", () => {
 
     const resolved = resolveGenSparxAgentDir();
 
-    expect(resolved).toBe(path.resolve(override));
+  it("prefers OPENCLAW_AGENT_DIR over PI_CODING_AGENT_DIR when both are set", async () => {
+    await withTempStateDir((stateDir) => {
+      const primaryOverride = path.join(stateDir, "primary-agent");
+      const fallbackOverride = path.join(stateDir, "fallback-agent");
+      withEnv(
+        {
+          OPENCLAW_STATE_DIR: undefined,
+          OPENCLAW_AGENT_DIR: primaryOverride,
+          PI_CODING_AGENT_DIR: fallbackOverride,
+        },
+        () => {
+          const resolved = resolveOpenClawAgentDir();
+          expect(resolved).toBe(path.resolve(primaryOverride));
+        },
+      );
+    });
   });
 });

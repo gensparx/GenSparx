@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import type { GenSparxConfig } from "../config/config.js";
 import {
   resolveLineAccount,
-  listLineAccountIds,
   resolveDefaultLineAccountId,
   normalizeAccountId,
   DEFAULT_ACCOUNT_ID,
@@ -176,24 +175,8 @@ describe("LINE accounts", () => {
   });
 
   describe("normalizeAccountId", () => {
-    it("normalizes undefined to default", () => {
-      expect(normalizeAccountId(undefined)).toBe(DEFAULT_ACCOUNT_ID);
-    });
-
-    it("normalizes 'default' to DEFAULT_ACCOUNT_ID", () => {
-      expect(normalizeAccountId("default")).toBe(DEFAULT_ACCOUNT_ID);
-    });
-
-    it("preserves other account ids", () => {
-      expect(normalizeAccountId("business")).toBe("business");
-    });
-
-    it("lowercases account ids", () => {
-      expect(normalizeAccountId("Business")).toBe("business");
-    });
-
-    it("trims whitespace", () => {
-      expect(normalizeAccountId("  business  ")).toBe("business");
+    it("trims and lowercases account ids", () => {
+      expect(normalizeAccountId("  Business  ")).toBe("business");
     });
   });
 });

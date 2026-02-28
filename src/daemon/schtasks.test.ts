@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { parseSchtasksQuery, readScheduledTaskCommand, resolveTaskScriptPath } from "./schtasks.js";
 
 describe("schtasks runtime parsing", () => {
-  it("parses status and last run info", () => {
+  it.each(["Ready", "Running"])("parses %s status", (status) => {
     const output = [
       "TaskName: \\GenSparx Gateway",
       "Status: Ready",
@@ -189,9 +189,7 @@ describe("readScheduledTaskCommand", () => {
       const env = { USERPROFILE: tmpDir, GENSPARX_PROFILE: "default" };
       const result = await readScheduledTaskCommand(env);
       expect(result).toBeNull();
-    } finally {
-      await fs.rm(tmpDir, { recursive: true, force: true });
-    }
+    });
   });
 
   it("returns null when script has no command", async () => {
@@ -227,9 +225,21 @@ describe("readScheduledTaskCommand", () => {
           "set NODE_ENV=production",
           "set GENSPARX_PORT=18789",
           "node gateway.js --verbose",
-        ].join("\r\n"),
-        "utf8",
-      );
+        ],
+      },
+      async (env) => {
+        const result = await readScheduledTaskCommand(env);
+        expect(result).toEqual({
+          programArguments: ["node", "gateway.js", "--verbose"],
+          workingDirectory: "C:\\Projects\\openclaw",
+          environment: {
+            NODE_ENV: "production",
+            OPENCLAW_PORT: "18789",
+          },
+        });
+      },
+    );
+  });
 
       const env = { USERPROFILE: tmpDir, GENSPARX_PROFILE: "default" };
       const result = await readScheduledTaskCommand(env);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseSystemdExecStart } from "./systemd-unit.js";
+import { buildSystemdUnit } from "./systemd-unit.js";
 
 describe("parseSystemdExecStart", () => {
   it("splits on whitespace outside quotes", () => {

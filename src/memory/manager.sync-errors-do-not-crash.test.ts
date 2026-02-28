@@ -36,6 +36,7 @@ describeFts("memory manager sync failures", () => {
   let workspaceDir: string;
   let indexPath: string;
   let manager: MemoryIndexManager | null = null;
+  const embedBatch = getEmbedBatchMock();
 
   beforeEach(async () => {
     vi.useFakeTimers();
@@ -74,14 +75,9 @@ describeFts("memory manager sync failures", () => {
         },
         list: [{ id: "main", default: true }],
       },
-    };
+    } as OpenClawConfig;
 
-    const result = await getMemorySearchManager({ cfg, agentId: "main" });
-    expect(result.manager).not.toBeNull();
-    if (!result.manager) {
-      throw new Error("manager missing");
-    }
-    manager = result.manager;
+    manager = await getRequiredMemoryIndexManager({ cfg, agentId: "main" });
     const syncSpy = vi.spyOn(manager, "sync");
 
     // Call the internal scheduler directly; it uses fire-and-forget sync.

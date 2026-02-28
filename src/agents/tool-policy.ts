@@ -1,4 +1,19 @@
+import {
+  expandToolGroups,
+  normalizeToolList,
+  normalizeToolName,
+  resolveToolProfilePolicy,
+  TOOL_GROUPS,
+} from "./tool-policy-shared.js";
 import type { AnyAgentTool } from "./tools/common.js";
+export {
+  expandToolGroups,
+  normalizeToolList,
+  normalizeToolName,
+  resolveToolProfilePolicy,
+  TOOL_GROUPS,
+} from "./tool-policy-shared.js";
+export type { ToolProfileId } from "./tool-policy-shared.js";
 
 export type ToolProfileId = "minimal" | "coding" | "messaging" | "full";
 
@@ -104,36 +119,27 @@ export function normalizeToolName(name: string) {
   return TOOL_NAME_ALIASES[normalized] ?? normalized;
 }
 
+const OWNER_ONLY_TOOL_NAME_FALLBACKS = new Set<string>(["whatsapp_login", "cron", "gateway"]);
+
 export function isOwnerOnlyToolName(name: string) {
-  return OWNER_ONLY_TOOL_NAMES.has(normalizeToolName(name));
+  return OWNER_ONLY_TOOL_NAME_FALLBACKS.has(normalizeToolName(name));
+}
+
+function isOwnerOnlyTool(tool: AnyAgentTool) {
+  return tool.ownerOnly === true || isOwnerOnlyToolName(tool.name);
 }
 
 export function applyOwnerOnlyToolPolicy(tools: AnyAgentTool[], senderIsOwner: boolean) {
   const withGuard = tools.map((tool) => {
-    if (!isOwnerOnlyToolName(tool.name)) {
+    if (!isOwnerOnlyTool(tool)) {
       return tool;
     }
-    if (senderIsOwner || !tool.execute) {
-      return tool;
-    }
-    return {
-      ...tool,
-      execute: async () => {
-        throw new Error("Tool restricted to owner senders.");
-      },
-    };
+    return wrapOwnerOnlyToolExecution(tool, senderIsOwner);
   });
   if (senderIsOwner) {
     return withGuard;
   }
-  return withGuard.filter((tool) => !isOwnerOnlyToolName(tool.name));
-}
-
-export function normalizeToolList(list?: string[]) {
-  if (!list) {
-    return [];
-  }
-  return list.map(normalizeToolName).filter(Boolean);
+  return withGuard.filter((tool) => !isOwnerOnlyTool(tool));
 }
 
 export type ToolPolicyLike = {
@@ -151,20 +157,6 @@ export type AllowlistResolution = {
   unknownAllowlist: string[];
   strippedAllowlist: boolean;
 };
-
-export function expandToolGroups(list?: string[]) {
-  const normalized = normalizeToolList(list);
-  const expanded: string[] = [];
-  for (const value of normalized) {
-    const group = TOOL_GROUPS[value];
-    if (group) {
-      expanded.push(...group);
-      continue;
-    }
-    expanded.push(value);
-  }
-  return Array.from(new Set(expanded));
-}
 
 export function collectExplicitAllowlist(policies: Array<ToolPolicyLike | undefined>): string[] {
   const entries: string[] = [];
@@ -293,19 +285,12 @@ export function stripPluginOnlyAllowlist(
   };
 }
 
-export function resolveToolProfilePolicy(profile?: string): ToolProfilePolicy | undefined {
-  if (!profile) {
-    return undefined;
+export function mergeAlsoAllowPolicy<TPolicy extends { allow?: string[] }>(
+  policy: TPolicy | undefined,
+  alsoAllow?: string[],
+): TPolicy | undefined {
+  if (!policy?.allow || !Array.isArray(alsoAllow) || alsoAllow.length === 0) {
+    return policy;
   }
-  const resolved = TOOL_PROFILES[profile as ToolProfileId];
-  if (!resolved) {
-    return undefined;
-  }
-  if (!resolved.allow && !resolved.deny) {
-    return undefined;
-  }
-  return {
-    allow: resolved.allow ? [...resolved.allow] : undefined,
-    deny: resolved.deny ? [...resolved.deny] : undefined,
-  };
+  return { ...policy, allow: Array.from(new Set([...policy.allow, ...alsoAllow])) };
 }

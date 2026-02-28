@@ -150,8 +150,12 @@ describe("argv helpers", () => {
     expect(shouldMigrateState(["node", "gensparx", "message", "send"])).toBe(true);
   });
 
-  it("reuses command path for migrate state decisions", () => {
-    expect(shouldMigrateStateFromPath(["status"])).toBe(false);
-    expect(shouldMigrateStateFromPath(["agents", "list"])).toBe(true);
+  it.each([
+    { path: ["status"], expected: false },
+    { path: ["config", "get"], expected: false },
+    { path: ["models", "status"], expected: false },
+    { path: ["agents", "list"], expected: true },
+  ])("reuses command path for migrate state decisions: $path", ({ path, expected }) => {
+    expect(shouldMigrateStateFromPath(path)).toBe(expected);
   });
 });

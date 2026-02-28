@@ -1,16 +1,18 @@
 ---
-summary: "Troubleshooting hub: symptoms → checks → fixes"
+summary: "Symptom first troubleshooting hub for OpenClaw"
 read_when:
-  - You see an error and want the fix path
-  - The installer says “success” but the CLI doesn’t work
+  - OpenClaw is not working and you need the fastest path to a fix
+  - You want a triage flow before diving into deep runbooks
 title: "Troubleshooting"
 ---
 
 # Troubleshooting
 
+If you only have 2 minutes, use this page as a triage front door.
+
 ## First 60 seconds
 
-Run these in order:
+Run this exact ladder in order:
 
 ```bash
 gensparx status
@@ -20,76 +22,107 @@ gensparx logs --follow
 gensparx doctor
 ```
 
-If the gateway is reachable, deep probes:
+Good output in one line:
 
 ```bash
 gensparx status --deep
 ```
 
-## Common “it broke” cases
+<AccordionGroup>
+  <Accordion title="No replies">
+    ```bash
+    openclaw status
+    openclaw gateway status
+    openclaw channels status --probe
+    openclaw pairing list --channel <channel> [--account <id>]
+    openclaw logs --follow
+    ```
 
 ### `gensparx: command not found`
 
-Almost always a Node/npm PATH issue. Start here:
+    - `Runtime: running`
+    - `RPC probe: ok`
+    - Your channel shows connected/ready in `channels status --probe`
+    - Sender appears approved (or DM policy is open/allowlist)
 
-- [Install (Node/npm PATH sanity)](/install#nodejs--npm-path-sanity)
+    Common log signatures:
 
-### Installer fails (or you need full logs)
+    - `drop guild message (mention required` → mention gating blocked the message in Discord.
+    - `pairing request` → sender is unapproved and waiting for DM pairing approval.
+    - `blocked` / `allowlist` in channel logs → sender, room, or group is filtered.
 
-Re-run the installer in verbose mode to see the full trace and npm output:
+    Deep pages:
 
 ```bash
 curl -fsSL https://gensparx.com/install.sh | bash -s -- --verbose
 ```
 
-For beta installs:
+  </Accordion>
 
 ```bash
 curl -fsSL https://gensparx.com/install.sh | bash -s -- --beta --verbose
 ```
 
-You can also set `OPENCLAW_VERBOSE=1` instead of the flag.
+    Good output looks like:
 
-### Gateway “unauthorized”, can’t connect, or keeps reconnecting
+    - `Dashboard: http://...` is shown in `openclaw gateway status`
+    - `RPC probe: ok`
+    - No auth loop in logs
 
-- [Gateway troubleshooting](/gateway/troubleshooting)
-- [Gateway authentication](/gateway/authentication)
+    Common log signatures:
 
-### Control UI fails on HTTP (device identity required)
+    - `device identity required` → HTTP/non-secure context cannot complete device auth.
+    - `unauthorized` / reconnect loop → wrong token/password or auth mode mismatch.
+    - `gateway connect failed:` → UI is targeting the wrong URL/port or unreachable gateway.
 
-- [Gateway troubleshooting](/gateway/troubleshooting)
-- [Control UI](/web/control-ui#insecure-http)
+    Deep pages:
 
 ### `docs.gensparx.com` shows an SSL error (Comcast/Xfinity)
 
 Some Comcast/Xfinity connections block `docs.gensparx.com` via Xfinity Advanced Security.
 Disable Advanced Security or add `docs.gensparx.com` to the allowlist, then retry.
 
-- Xfinity Advanced Security help: https://www.xfinity.com/support/articles/using-xfinity-xfi-advanced-security
-- Quick sanity checks: try a mobile hotspot or VPN to confirm it’s ISP-level filtering
+  <Accordion title="Gateway will not start or service installed but not running">
+    ```bash
+    openclaw status
+    openclaw gateway status
+    openclaw logs --follow
+    openclaw doctor
+    openclaw channels status --probe
+    ```
 
-### Service says running, but RPC probe fails
+    Good output looks like:
 
-- [Gateway troubleshooting](/gateway/troubleshooting)
-- [Background process / service](/gateway/background-process)
+    - `Service: ... (loaded)`
+    - `Runtime: running`
+    - `RPC probe: ok`
 
-### Model/auth failures (rate limit, billing, “all models failed”)
+    Common log signatures:
 
-- [Models](/cli/models)
-- [OAuth / auth concepts](/concepts/oauth)
+    - `Gateway start blocked: set gateway.mode=local` → gateway mode is unset/remote.
+    - `refusing to bind gateway ... without auth` → non-loopback bind without token/password.
+    - `another gateway instance is already listening` or `EADDRINUSE` → port already taken.
 
-### `/model` says `model not allowed`
+    Deep pages:
 
-This usually means `agents.defaults.models` is configured as an allowlist. When it’s non-empty,
-only those provider/model keys can be selected.
+    - [/gateway/troubleshooting#gateway-service-not-running](/gateway/troubleshooting#gateway-service-not-running)
+    - [/gateway/background-process](/gateway/background-process)
+    - [/gateway/configuration](/gateway/configuration)
 
 - Check the allowlist: `gensparx config get agents.defaults.models`
 - Add the model you want (or clear the allowlist) and retry `/model`
 - Use `/models` to browse the allowed providers/models
 
-### When filing an issue
+  <Accordion title="Channel connects but messages do not flow">
+    ```bash
+    openclaw status
+    openclaw gateway status
+    openclaw logs --follow
+    openclaw doctor
+    openclaw channels status --probe
+    ```
 
-Paste a safe report:
+    Good output looks like:
 
 ```bash
 gensparx status --all

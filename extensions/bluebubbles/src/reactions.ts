@@ -111,19 +111,7 @@ const REACTION_EMOJIS = new Map<string, string>([
 ]);
 
 function resolveAccount(params: BlueBubblesReactionOpts) {
-  const account = resolveBlueBubblesAccount({
-    cfg: params.cfg ?? {},
-    accountId: params.accountId,
-  });
-  const baseUrl = params.serverUrl?.trim() || account.config.serverUrl?.trim();
-  const password = params.password?.trim() || account.config.password?.trim();
-  if (!baseUrl) {
-    throw new Error("BlueBubbles serverUrl is required");
-  }
-  if (!password) {
-    throw new Error("BlueBubbles password is required");
-  }
-  return { baseUrl, password };
+  return resolveBlueBubblesServerAccount(params);
 }
 
 export function normalizeBlueBubblesReactionInput(emoji: string, remove?: boolean): string {
@@ -160,7 +148,12 @@ export async function sendBlueBubblesReaction(params: {
     throw new Error("BlueBubbles reaction requires messageGuid.");
   }
   const reaction = normalizeBlueBubblesReactionInput(params.emoji, params.remove);
-  const { baseUrl, password } = resolveAccount(params.opts ?? {});
+  const { baseUrl, password, accountId } = resolveAccount(params.opts ?? {});
+  if (getCachedBlueBubblesPrivateApiStatus(accountId) === false) {
+    throw new Error(
+      "BlueBubbles reaction requires Private API, but it is disabled on the BlueBubbles server.",
+    );
+  }
   const url = buildBlueBubblesApiUrl({
     baseUrl,
     path: "/api/v1/message/react",

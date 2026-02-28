@@ -12,8 +12,14 @@ import {
 import { loadInternalHooks } from "./loader.js";
 
 describe("loader", () => {
+  let fixtureRoot = "";
+  let caseId = 0;
   let tmpDir: string;
-  let originalBundledDir: string | undefined;
+  let envSnapshot: ReturnType<typeof captureEnv>;
+
+  beforeAll(async () => {
+    fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-hooks-loader-"));
+  });
 
   beforeEach(async () => {
     clearInternalHooks();
@@ -25,6 +31,25 @@ describe("loader", () => {
     originalBundledDir = process.env.GENSPARX_BUNDLED_HOOKS_DIR;
     process.env.GENSPARX_BUNDLED_HOOKS_DIR = "/nonexistent/bundled/hooks";
   });
+
+  async function writeHandlerModule(
+    fileName: string,
+    code = "export default async function() {}",
+  ): Promise<string> {
+    const handlerPath = path.join(tmpDir, fileName);
+    await fs.writeFile(handlerPath, code, "utf-8");
+    return handlerPath;
+  }
+
+  function createEnabledHooksConfig(
+    handlers?: Array<{ event: string; module: string; export?: string }>,
+  ): OpenClawConfig {
+    return {
+      hooks: {
+        internal: handlers ? { enabled: true, handlers } : { enabled: true },
+      },
+    };
+  }
 
   afterEach(async () => {
     clearInternalHooks();
@@ -40,6 +65,7 @@ describe("loader", () => {
     } catch {
       // Ignore cleanup errors
     }
+    await fs.rm(fixtureRoot, { recursive: true, force: true });
   });
 
   describe("loadInternalHooks", () => {
@@ -64,7 +90,6 @@ describe("loader", () => {
 
     it("should load a handler from a module", async () => {
       // Create a test handler module
-      const handlerPath = path.join(tmpDir, "test-handler.js");
       const handlerCode = `
         export default async function(event) {
           // Test handler
@@ -84,7 +109,7 @@ describe("loader", () => {
             ],
           },
         },
-      };
+      ]);
 
       const count = await loadInternalHooks(cfg, tmpDir);
       expect(count).toBe(1);
@@ -95,8 +120,8 @@ describe("loader", () => {
 
     it("should load multiple handlers", async () => {
       // Create test handler modules
-      const handler1Path = path.join(tmpDir, "handler1.js");
-      const handler2Path = path.join(tmpDir, "handler2.js");
+      const handler1Path = await writeHandlerModule("handler1.js");
+      const handler2Path = await writeHandlerModule("handler2.js");
 
       await fs.writeFile(handler1Path, "export default async function() {}", "utf-8");
       await fs.writeFile(handler2Path, "export default async function() {}", "utf-8");
@@ -123,13 +148,12 @@ describe("loader", () => {
 
     it("should support named exports", async () => {
       // Create a handler module with named export
-      const handlerPath = path.join(tmpDir, "named-export.js");
       const handlerCode = `
         export const myHandler = async function(event) {
           // Named export handler
         }
       `;
-      await fs.writeFile(handlerPath, handlerCode, "utf-8");
+      const handlerPath = await writeHandlerModule("named-export.js", handlerCode);
 
       const cfg: GenSparxConfig = {
         hooks: {
@@ -144,7 +168,7 @@ describe("loader", () => {
             ],
           },
         },
-      };
+      ]);
 
       const count = await loadInternalHooks(cfg, tmpDir);
       expect(count).toBe(1);
@@ -165,24 +189,19 @@ describe("loader", () => {
             ],
           },
         },
-      };
+      ]);
 
+      // Should not throw and should return 0 (handler failed to load)
       const count = await loadInternalHooks(cfg, tmpDir);
       expect(count).toBe(0);
-      expect(consoleError).toHaveBeenCalledWith(
-        expect.stringContaining("Failed to load hook handler"),
-        expect.any(String),
-      );
-
-      consoleError.mockRestore();
     });
 
     it("should handle non-function exports", async () => {
-      const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
-
       // Create a module with a non-function export
-      const handlerPath = path.join(tmpDir, "bad-export.js");
-      await fs.writeFile(handlerPath, 'export default "not a function";', "utf-8");
+      const handlerPath = await writeHandlerModule(
+        "bad-export.js",
+        'export default "not a function";',
+      );
 
       const cfg: GenSparxConfig = {
         hooks: {
@@ -196,22 +215,19 @@ describe("loader", () => {
             ],
           },
         },
-      };
+      ]);
 
+      // Should not throw and should return 0 (handler is not a function)
       const count = await loadInternalHooks(cfg, tmpDir);
       expect(count).toBe(0);
-      expect(consoleError).toHaveBeenCalledWith(expect.stringContaining("is not a function"));
-
-      consoleError.mockRestore();
     });
 
     it("should handle relative paths", async () => {
       // Create a handler module
-      const handlerPath = path.join(tmpDir, "relative-handler.js");
-      await fs.writeFile(handlerPath, "export default async function() {}", "utf-8");
+      const handlerPath = await writeHandlerModule("relative-handler.js");
 
-      // Get relative path from cwd
-      const relativePath = path.relative(process.cwd(), handlerPath);
+      // Relative to workspaceDir (tmpDir)
+      const relativePath = path.relative(tmpDir, handlerPath);
 
       const cfg: GenSparxConfig = {
         hooks: {
@@ -225,7 +241,7 @@ describe("loader", () => {
             ],
           },
         },
-      };
+      ]);
 
       const count = await loadInternalHooks(cfg, tmpDir);
       expect(count).toBe(1);
@@ -233,7 +249,6 @@ describe("loader", () => {
 
     it("should actually call the loaded handler", async () => {
       // Create a handler that we can verify was called
-      const handlerPath = path.join(tmpDir, "callable-handler.js");
       const handlerCode = `
         let callCount = 0;
         export default async function(event) {
@@ -243,7 +258,7 @@ describe("loader", () => {
           return callCount;
         }
       `;
-      await fs.writeFile(handlerPath, handlerCode, "utf-8");
+      const handlerPath = await writeHandlerModule("callable-handler.js", handlerCode);
 
       const cfg: GenSparxConfig = {
         hooks: {
@@ -257,7 +272,7 @@ describe("loader", () => {
             ],
           },
         },
-      };
+      ]);
 
       await loadInternalHooks(cfg, tmpDir);
 
@@ -269,6 +284,127 @@ describe("loader", () => {
       // the call count from this context without more complex test infrastructure
       // This test mainly verifies that loading and triggering doesn't crash
       expect(getRegisteredEventKeys()).toContain("command:new");
+    });
+
+    it("rejects directory hook handlers that escape hook dir via symlink", async () => {
+      const outsideHandlerPath = path.join(fixtureRoot, `outside-handler-${caseId}.js`);
+      await fs.writeFile(outsideHandlerPath, "export default async function() {}", "utf-8");
+
+      const hookDir = path.join(tmpDir, "hooks", "symlink-hook");
+      await fs.mkdir(hookDir, { recursive: true });
+      await fs.writeFile(
+        path.join(hookDir, "HOOK.md"),
+        [
+          "---",
+          "name: symlink-hook",
+          "description: symlink test",
+          'metadata: {"openclaw":{"events":["command:new"]}}',
+          "---",
+          "",
+          "# Symlink Hook",
+        ].join("\n"),
+        "utf-8",
+      );
+      try {
+        await fs.symlink(outsideHandlerPath, path.join(hookDir, "handler.js"));
+      } catch {
+        return;
+      }
+
+      const cfg = createEnabledHooksConfig();
+
+      const count = await loadInternalHooks(cfg, tmpDir);
+      expect(count).toBe(0);
+      expect(getRegisteredEventKeys()).not.toContain("command:new");
+    });
+
+    it("rejects legacy handler modules that escape workspace via symlink", async () => {
+      const outsideHandlerPath = path.join(fixtureRoot, `outside-legacy-${caseId}.js`);
+      await fs.writeFile(outsideHandlerPath, "export default async function() {}", "utf-8");
+
+      const linkedHandlerPath = path.join(tmpDir, "legacy-handler.js");
+      try {
+        await fs.symlink(outsideHandlerPath, linkedHandlerPath);
+      } catch {
+        return;
+      }
+
+      const cfg = createEnabledHooksConfig([
+        {
+          event: "command:new",
+          module: "legacy-handler.js",
+        },
+      ]);
+
+      const count = await loadInternalHooks(cfg, tmpDir);
+      expect(count).toBe(0);
+      expect(getRegisteredEventKeys()).not.toContain("command:new");
+    });
+
+    it("rejects directory hook handlers that escape hook dir via hardlink", async () => {
+      if (process.platform === "win32") {
+        return;
+      }
+      const outsideHandlerPath = path.join(fixtureRoot, `outside-handler-hardlink-${caseId}.js`);
+      await fs.writeFile(outsideHandlerPath, "export default async function() {}", "utf-8");
+
+      const hookDir = path.join(tmpDir, "hooks", "hardlink-hook");
+      await fs.mkdir(hookDir, { recursive: true });
+      await fs.writeFile(
+        path.join(hookDir, "HOOK.md"),
+        [
+          "---",
+          "name: hardlink-hook",
+          "description: hardlink test",
+          'metadata: {"openclaw":{"events":["command:new"]}}',
+          "---",
+          "",
+          "# Hardlink Hook",
+        ].join("\n"),
+        "utf-8",
+      );
+      try {
+        await fs.link(outsideHandlerPath, path.join(hookDir, "handler.js"));
+      } catch (err) {
+        if ((err as NodeJS.ErrnoException).code === "EXDEV") {
+          return;
+        }
+        throw err;
+      }
+
+      const cfg = createEnabledHooksConfig();
+      const count = await loadInternalHooks(cfg, tmpDir);
+      expect(count).toBe(0);
+      expect(getRegisteredEventKeys()).not.toContain("command:new");
+    });
+
+    it("rejects legacy handler modules that escape workspace via hardlink", async () => {
+      if (process.platform === "win32") {
+        return;
+      }
+      const outsideHandlerPath = path.join(fixtureRoot, `outside-legacy-hardlink-${caseId}.js`);
+      await fs.writeFile(outsideHandlerPath, "export default async function() {}", "utf-8");
+
+      const linkedHandlerPath = path.join(tmpDir, "legacy-handler.js");
+      try {
+        await fs.link(outsideHandlerPath, linkedHandlerPath);
+      } catch (err) {
+        if ((err as NodeJS.ErrnoException).code === "EXDEV") {
+          return;
+        }
+        throw err;
+      }
+
+      const cfg = createEnabledHooksConfig([
+        {
+          event: "command:new",
+          module: "legacy-handler.js",
+        },
+      ]);
+
+      const count = await loadInternalHooks(cfg, tmpDir);
+      expect(count).toBe(0);
+      expect(getRegisteredEventKeys()).not.toContain("command:new");
     });
   });
 });

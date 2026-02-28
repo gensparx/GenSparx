@@ -93,6 +93,8 @@ const _makeSessionStore = async (
 };
 
 describe("broadcast groups", () => {
+  installWebAutoReplyUnitTestHooks();
+
   it("broadcasts sequentially in configured order", async () => {
     setLoadConfigMock({
       channels: { whatsapp: { allowFrom: ["*"] } },
@@ -106,41 +108,7 @@ describe("broadcast groups", () => {
       },
     } satisfies GenSparxConfig);
 
-    const sendMedia = vi.fn();
-    const reply = vi.fn().mockResolvedValue(undefined);
-    const sendComposing = vi.fn();
-    const seen: string[] = [];
-    const resolver = vi.fn(async (ctx: { SessionKey?: unknown }) => {
-      seen.push(String(ctx.SessionKey));
-      return { text: "ok" };
-    });
-
-    let capturedOnMessage:
-      | ((msg: import("./inbound.js").WebInboundMessage) => Promise<void>)
-      | undefined;
-    const listenerFactory = async (opts: {
-      onMessage: (msg: import("./inbound.js").WebInboundMessage) => Promise<void>;
-    }) => {
-      capturedOnMessage = opts.onMessage;
-      return { close: vi.fn() };
-    };
-
-    await monitorWebChannel(false, listenerFactory, false, resolver);
-    expect(capturedOnMessage).toBeDefined();
-
-    await capturedOnMessage?.({
-      id: "m1",
-      from: "+1000",
-      conversationId: "+1000",
-      to: "+2000",
-      body: "hello",
-      timestamp: Date.now(),
-      chatType: "direct",
-      chatId: "direct:+1000",
-      sendComposing,
-      reply,
-      sendMedia,
-    });
+    const { seen, resolver } = await sendWebDirectInboundAndCollectSessionKeys();
 
     expect(resolver).toHaveBeenCalledTimes(2);
     expect(seen[0]).toContain("agent:alfred:");
@@ -160,58 +128,32 @@ describe("broadcast groups", () => {
       },
     } satisfies GenSparxConfig);
 
-    const sendMedia = vi.fn();
-    const reply = vi.fn().mockResolvedValue(undefined);
-    const sendComposing = vi.fn();
     const resolver = vi.fn().mockResolvedValue({ text: "ok" });
 
-    let capturedOnMessage:
-      | ((msg: import("./inbound.js").WebInboundMessage) => Promise<void>)
-      | undefined;
-    const listenerFactory = async (opts: {
-      onMessage: (msg: import("./inbound.js").WebInboundMessage) => Promise<void>;
-    }) => {
-      capturedOnMessage = opts.onMessage;
-      return { close: vi.fn() };
-    };
+    const { spies, onMessage } = await monitorWebChannelWithCapture(resolver);
 
-    await monitorWebChannel(false, listenerFactory, false, resolver);
-    expect(capturedOnMessage).toBeDefined();
-
-    await capturedOnMessage?.({
+    await sendWebGroupInboundMessage({
+      onMessage,
+      spies,
       body: "hello group",
-      from: "123@g.us",
-      conversationId: "123@g.us",
-      chatId: "123@g.us",
-      chatType: "group",
-      to: "+2",
       id: "g1",
       senderE164: "+111",
       senderName: "Alice",
       selfE164: "+999",
-      sendComposing,
-      reply,
-      sendMedia,
     });
 
     expect(resolver).not.toHaveBeenCalled();
 
-    await capturedOnMessage?.({
+    await sendWebGroupInboundMessage({
+      onMessage,
+      spies,
       body: "@bot ping",
-      from: "123@g.us",
-      conversationId: "123@g.us",
-      chatId: "123@g.us",
-      chatType: "group",
-      to: "+2",
       id: "g2",
       senderE164: "+222",
       senderName: "Bob",
       mentionedJids: ["999@s.whatsapp.net"],
       selfE164: "+999",
       selfJid: "999@s.whatsapp.net",
-      sendComposing,
-      reply,
-      sendMedia,
     });
 
     expect(resolver).toHaveBeenCalledTimes(2);
@@ -224,29 +166,24 @@ describe("broadcast groups", () => {
       };
       expect(payload.Body).toContain("Chat messages since your last reply");
       expect(payload.Body).toContain("Alice (+111): hello group");
-      expect(payload.Body).toContain("[message_id: g1]");
+      // Message id hints are not included in prompts anymore.
+      expect(payload.Body).not.toContain("[message_id:");
       expect(payload.Body).toContain("@bot ping");
       expect(payload.SenderName).toBe("Bob");
       expect(payload.SenderE164).toBe("+222");
       expect(payload.SenderId).toBe("+222");
     }
 
-    await capturedOnMessage?.({
+    await sendWebGroupInboundMessage({
+      onMessage,
+      spies,
       body: "@bot ping 2",
-      from: "123@g.us",
-      conversationId: "123@g.us",
-      chatId: "123@g.us",
-      chatType: "group",
-      to: "+2",
       id: "g3",
       senderE164: "+333",
       senderName: "Clara",
       mentionedJids: ["999@s.whatsapp.net"],
       selfE164: "+999",
       selfJid: "999@s.whatsapp.net",
-      sendComposing,
-      reply,
-      sendMedia,
     });
 
     expect(resolver).toHaveBeenCalledTimes(4);
@@ -291,24 +228,14 @@ describe("broadcast groups", () => {
       return { text: "ok" };
     });
 
-    let capturedOnMessage:
-      | ((msg: import("./inbound.js").WebInboundMessage) => Promise<void>)
-      | undefined;
-    const listenerFactory = async (opts: {
-      onMessage: (msg: import("./inbound.js").WebInboundMessage) => Promise<void>;
-    }) => {
-      capturedOnMessage = opts.onMessage;
-      return { close: vi.fn() };
-    };
+    const { onMessage: capturedOnMessage } = await monitorWebChannelWithCapture(resolver);
 
-    await monitorWebChannel(false, listenerFactory, false, resolver);
-    expect(capturedOnMessage).toBeDefined();
-
-    await capturedOnMessage?.({
+    await capturedOnMessage({
       id: "m1",
       from: "+1000",
       conversationId: "+1000",
       to: "+2000",
+      accountId: "default",
       body: "hello",
       timestamp: Date.now(),
       chatType: "direct",

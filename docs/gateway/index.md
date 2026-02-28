@@ -5,17 +5,31 @@ read_when:
 title: "Gateway Runbook"
 ---
 
-# Gateway service runbook
+# Gateway runbook
 
-Last updated: 2025-12-09
+Use this page for day-1 startup and day-2 operations of the Gateway service.
 
-## What it is
+<CardGroup cols={2}>
+  <Card title="Deep troubleshooting" icon="siren" href="/gateway/troubleshooting">
+    Symptom-first diagnostics with exact command ladders and log signatures.
+  </Card>
+  <Card title="Configuration" icon="sliders" href="/gateway/configuration">
+    Task-oriented setup guide + full configuration reference.
+  </Card>
+  <Card title="Secrets management" icon="key-round" href="/gateway/secrets">
+    SecretRef contract, runtime snapshot behavior, and migrate/reload operations.
+  </Card>
+  <Card title="Secrets plan contract" icon="shield-check" href="/gateway/secrets-plan-contract">
+    Exact `secrets apply` target/path rules and ref-only auth-profile behavior.
+  </Card>
+</CardGroup>
 
 - The always-on process that owns the single Baileys/Telegram connection and the control/event plane.
 - Replaces the legacy `gateway` command. CLI entry point: `gensparx gateway`.
 - Runs until stopped; exits non-zero on fatal errors so the supervisor restarts it.
 
-## How to run (local)
+<Steps>
+  <Step title="Start the Gateway">
 
 ```bash
 gensparx gateway --port 18789
@@ -27,24 +41,73 @@ gensparx gateway --force
 pnpm gateway:watch
 ```
 
-- Config hot reload watches `~/.openclaw/openclaw.json` (or `OPENCLAW_CONFIG_PATH`).
-  - Default mode: `gateway.reload.mode="hybrid"` (hot-apply safe changes, restart on critical).
-  - Hot reload uses in-process restart via **SIGUSR1** when needed.
-  - Disable with `gateway.reload.mode="off"`.
-- Binds WebSocket control plane to `127.0.0.1:<port>` (default 18789).
-- The same port also serves HTTP (control UI, hooks, A2UI). Single-port multiplex.
-  - OpenAI Chat Completions (HTTP): [`/v1/chat/completions`](/gateway/openai-http-api).
-  - OpenResponses (HTTP): [`/v1/responses`](/gateway/openresponses-http-api).
-  - Tools Invoke (HTTP): [`/tools/invoke`](/gateway/tools-invoke-http-api).
-- Starts a Canvas file server by default on `canvasHost.port` (default `18793`), serving `http://<gateway-host>:18793/__openclaw__/canvas/` from `~/.openclaw/workspace/canvas`. Disable with `canvasHost.enabled=false` or `OPENCLAW_SKIP_CANVAS_HOST=1`.
-- Logs to stdout; use launchd/systemd to keep it alive and rotate logs.
-- Pass `--verbose` to mirror debug logging (handshakes, req/res, events) from the log file into stdio when troubleshooting.
-- `--force` uses `lsof` to find listeners on the chosen port, sends SIGTERM, logs what it killed, then starts the gateway (fails fast if `lsof` is missing).
-- If you run under a supervisor (launchd/systemd/mac app child-process mode), a stop/restart typically sends **SIGTERM**; older builds may surface this as `pnpm` `ELIFECYCLE` exit code **143** (SIGTERM), which is a normal shutdown, not a crash.
-- **SIGUSR1** triggers an in-process restart when authorized (gateway tool/config apply/update, or enable `commands.restart` for manual restarts).
-- Gateway auth is required by default: set `gateway.auth.token` (or `OPENCLAW_GATEWAY_TOKEN`) or `gateway.auth.password`. Clients must send `connect.params.auth.token/password` unless using Tailscale Serve identity.
-- The wizard now generates a token by default, even on loopback.
-- Port precedence: `--port` > `OPENCLAW_GATEWAY_PORT` > `gateway.port` > default `18789`.
+  </Step>
+
+  <Step title="Verify service health">
+
+```bash
+openclaw gateway status
+openclaw status
+openclaw logs --follow
+```
+
+Healthy baseline: `Runtime: running` and `RPC probe: ok`.
+
+  </Step>
+
+  <Step title="Validate channel readiness">
+
+```bash
+openclaw channels status --probe
+```
+
+  </Step>
+</Steps>
+
+<Note>
+Gateway config reload watches the active config file path (resolved from profile/state defaults, or `OPENCLAW_CONFIG_PATH` when set).
+Default mode is `gateway.reload.mode="hybrid"`.
+</Note>
+
+## Runtime model
+
+- One always-on process for routing, control plane, and channel connections.
+- Single multiplexed port for:
+  - WebSocket control/RPC
+  - HTTP APIs (OpenAI-compatible, Responses, tools invoke)
+  - Control UI and hooks
+- Default bind mode: `loopback`.
+- Auth is required by default (`gateway.auth.token` / `gateway.auth.password`, or `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`).
+
+### Port and bind precedence
+
+| Setting      | Resolution order                                              |
+| ------------ | ------------------------------------------------------------- |
+| Gateway port | `--port` → `OPENCLAW_GATEWAY_PORT` → `gateway.port` → `18789` |
+| Bind mode    | CLI/override → `gateway.bind` → `loopback`                    |
+
+### Hot reload modes
+
+| `gateway.reload.mode` | Behavior                                   |
+| --------------------- | ------------------------------------------ |
+| `off`                 | No config reload                           |
+| `hot`                 | Apply only hot-safe changes                |
+| `restart`             | Restart on reload-required changes         |
+| `hybrid` (default)    | Hot-apply when safe, restart when required |
+
+## Operator command set
+
+```bash
+openclaw gateway status
+openclaw gateway status --deep
+openclaw gateway status --json
+openclaw gateway install
+openclaw gateway restart
+openclaw gateway stop
+openclaw secrets reload
+openclaw logs --follow
+openclaw doctor
+```
 
 ## Remote access
 
@@ -87,21 +150,64 @@ gensparx --dev status
 gensparx --dev health
 ```
 
-Defaults (can be overridden via env/flags/config):
+Then connect clients to `ws://127.0.0.1:18789` locally.
 
-- `OPENCLAW_STATE_DIR=~/.openclaw-dev`
-- `OPENCLAW_CONFIG_PATH=~/.openclaw-dev/openclaw.json`
-- `OPENCLAW_GATEWAY_PORT=19001` (Gateway WS + HTTP)
-- browser control service port = `19003` (derived: `gateway.port+2`, loopback only)
-- `canvasHost.port=19005` (derived: `gateway.port+4`)
-- `agents.defaults.workspace` default becomes `~/.openclaw/workspace-dev` when you run `setup`/`onboard` under `--dev`.
+<Warning>
+If gateway auth is configured, clients still must send auth (`token`/`password`) even over SSH tunnels.
+</Warning>
 
-Derived ports (rules of thumb):
+See: [Remote Gateway](/gateway/remote), [Authentication](/gateway/authentication), [Tailscale](/gateway/tailscale).
 
-- Base port = `gateway.port` (or `OPENCLAW_GATEWAY_PORT` / `--port`)
-- browser control service port = base + 2 (loopback only)
-- `canvasHost.port = base + 4` (or `OPENCLAW_CANVAS_HOST_PORT` / config override)
-- Browser profile CDP ports auto-allocate from `browser.controlPort + 9 .. + 108` (persisted per profile).
+## Supervision and service lifecycle
+
+Use supervised runs for production-like reliability.
+
+<Tabs>
+  <Tab title="macOS (launchd)">
+
+```bash
+openclaw gateway install
+openclaw gateway status
+openclaw gateway restart
+openclaw gateway stop
+```
+
+LaunchAgent labels are `ai.openclaw.gateway` (default) or `ai.openclaw.<profile>` (named profile). `openclaw doctor` audits and repairs service config drift.
+
+  </Tab>
+
+  <Tab title="Linux (systemd user)">
+
+```bash
+openclaw gateway install
+systemctl --user enable --now openclaw-gateway[-<profile>].service
+openclaw gateway status
+```
+
+For persistence after logout, enable lingering:
+
+```bash
+sudo loginctl enable-linger <user>
+```
+
+  </Tab>
+
+  <Tab title="Linux (system service)">
+
+Use a system unit for multi-user/always-on hosts.
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now openclaw-gateway[-<profile>].service
+```
+
+  </Tab>
+</Tabs>
+
+## Multiple gateways on one host
+
+Most setups should run **one** Gateway.
+Use multiple only for strict isolation/redundancy (for example a rescue profile).
 
 Checklist per instance:
 
@@ -125,7 +231,7 @@ OPENCLAW_CONFIG_PATH=~/.openclaw/a.json OPENCLAW_STATE_DIR=~/.openclaw-a genspar
 OPENCLAW_CONFIG_PATH=~/.openclaw/b.json OPENCLAW_STATE_DIR=~/.openclaw-b gensparx gateway --port 19002
 ```
 
-## Protocol (operator view)
+See: [Multiple gateways](/gateway/multiple-gateways).
 
 - Full docs: [Gateway protocol](/gateway/protocol) and [Bridge protocol (legacy)](/gateway/bridge-protocol).
 - Mandatory first frame from client: `req {type:"req", id, method:"connect", params:{minProtocol,maxProtocol,client:{id,displayName?,version,platform,deviceFamily?,modelIdentifier?,mode,instanceId?}, caps, auth?, locale?, userAgent? } }`.
@@ -220,7 +326,7 @@ gensparx gateway restart
 gensparx logs --follow
 ```
 
-Notes:
+Defaults include isolated state/config and base gateway port `19001`.
 
 - `gateway status` probes the Gateway RPC by default using the service’s resolved port/config (override with `--url`).
 - `gateway status --deep` adds system-level scans (LaunchDaemons/system units).
@@ -235,7 +341,10 @@ Notes:
   - Cleanup: `gensparx gateway uninstall` (current service) and `gensparx doctor` (legacy migrations).
 - `gateway install` is a no-op when already installed; use `gensparx gateway install --force` to reinstall (profile/env/path changes).
 
-Bundled mac app:
+- First client frame must be `connect`.
+- Gateway returns `hello-ok` snapshot (`presence`, `health`, `stateVersion`, `uptimeMs`, limits/policy).
+- Requests: `req(method, params)` → `res(ok/payload|error)`.
+- Common events: `connect.challenge`, `agent`, `chat`, `presence`, `tick`, `health`, `heartbeat`, `shutdown`.
 
 - GenSparx.app can bundle a Node-based gateway relay and install a per-user LaunchAgent labeled
   `bot.molt.gateway` (or `bot.molt.<profile>`; legacy `com.GenSparx.*` labels still unload cleanly).
@@ -244,7 +353,8 @@ Bundled mac app:
   - `launchctl` only works if the LaunchAgent is installed; otherwise use `gensparx gateway install` first.
   - Replace the label with `bot.molt.<profile>` when running a named profile.
 
-## Supervision (systemd user unit)
+1. Immediate accepted ack (`status:"accepted"`)
+2. Final completion response (`status:"ok"|"error"`), with streamed `agent` events in between.
 
 GenSparx installs a **systemd user service** by default on Linux/WSL2. We
 recommend user services for single-user machines (simpler env, per-user config).
@@ -302,18 +412,41 @@ Windows installs should use **WSL2** and follow the Linux systemd section above.
 
 ## Operational checks
 
-- Liveness: open WS and send `req:connect` → expect `res` with `payload.type="hello-ok"` (with snapshot).
-- Readiness: call `health` → expect `ok: true` and a linked channel in `linkChannel` (when applicable).
-- Debug: subscribe to `tick` and `presence` events; ensure `status` shows linked/auth age; presence entries show Gateway host and connected clients.
+### Liveness
+
+- Open WS and send `connect`.
+- Expect `hello-ok` response with snapshot.
+
+### Readiness
+
+```bash
+openclaw gateway status
+openclaw channels status --probe
+openclaw health
+```
+
+### Gap recovery
+
+Events are not replayed. On sequence gaps, refresh state (`health`, `system-presence`) before continuing.
+
+## Common failure signatures
+
+| Signature                                                      | Likely issue                             |
+| -------------------------------------------------------------- | ---------------------------------------- |
+| `refusing to bind gateway ... without auth`                    | Non-loopback bind without token/password |
+| `another gateway instance is already listening` / `EADDRINUSE` | Port conflict                            |
+| `Gateway start blocked: set gateway.mode=local`                | Config set to remote mode                |
+| `unauthorized` during connect                                  | Auth mismatch between client and gateway |
+
+For full diagnosis ladders, use [Gateway Troubleshooting](/gateway/troubleshooting).
 
 ## Safety guarantees
 
-- Assume one Gateway per host by default; if you run multiple profiles, isolate ports/state and target the right instance.
-- No fallback to direct Baileys connections; if the Gateway is down, sends fail fast.
-- Non-connect first frames or malformed JSON are rejected and the socket is closed.
-- Graceful shutdown: emit `shutdown` event before closing; clients must handle close + reconnect.
+- Gateway protocol clients fail fast when Gateway is unavailable (no implicit direct-channel fallback).
+- Invalid/non-connect first frames are rejected and closed.
+- Graceful shutdown emits `shutdown` event before socket close.
 
-## CLI helpers
+---
 
 - `gensparx gateway health|status` — request health/status over the Gateway WS.
 - `gensparx message send --target <num> --message "hi" [--media ...]` — send via Gateway (idempotent for WhatsApp).

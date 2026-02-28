@@ -230,109 +230,15 @@ vi.mock("../infra/gensparx-root.js", () => ({
 
 vi.mock("../infra/update-runner.js", () => ({
   runGatewayUpdate,
-}));
+  serviceInstall,
+  serviceIsLoaded,
+  uninstallLegacyGatewayServices,
+  writeConfigFile,
+} from "./doctor.e2e-harness.js";
+import "./doctor.fast-path-mocks.js";
 
-vi.mock("../agents/auth-profiles.js", async (importOriginal) => {
-  const actual = await importOriginal();
-  return {
-    ...actual,
-    ensureAuthProfileStore,
-  };
-});
-
-vi.mock("../daemon/service.js", () => ({
-  resolveGatewayService: () => ({
-    label: "LaunchAgent",
-    loadedText: "loaded",
-    notLoadedText: "not loaded",
-    install: serviceInstall,
-    uninstall: serviceUninstall,
-    stop: serviceStop,
-    restart: serviceRestart,
-    isLoaded: serviceIsLoaded,
-    readCommand: vi.fn(),
-    readRuntime: vi.fn().mockResolvedValue({ status: "running" }),
-  }),
-}));
-
-vi.mock("../pairing/pairing-store.js", () => ({
-  readChannelAllowFromStore: vi.fn().mockResolvedValue([]),
-  upsertChannelPairingRequest: vi.fn().mockResolvedValue({ code: "000000", created: false }),
-}));
-
-vi.mock("../telegram/token.js", () => ({
-  resolveTelegramToken: vi.fn(() => ({ token: "", source: "none" })),
-}));
-
-vi.mock("../runtime.js", () => ({
-  defaultRuntime: {
-    log: () => {},
-    error: () => {},
-    exit: () => {
-      throw new Error("exit");
-    },
-  },
-}));
-
-vi.mock("../utils.js", async (importOriginal) => {
-  const actual = await importOriginal();
-  return {
-    ...actual,
-    resolveUserPath: (value: string) => value,
-    sleep: vi.fn(),
-  };
-});
-
-vi.mock("./health.js", () => ({
-  healthCommand: vi.fn().mockResolvedValue(undefined),
-}));
-
-vi.mock("./onboard-helpers.js", () => ({
-  applyWizardMetadata: (cfg: Record<string, unknown>) => cfg,
-  DEFAULT_WORKSPACE: "/tmp",
-  guardCancel: (value: unknown) => value,
-  printWizardHeader: vi.fn(),
-  randomToken: vi.fn(() => "test-gateway-token"),
-}));
-
-vi.mock("./doctor-state-migrations.js", () => ({
-  autoMigrateLegacyStateDir: vi.fn().mockResolvedValue({
-    migrated: false,
-    skipped: false,
-    changes: [],
-    warnings: [],
-  }),
-  detectLegacyStateMigrations: vi.fn().mockResolvedValue({
-    targetAgentId: "main",
-    targetMainKey: "main",
-    targetScope: undefined,
-    stateDir: "/tmp/state",
-    oauthDir: "/tmp/oauth",
-    sessions: {
-      legacyDir: "/tmp/state/sessions",
-      legacyStorePath: "/tmp/state/sessions/sessions.json",
-      targetDir: "/tmp/state/agents/main/sessions",
-      targetStorePath: "/tmp/state/agents/main/sessions/sessions.json",
-      hasLegacy: false,
-      legacyKeys: [],
-    },
-    agentDir: {
-      legacyDir: "/tmp/state/agent",
-      targetDir: "/tmp/state/agents/main/agent",
-      hasLegacy: false,
-    },
-    whatsappAuth: {
-      legacyDir: "/tmp/oauth",
-      targetDir: "/tmp/oauth/whatsapp/default",
-      hasLegacy: false,
-    },
-    preview: [],
-  }),
-  runLegacyStateMigrations: vi.fn().mockResolvedValue({
-    changes: [],
-    warnings: [],
-  }),
-}));
+const DOCTOR_MIGRATION_TIMEOUT_MS = process.platform === "win32" ? 60_000 : 45_000;
+const { doctorCommand } = await import("./doctor.js");
 
 describe("doctor command", () => {
   it("migrates routing.allowFrom to channels.whatsapp.allowFrom", { timeout: 60_000 }, async () => {
@@ -342,41 +248,37 @@ describe("doctor command", () => {
       raw: "{}",
       parsed: { routing: { allowFrom: ["+15555550123"] } },
       valid: false,
-      config: {},
-      issues: [
-        {
-          path: "routing.allowFrom",
-          message: "legacy",
-        },
-      ],
-      legacyIssues: [
-        {
-          path: "routing.allowFrom",
-          message: "legacy",
-        },
-      ],
+      issues: [{ path: "routing.allowFrom", message: "legacy" }],
+      legacyIssues: [{ path: "routing.allowFrom", message: "legacy" }],
     });
 
-    const { doctorCommand } = await import("./doctor.js");
-    const runtime = {
-      log: vi.fn(),
-      error: vi.fn(),
-      exit: vi.fn(),
-    };
+    const runtime = createDoctorRuntime();
 
     migrateLegacyConfig.mockReturnValue({
-      config: { channels: { whatsapp: { allowFrom: ["+15555550123"] } } },
+      config: {
+        channels: { whatsapp: { allowFrom: ["+15555550123"] } },
+        gateway: { remote: { token: "legacy-remote-token" } },
+      },
       changes: ["Moved routing.allowFrom → channels.whatsapp.allowFrom."],
     });
 
-    await doctorCommand(runtime, { nonInteractive: true, repair: true });
+    await doctorCommand(runtime, { repair: true });
 
     expect(writeConfigFile).toHaveBeenCalledTimes(1);
     const written = writeConfigFile.mock.calls[0]?.[0] as Record<string, unknown>;
-    expect((written.channels as Record<string, unknown>)?.whatsapp).toEqual({
-      allowFrom: ["+15555550123"],
-    });
+    const gateway = (written.gateway as Record<string, unknown>) ?? {};
+    const auth = gateway.auth as Record<string, unknown> | undefined;
+    const remote = gateway.remote as Record<string, unknown>;
+    const channels = (written.channels as Record<string, unknown>) ?? {};
+
+    expect(channels.whatsapp).toEqual(
+      expect.objectContaining({
+        allowFrom: ["+15555550123"],
+      }),
+    );
     expect(written.routing).toBeUndefined();
+    expect(remote.token).toBe("legacy-remote-token");
+    expect(auth).toBeUndefined();
   });
 
   it("skips legacy gateway services migration", { timeout: 60_000 }, async () => {
@@ -401,18 +303,12 @@ describe("doctor command", () => {
     serviceIsLoaded.mockResolvedValueOnce(false);
     serviceInstall.mockClear();
 
-    const { doctorCommand } = await import("./doctor.js");
-    const runtime = {
-      log: vi.fn(),
-      error: vi.fn(),
-      exit: vi.fn(),
-    };
+      await doctorCommand(createDoctorRuntime());
 
-    await doctorCommand(runtime);
-
-    expect(uninstallLegacyGatewayServices).not.toHaveBeenCalled();
-    expect(serviceInstall).not.toHaveBeenCalled();
-  });
+      expect(uninstallLegacyGatewayServices).not.toHaveBeenCalled();
+      expect(serviceInstall).not.toHaveBeenCalled();
+    },
+  );
 
   it("offers to update first for git checkouts", async () => {
     delete process.env.GENSPARX_UPDATE_IN_PROGRESS;
@@ -445,14 +341,7 @@ describe("doctor command", () => {
       legacyIssues: [],
     });
 
-    const { doctorCommand } = await import("./doctor.js");
-    const runtime = {
-      log: vi.fn(),
-      error: vi.fn(),
-      exit: vi.fn(),
-    };
-
-    await doctorCommand(runtime);
+    await doctorCommand(createDoctorRuntime());
 
     expect(runGatewayUpdate).toHaveBeenCalledWith(expect.objectContaining({ cwd: root }));
     expect(readConfigFileSnapshot).not.toHaveBeenCalled();

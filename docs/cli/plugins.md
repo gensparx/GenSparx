@@ -12,7 +12,7 @@ Manage Gateway plugins/extensions (loaded in-process).
 
 Related:
 
-- Plugin system: [Plugins](/plugin)
+- Plugin system: [Plugins](/tools/plugin)
 - Plugin manifest + schema: [Plugin manifest](/plugins/manifest)
 - Security hardening: [Security](/gateway/security)
 
@@ -43,6 +43,9 @@ gensparx plugins install <path-or-spec>
 
 Security note: treat plugin installs like running code. Prefer pinned versions.
 
+Npm specs are **registry-only** (package name + optional version/tag). Git/URL/file
+specs are rejected. Dependency installs run with `--ignore-scripts` for safety.
+
 Supported archives: `.zip`, `.tgz`, `.tar.gz`, `.tar`.
 
 Use `--link` to avoid copying a local directory (adds to `plugins.load.paths`):
@@ -50,6 +53,27 @@ Use `--link` to avoid copying a local directory (adds to `plugins.load.paths`):
 ```bash
 gensparx plugins install -l ./my-plugin
 ```
+
+Use `--pin` on npm installs to save the resolved exact spec (`name@version`) in
+`plugins.installs` while keeping the default behavior unpinned.
+
+### Uninstall
+
+```bash
+openclaw plugins uninstall <id>
+openclaw plugins uninstall <id> --dry-run
+openclaw plugins uninstall <id> --keep-files
+```
+
+`uninstall` removes plugin records from `plugins.entries`, `plugins.installs`,
+the plugin allowlist, and linked `plugins.load.paths` entries when applicable.
+For active memory plugins, the memory slot resets to `memory-core`.
+
+By default, uninstall also removes the plugin install directory under the active
+state dir extensions root (`$OPENCLAW_STATE_DIR/extensions/<id>`). Use
+`--keep-files` to keep files on disk.
+
+`--keep-config` is supported as a deprecated alias for `--keep-files`.
 
 ### Update
 

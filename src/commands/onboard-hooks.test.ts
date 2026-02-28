@@ -40,6 +40,45 @@ describe("onboard-hooks", () => {
     exit: vi.fn(),
   });
 
+  const createMockHook = (
+    params: {
+      name: string;
+      description: string;
+      filePath: string;
+      baseDir: string;
+      handlerPath: string;
+      hookKey: string;
+      emoji: string;
+      events: string[];
+    },
+    eligible: boolean,
+  ) => ({
+    ...params,
+    source: "openclaw-bundled" as const,
+    pluginId: undefined,
+    homepage: undefined,
+    always: false,
+    disabled: false,
+    eligible,
+    managedByPlugin: false,
+    requirements: {
+      bins: [],
+      anyBins: [],
+      env: [],
+      config: ["workspace.dir"],
+      os: [],
+    },
+    missing: {
+      bins: [],
+      anyBins: [],
+      env: [],
+      config: eligible ? [] : ["workspace.dir"],
+      os: [],
+    },
+    configChecks: [],
+    install: [],
+  });
+
   const createMockHookReport = (eligible = true): HookStatusReport => ({
     workspaceDir: "/mock/workspace",
     managedHooksDir: "/mock/.gensparx/hooks",
@@ -59,13 +98,17 @@ describe("onboard-hooks", () => {
         always: false,
         disabled: false,
         eligible,
-        managedByPlugin: false,
-        requirements: {
-          bins: [],
-          anyBins: [],
-          env: [],
-          config: ["workspace.dir"],
-          os: [],
+      ),
+      createMockHook(
+        {
+          name: "command-logger",
+          description: "Log all command events to a centralized audit file",
+          filePath: "/mock/workspace/hooks/command-logger/HOOK.md",
+          baseDir: "/mock/workspace/hooks/command-logger",
+          handlerPath: "/mock/workspace/hooks/command-logger/handler.js",
+          hookKey: "command-logger",
+          emoji: "📝",
+          events: ["command"],
         },
         missing: {
           bins: [],
@@ -92,26 +135,26 @@ describe("onboard-hooks", () => {
         always: false,
         disabled: false,
         eligible,
-        managedByPlugin: false,
-        requirements: {
-          bins: [],
-          anyBins: [],
-          env: [],
-          config: ["workspace.dir"],
-          os: [],
-        },
-        missing: {
-          bins: [],
-          anyBins: [],
-          env: [],
-          config: eligible ? [] : ["workspace.dir"],
-          os: [],
-        },
-        configChecks: [],
-        install: [],
-      },
+      ),
     ],
   });
+
+  async function runSetupInternalHooks(params: {
+    selected: string[];
+    cfg?: OpenClawConfig;
+    eligible?: boolean;
+  }) {
+    const { buildWorkspaceHookStatus } = await import("../hooks/hooks-status.js");
+    vi.mocked(buildWorkspaceHookStatus).mockReturnValue(
+      createMockHookReport(params.eligible ?? true),
+    );
+
+    const cfg = params.cfg ?? {};
+    const prompter = createMockPrompter(params.selected);
+    const runtime = createMockRuntime();
+    const result = await setupInternalHooks(cfg, runtime, prompter);
+    return { result, cfg, prompter };
+  }
 
   describe("setupInternalHooks", () => {
     it("should enable hooks when user selects them", async () => {
@@ -136,7 +179,7 @@ describe("onboard-hooks", () => {
           {
             value: "session-memory",
             label: "💾 session-memory",
-            hint: "Save session context to memory when /new command is issued",
+            hint: "Save session context to memory when /new or /reset command is issued",
           },
           {
             value: "command-logger",
@@ -190,10 +233,10 @@ describe("onboard-hooks", () => {
           token: "existing-token",
         },
       };
-      const prompter = createMockPrompter(["session-memory"]);
-      const runtime = createMockRuntime();
-
-      const result = await setupInternalHooks(cfg, runtime, prompter);
+      const { result } = await runSetupInternalHooks({
+        selected: ["session-memory"],
+        cfg,
+      });
 
       expect(result.hooks?.enabled).toBe(true);
       expect(result.hooks?.path).toBe("/webhook");
@@ -211,10 +254,10 @@ describe("onboard-hooks", () => {
       const cfg: GenSparxConfig = {
         agents: { defaults: { workspace: "/workspace" } },
       };
-      const prompter = createMockPrompter(["__skip__"]);
-      const runtime = createMockRuntime();
-
-      const result = await setupInternalHooks(cfg, runtime, prompter);
+      const { result } = await runSetupInternalHooks({
+        selected: ["__skip__"],
+        cfg,
+      });
 
       expect(result).toEqual(cfg);
       expect(result.agents?.defaults?.workspace).toBe("/workspace");

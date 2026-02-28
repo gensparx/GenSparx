@@ -4,10 +4,7 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { stripAnsi } from "../terminal/ansi.js";
 
-let originalIsTTY: boolean | undefined;
-let originalStateDir: string | undefined;
-let originalUpdateInProgress: string | undefined;
-let tempStateDir: string | undefined;
+vi.doUnmock("./doctor-state-integrity.js");
 
 function setStdinTty(value: boolean | undefined) {
   try {
@@ -345,6 +342,10 @@ vi.mock("./doctor-update.js", () => ({
 }));
 
 describe("doctor command", () => {
+  beforeAll(async () => {
+    ({ doctorCommand } = await import("./doctor.js"));
+  });
+
   it("warns when the state directory is missing", async () => {
     readConfigFileSnapshot.mockResolvedValue({
       path: "/tmp/gensparx.json",
@@ -362,11 +363,10 @@ describe("doctor command", () => {
     process.env.GENSPARX_STATE_DIR = missingDir;
     note.mockClear();
 
-    const { doctorCommand } = await import("./doctor.js");
-    await doctorCommand(
-      { log: vi.fn(), error: vi.fn(), exit: vi.fn() },
-      { nonInteractive: true, workspaceSuggestions: false },
-    );
+    await doctorCommand(createDoctorRuntime(), {
+      nonInteractive: true,
+      workspaceSuggestions: false,
+    });
 
     const stateNote = note.mock.calls.find((call) =>
       normalizeText(call[1]).includes("State integrity"),
@@ -392,15 +392,12 @@ describe("doctor command", () => {
           },
         },
       },
-      issues: [],
-      legacyIssues: [],
     });
 
-    const { doctorCommand } = await import("./doctor.js");
-    await doctorCommand(
-      { log: vi.fn(), error: vi.fn(), exit: vi.fn() },
-      { nonInteractive: true, workspaceSuggestions: false },
-    );
+    await doctorCommand(createDoctorRuntime(), {
+      nonInteractive: true,
+      workspaceSuggestions: false,
+    });
 
     const warned = note.mock.calls.some(
       ([message, title]) =>
@@ -420,8 +417,6 @@ describe("doctor command", () => {
       config: {
         gateway: { mode: "local" },
       },
-      issues: [],
-      legacyIssues: [],
     });
 
     const prevToken = process.env.GENSPARX_GATEWAY_TOKEN;
@@ -429,11 +424,10 @@ describe("doctor command", () => {
     note.mockClear();
 
     try {
-      const { doctorCommand } = await import("./doctor.js");
-      await doctorCommand(
-        { log: vi.fn(), error: vi.fn(), exit: vi.fn() },
-        { nonInteractive: true, workspaceSuggestions: false },
-      );
+      await doctorCommand(createDoctorRuntime(), {
+        nonInteractive: true,
+        workspaceSuggestions: false,
+      });
     } finally {
       if (prevToken === undefined) {
         delete process.env.GENSPARX_GATEWAY_TOKEN;

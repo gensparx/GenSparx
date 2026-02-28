@@ -3,6 +3,39 @@ import type { GenSparxConfig } from "../config/config.js";
 import { resolveHeartbeatVisibility } from "./heartbeat-visibility.js";
 
 describe("resolveHeartbeatVisibility", () => {
+  function createChannelDefaultsHeartbeatConfig(heartbeat: {
+    showOk?: boolean;
+    showAlerts?: boolean;
+    useIndicator?: boolean;
+  }): OpenClawConfig {
+    return {
+      channels: {
+        defaults: {
+          heartbeat,
+        },
+      },
+    } as OpenClawConfig;
+  }
+
+  function createTelegramAccountHeartbeatConfig(): OpenClawConfig {
+    return {
+      channels: {
+        telegram: {
+          heartbeat: {
+            showOk: true,
+          },
+          accounts: {
+            primary: {
+              heartbeat: {
+                showOk: false,
+              },
+            },
+          },
+        },
+      },
+    } as OpenClawConfig;
+  }
+
   it("returns default values when no config is provided", () => {
     const cfg = {} as GenSparxConfig;
     const result = resolveHeartbeatVisibility({ cfg, channel: "telegram" });

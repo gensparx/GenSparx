@@ -4,69 +4,31 @@ import type { GenSparxConfig } from "../config/config.js";
 import type { SandboxContext } from "./sandbox.js";
 import { ensureGenSparxModelsJson } from "./models-config.js";
 import { buildEmbeddedSandboxInfo } from "./pi-embedded-runner.js";
+import type { SandboxContext } from "./sandbox.js";
 
-vi.mock("@mariozechner/pi-ai", async () => {
-  const actual = await vi.importActual<typeof import("@mariozechner/pi-ai")>("@mariozechner/pi-ai");
-  return {
-    ...actual,
-    streamSimple: (model: { api: string; provider: string; id: string }) => {
-      if (model.id === "mock-error") {
-        throw new Error("boom");
-      }
-      const stream = new actual.AssistantMessageEventStream();
-      queueMicrotask(() => {
-        stream.push({
-          type: "done",
-          reason: "stop",
-          message: {
-            role: "assistant",
-            content: [{ type: "text", text: "ok" }],
-            stopReason: "stop",
-            api: model.api,
-            provider: model.provider,
-            model: model.id,
-            usage: {
-              input: 1,
-              output: 1,
-              cacheRead: 0,
-              cacheWrite: 0,
-              totalTokens: 2,
-              cost: {
-                input: 0,
-                output: 0,
-                cacheRead: 0,
-                cacheWrite: 0,
-                total: 0,
-              },
-            },
-            timestamp: Date.now(),
-          },
-        });
-      });
-      return stream;
+function createSandboxContext(overrides?: Partial<SandboxContext>): SandboxContext {
+  const base = {
+    enabled: true,
+    sessionKey: "session:test",
+    workspaceDir: "/tmp/openclaw-sandbox",
+    agentWorkspaceDir: "/tmp/openclaw-workspace",
+    workspaceAccess: "none",
+    containerName: "openclaw-sbx-test",
+    containerWorkdir: "/workspace",
+    docker: {
+      image: "openclaw-sandbox:bookworm-slim",
+      containerPrefix: "openclaw-sbx-",
+      workdir: "/workspace",
+      readOnlyRoot: true,
+      tmpfs: ["/tmp"],
+      network: "none",
+      user: "1000:1000",
+      capDrop: ["ALL"],
+      env: { LANG: "C.UTF-8" },
     },
-  };
-});
-
-const _makeOpenAiConfig = (modelIds: string[]) =>
-  ({
-    models: {
-      providers: {
-        openai: {
-          api: "openai-responses",
-          apiKey: "sk-test",
-          baseUrl: "https://example.com",
-          models: modelIds.map((id) => ({
-            id,
-            name: `Mock ${id}`,
-            reasoning: false,
-            input: ["text"],
-            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
-            contextWindow: 16_000,
-            maxTokens: 2048,
-          })),
-        },
-      },
+    tools: {
+      allow: ["exec"],
+      deny: ["browser"],
     },
   }) satisfies GenSparxConfig;
 
@@ -103,6 +65,7 @@ describe("buildEmbeddedSandboxInfo", () => {
   it("returns undefined when sandbox is missing", () => {
     expect(buildEmbeddedSandboxInfo()).toBeUndefined();
   });
+
   it("maps sandbox context into prompt info", () => {
     const sandbox = {
       enabled: true,
@@ -145,6 +108,7 @@ describe("buildEmbeddedSandboxInfo", () => {
       hostBrowserAllowed: true,
     });
   });
+
   it("includes elevated info when allowed", () => {
     const sandbox = {
       enabled: true,
@@ -170,7 +134,8 @@ describe("buildEmbeddedSandboxInfo", () => {
         deny: ["browser"],
       },
       browserAllowHostControl: false,
-    } satisfies SandboxContext;
+      browser: undefined,
+    });
 
     expect(
       buildEmbeddedSandboxInfo(sandbox, {

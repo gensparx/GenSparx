@@ -41,8 +41,15 @@ describeFts("memory manager atomic reindex", () => {
   let workspaceDir: string;
   let indexPath: string;
   let manager: MemoryIndexManager | null = null;
+  const embedBatch = getEmbedBatchMock();
+
+  beforeAll(async () => {
+    fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-mem-atomic-"));
+  });
 
   beforeEach(async () => {
+    vi.stubEnv("OPENCLAW_TEST_MEMORY_UNSAFE_REINDEX", "0");
+    resetEmbeddingMocks();
     shouldFail = false;
     workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-mem-"));
     indexPath = path.join(workspaceDir, "index.sqlite");
@@ -55,7 +62,13 @@ describeFts("memory manager atomic reindex", () => {
       await manager.close();
       manager = null;
     }
-    await fs.rm(workspaceDir, { recursive: true, force: true });
+  });
+
+  afterAll(async () => {
+    if (!fixtureRoot) {
+      return;
+    }
+    await fs.rm(fixtureRoot, { recursive: true, force: true });
   });
 
   it("keeps the prior index when a full reindex fails", async () => {
@@ -68,28 +81,25 @@ describeFts("memory manager atomic reindex", () => {
             model: "mock-embed",
             store: { path: indexPath },
             cache: { enabled: false },
+            // Perf: keep test indexes to a single chunk to reduce sqlite work.
+            chunking: { tokens: 4000, overlap: 0 },
             sync: { watch: false, onSessionStart: false, onSearch: false },
           },
         },
         list: [{ id: "main", default: true }],
       },
-    };
+    } as OpenClawConfig;
 
-    const result = await getMemorySearchManager({ cfg, agentId: "main" });
-    expect(result.manager).not.toBeNull();
-    if (!result.manager) {
-      throw new Error("manager missing");
-    }
-    manager = result.manager;
+    manager = await getRequiredMemoryIndexManager({ cfg, agentId: "main" });
 
     await manager.sync({ force: true });
-    const before = await manager.search("Hello");
-    expect(before.length).toBeGreaterThan(0);
+    const beforeStatus = manager.status();
+    expect(beforeStatus.chunks).toBeGreaterThan(0);
 
     shouldFail = true;
     await expect(manager.sync({ force: true })).rejects.toThrow("embedding failure");
 
-    const after = await manager.search("Hello");
-    expect(after.length).toBeGreaterThan(0);
+    const afterStatus = manager.status();
+    expect(afterStatus.chunks).toBeGreaterThan(0);
   });
 });

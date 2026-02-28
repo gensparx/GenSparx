@@ -3,8 +3,8 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
-import type { StoredConversationReference } from "./conversation-store.js";
 import { createMSTeamsConversationStoreFs } from "./conversation-store-fs.js";
+import type { StoredConversationReference } from "./conversation-store.js";
 import { setMSTeamsRuntime } from "./runtime.js";
 
 const runtimeStub = {
@@ -22,7 +22,7 @@ const runtimeStub = {
 
 describe("msteams conversation store (fs)", () => {
   beforeEach(() => {
-    setMSTeamsRuntime(runtimeStub);
+    setMSTeamsRuntime(msteamsRuntimeStub);
   });
 
   it("filters and prunes expired entries (but keeps legacy ones)", async () => {

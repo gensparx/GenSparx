@@ -1,29 +1,41 @@
 import { createRequire } from "node:module";
 
 declare const __OPENCLAW_VERSION__: string | undefined;
+const CORE_PACKAGE_NAME = "openclaw";
 
-function readVersionFromPackageJson(): string | null {
-  try {
-    const require = createRequire(import.meta.url);
-    const pkg = require("../package.json") as { version?: string };
-    return pkg.version ?? null;
-  } catch {
-    return null;
-  }
-}
+const PACKAGE_JSON_CANDIDATES = [
+  "../package.json",
+  "../../package.json",
+  "../../../package.json",
+  "./package.json",
+] as const;
 
-function readVersionFromBuildInfo(): string | null {
+const BUILD_INFO_CANDIDATES = [
+  "../build-info.json",
+  "../../build-info.json",
+  "./build-info.json",
+] as const;
+
+function readVersionFromJsonCandidates(
+  moduleUrl: string,
+  candidates: readonly string[],
+  opts: { requirePackageName?: boolean } = {},
+): string | null {
   try {
-    const require = createRequire(import.meta.url);
-    const candidates = ["../build-info.json", "./build-info.json"];
+    const require = createRequire(moduleUrl);
     for (const candidate of candidates) {
       try {
-        const info = require(candidate) as { version?: string };
-        if (info.version) {
-          return info.version;
+        const parsed = require(candidate) as { name?: string; version?: string };
+        const version = parsed.version?.trim();
+        if (!version) {
+          continue;
         }
+        if (opts.requirePackageName && parsed.name !== CORE_PACKAGE_NAME) {
+          continue;
+        }
+        return version;
       } catch {
-        // ignore missing candidate
+        // ignore missing or unreadable candidate
       }
     }
     return null;
@@ -38,6 +50,5 @@ function readVersionFromBuildInfo(): string | null {
 export const VERSION =
   (typeof __OPENCLAW_VERSION__ === "string" && __OPENCLAW_VERSION__) ||
   process.env.OPENCLAW_BUNDLED_VERSION ||
-  readVersionFromPackageJson() ||
-  readVersionFromBuildInfo() ||
+  resolveVersionFromModuleUrl(import.meta.url) ||
   "0.0.0";

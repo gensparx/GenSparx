@@ -1,7 +1,37 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { describe, expect, it, vi } from "vitest";
-import { withEnvOverride, withTempHome } from "./test-helpers.js";
+import { describe, expect, it } from "vitest";
+import {
+  createConfigIO,
+  DEFAULT_GATEWAY_PORT,
+  resolveConfigPathCandidate,
+  resolveGatewayPort,
+  resolveIsNixMode,
+  resolveStateDir,
+} from "./config.js";
+import { withTempHome, withTempHomeConfig } from "./test-helpers.js";
+
+function envWith(overrides: Record<string, string | undefined>): NodeJS.ProcessEnv {
+  // Hermetic env: don't inherit process.env because other tests may mutate it.
+  return { ...overrides };
+}
+
+function loadConfigForHome(home: string) {
+  return createConfigIO({
+    env: envWith({ OPENCLAW_HOME: home }),
+    homedir: () => home,
+  }).loadConfig();
+}
+
+async function withLoadedConfigForHome(
+  config: unknown,
+  run: (cfg: ReturnType<typeof loadConfigForHome>) => Promise<void> | void,
+) {
+  await withTempHomeConfig(config, async ({ home }) => {
+    const cfg = loadConfigForHome(home);
+    await run(cfg);
+  });
+}
 
 describe("Nix integration (U3, U5, U9)", () => {
   describe("U3: isNixMode env var detection", () => {
@@ -162,9 +192,7 @@ describe("Nix integration (U3, U5, U9)", () => {
           "utf-8",
         );
 
-        vi.resetModules();
-        const { loadConfig } = await import("./config.js");
-        const cfg = loadConfig();
+        const cfg = loadConfigForHome(home);
 
         expect(cfg.plugins?.load?.paths?.[0]).toBe(path.join(home, "plugins", "demo-plugin"));
         expect(cfg.agents?.defaults?.workspace).toBe(path.join(home, "ws-default"));
@@ -257,16 +285,13 @@ describe("Nix integration (U3, U5, U9)", () => {
                 tokenFile: "/run/agenix/telegram-token",
               },
             },
-          }),
-          "utf-8",
-        );
-
-        vi.resetModules();
-        const { loadConfig } = await import("./config.js");
-        const cfg = loadConfig();
-        expect(cfg.channels?.telegram?.botToken).toBe("fallback:token");
-        expect(cfg.channels?.telegram?.tokenFile).toBe("/run/agenix/telegram-token");
-      });
+          },
+        },
+        async (cfg) => {
+          expect(cfg.channels?.telegram?.botToken).toBe("fallback:token");
+          expect(cfg.channels?.telegram?.tokenFile).toBe("/run/agenix/telegram-token");
+        },
+      );
     });
   });
 });

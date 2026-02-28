@@ -23,7 +23,7 @@ gensparx devices list --json
 
 ### `gensparx devices approve <requestId>`
 
-Approve a pending device pairing request.
+Remove one paired device entry.
 
 ```
 gensparx devices approve <requestId>

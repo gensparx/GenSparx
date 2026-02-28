@@ -22,14 +22,14 @@ gensparx onboard --auth-choice zai-api-key
 ```json5
 {
   env: { ZAI_API_KEY: "sk-..." },
-  agents: { defaults: { model: { primary: "zai/glm-4.7" } } },
+  agents: { defaults: { model: { primary: "zai/glm-5" } } },
 }
 ```
 
 ## Notes
 
 - GLM versions and availability can change; check Z.AI's docs for the latest.
-- Example model IDs include `glm-4.7` and `glm-4.6`.
+- Example model IDs include `glm-5`, `glm-4.7`, and `glm-4.6`.
 - For provider details, see [/providers/zai](/providers/zai).
 
 

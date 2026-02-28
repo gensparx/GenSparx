@@ -13,10 +13,21 @@ import {
   resolveHomeDir,
   resolveJidToE164,
   resolveUserPath,
+  shortenHomeInString,
+  shortenHomePath,
   sleep,
   toWhatsappJid,
   withWhatsAppPrefix,
 } from "./utils.js";
+
+function withTempDirSync<T>(prefix: string, run: (dir: string) => T): T {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
+  try {
+    return run(dir);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+}
 
 describe("normalizePath", () => {
   it("adds leading slash when missing", () => {
@@ -58,6 +69,10 @@ describe("sleep", () => {
 });
 
 describe("assertWebChannel", () => {
+  it("accepts valid channel", () => {
+    expect(() => assertWebChannel("web")).not.toThrow();
+  });
+
   it("throws for invalid channel", () => {
     expect(() => assertWebChannel("bad" as string)).toThrow();
   });
@@ -80,15 +95,12 @@ describe("jidToE164", () => {
   it("maps @lid using reverse mapping file", () => {
     const mappingPath = path.join(CONFIG_DIR, "credentials", "lid-mapping-123_reverse.json");
     const original = fs.readFileSync;
-    const spy = vi
-      .spyOn(fs, "readFileSync")
-      // oxlint-disable-next-line typescript/no-explicit-any
-      .mockImplementation((path: any, encoding?: any) => {
-        if (path === mappingPath) {
-          return `"5551234"`;
-        }
-        return original(path, encoding);
-      });
+    const spy = vi.spyOn(fs, "readFileSync").mockImplementation((...args) => {
+      if (args[0] === mappingPath) {
+        return `"5551234"`;
+      }
+      return original(...args);
+    });
     expect(jidToE164("123@lid")).toBe("+5551234");
     spy.mockRestore();
   });
@@ -138,6 +150,43 @@ describe("resolveConfigDir", () => {
   });
 });
 
+describe("resolveHomeDir", () => {
+  it("prefers OPENCLAW_HOME over HOME", () => {
+    vi.stubEnv("OPENCLAW_HOME", "/srv/openclaw-home");
+    vi.stubEnv("HOME", "/home/other");
+
+    expect(resolveHomeDir()).toBe(path.resolve("/srv/openclaw-home"));
+
+    vi.unstubAllEnvs();
+  });
+});
+
+describe("shortenHomePath", () => {
+  it("uses $OPENCLAW_HOME prefix when OPENCLAW_HOME is set", () => {
+    vi.stubEnv("OPENCLAW_HOME", "/srv/openclaw-home");
+    vi.stubEnv("HOME", "/home/other");
+
+    expect(shortenHomePath(`${path.resolve("/srv/openclaw-home")}/.openclaw/openclaw.json`)).toBe(
+      "$OPENCLAW_HOME/.openclaw/openclaw.json",
+    );
+
+    vi.unstubAllEnvs();
+  });
+});
+
+describe("shortenHomeInString", () => {
+  it("uses $OPENCLAW_HOME replacement when OPENCLAW_HOME is set", () => {
+    vi.stubEnv("OPENCLAW_HOME", "/srv/openclaw-home");
+    vi.stubEnv("HOME", "/home/other");
+
+    expect(
+      shortenHomeInString(`config: ${path.resolve("/srv/openclaw-home")}/.openclaw/openclaw.json`),
+    ).toBe("config: $OPENCLAW_HOME/.openclaw/openclaw.json");
+
+    vi.unstubAllEnvs();
+  });
+});
+
 describe("resolveJidToE164", () => {
   it("resolves @lid via lidLookup when mapping file is missing", async () => {
     const lidLookup = {
@@ -154,6 +203,14 @@ describe("resolveJidToE164", () => {
     await expect(resolveJidToE164("888@s.whatsapp.net", { lidLookup })).resolves.toBe("+888");
     expect(lidLookup.getPNForLID).not.toHaveBeenCalled();
   });
+
+  it("returns null when lidLookup throws", async () => {
+    const lidLookup = {
+      getPNForLID: vi.fn().mockRejectedValue(new Error("lookup failed")),
+    };
+    await expect(resolveJidToE164("777@lid", { lidLookup })).resolves.toBeNull();
+    expect(lidLookup.getPNForLID).toHaveBeenCalledWith("777@lid");
+  });
 });
 
 describe("resolveUserPath", () => {
@@ -169,5 +226,24 @@ describe("resolveUserPath", () => {
 
   it("resolves relative paths", () => {
     expect(resolveUserPath("tmp/dir")).toBe(path.resolve("tmp/dir"));
+  });
+
+  it("prefers OPENCLAW_HOME for tilde expansion", () => {
+    vi.stubEnv("OPENCLAW_HOME", "/srv/openclaw-home");
+    vi.stubEnv("HOME", "/home/other");
+
+    expect(resolveUserPath("~/openclaw")).toBe(path.resolve("/srv/openclaw-home", "openclaw"));
+
+    vi.unstubAllEnvs();
+  });
+
+  it("keeps blank paths blank", () => {
+    expect(resolveUserPath("")).toBe("");
+    expect(resolveUserPath("   ")).toBe("");
+  });
+
+  it("returns empty string for undefined/null input", () => {
+    expect(resolveUserPath(undefined as unknown as string)).toBe("");
+    expect(resolveUserPath(null as unknown as string)).toBe("");
   });
 });

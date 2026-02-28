@@ -16,7 +16,13 @@ vi.mock("../agents/pi-embedded.js", () => ({
 import type { GenSparxConfig } from "../config/config.js";
 import { resetInboundDedupe } from "../auto-reply/reply/inbound-dedupe.js";
 import { monitorWebChannel } from "./auto-reply.js";
-import { resetLoadConfigMock, setLoadConfigMock } from "./test-helpers.js";
+import {
+  createMockWebListener,
+  installWebAutoReplyTestHomeHooks,
+  installWebAutoReplyUnitTestHooks,
+  resetLoadConfigMock,
+  setLoadConfigMock,
+} from "./auto-reply.test-harness.js";
 
 let previousHome: string | undefined;
 let tempHome: string | undefined;
@@ -93,6 +99,8 @@ const _makeSessionStore = async (
 };
 
 describe("typing controller idle", () => {
+  installWebAutoReplyUnitTestHooks();
+
   it("marks dispatch idle after replies flush", async () => {
     const markDispatchIdle = vi.fn();
     const typingMock = {
@@ -132,11 +140,12 @@ describe("typing controller idle", () => {
           timestamp: Date.now(),
           chatType: "direct",
           chatId: "direct:+1000",
+          accountId: "default",
           sendComposing,
           reply,
           sendMedia,
         });
-        return { close: vi.fn().mockResolvedValue(undefined) };
+        return createMockWebListener();
       },
       false,
       replyResolver,

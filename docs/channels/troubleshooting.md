@@ -1,29 +1,33 @@
 ---
-summary: "Channel-specific troubleshooting shortcuts (Discord/Telegram/WhatsApp)"
+summary: "Fast channel level troubleshooting with per channel failure signatures and fixes"
 read_when:
-  - A channel connects but messages don’t flow
-  - Investigating channel misconfiguration (intents, permissions, privacy mode)
+  - Channel transport says connected but replies fail
+  - You need channel specific checks before deep provider docs
 title: "Channel Troubleshooting"
 ---
 
 # Channel troubleshooting
 
-Start with:
+Use this page when a channel connects but behavior is wrong.
+
+## Command ladder
+
+Run these in order first:
 
 ```bash
 gensparx doctor
 gensparx channels status --probe
 ```
 
-`channels status --probe` prints warnings when it can detect common channel misconfigurations, and includes small live checks (credentials, some permissions/membership).
+Healthy baseline:
 
-## Channels
+- `Runtime: running`
+- `RPC probe: ok`
+- Channel probe shows connected/ready
 
-- Discord: [/channels/discord#troubleshooting](/channels/discord#troubleshooting)
-- Telegram: [/channels/telegram#troubleshooting](/channels/telegram#troubleshooting)
-- WhatsApp: [/channels/whatsapp#troubleshooting-quick](/channels/whatsapp#troubleshooting-quick)
+## WhatsApp
 
-## Telegram quick fixes
+### WhatsApp failure signatures
 
 - Logs show `HttpError: Network request for 'sendMessage' failed` or `sendChatAction` → check IPv6 DNS. If `api.telegram.org` resolves to IPv6 first and the host lacks IPv6 egress, force IPv4 or enable IPv6. See [/channels/telegram#troubleshooting](/channels/telegram#troubleshooting).
 - Logs show `setMyCommands failed` → check outbound HTTPS and DNS reachability to `api.telegram.org` (common on locked-down VPS or proxies).

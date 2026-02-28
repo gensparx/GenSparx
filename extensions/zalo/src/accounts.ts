@@ -2,6 +2,9 @@ import type { GenSparxConfig } from "gensparx/plugin-sdk";
 import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "gensparx/plugin-sdk";
 import type { ResolvedZaloAccount, ZaloAccountConfig, ZaloConfig } from "./types.js";
 import { resolveZaloToken } from "./token.js";
+import type { ResolvedZaloAccount, ZaloAccountConfig, ZaloConfig } from "./types.js";
+
+export type { ResolvedZaloAccount };
 
 function listConfiguredAccountIds(cfg: GenSparxConfig): string[] {
   const accounts = (cfg.channels?.zalo as ZaloConfig | undefined)?.accounts;

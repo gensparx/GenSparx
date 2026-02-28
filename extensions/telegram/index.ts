@@ -10,7 +10,7 @@ const plugin = {
   configSchema: emptyPluginConfigSchema(),
   register(api: GenSparxPluginApi) {
     setTelegramRuntime(api.runtime);
-    api.registerChannel({ plugin: telegramPlugin });
+    api.registerChannel({ plugin: telegramPlugin as ChannelPlugin });
   },
 };
 

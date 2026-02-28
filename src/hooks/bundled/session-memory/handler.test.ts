@@ -3,14 +3,25 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import type { GenSparxConfig } from "../../../config/config.js";
 import { makeTempWorkspace, writeWorkspaceFile } from "../../../test-helpers/workspace.js";
+import type { HookHandler } from "../../hooks.js";
 import { createHookEvent } from "../../hooks.js";
-import handler from "./handler.js";
+
+// Avoid calling the embedded Pi agent (global command lane); keep this unit test deterministic.
+vi.mock("../../llm-slug-generator.js", () => ({
+  generateSlugViaLLM: vi.fn().mockResolvedValue("simple-math"),
+}));
+
+let handler: HookHandler;
+
+beforeAll(async () => {
+  ({ default: handler } = await import("./handler.js"));
+});
 
 /**
  * Create a mock session JSONL file with various entry types
  */
 function createMockSessionContent(
-  entries: Array<{ role: string; content: string } | { type: string }>,
+  entries: Array<{ role: string; content: string } | ({ type: string } & Record<string, unknown>)>,
 ): string {
   return entries
     .map((entry) => {
@@ -98,7 +109,6 @@ describeSession("session-memory hook", () => {
     expect(files.length).toBe(1);
 
     // Read the memory file and verify content
-    const memoryContent = await fs.readFile(path.join(memoryDir, files[0]), "utf-8");
     expect(memoryContent).toContain("user: Hello there");
     expect(memoryContent).toContain("assistant: Hi! How can I help?");
     expect(memoryContent).toContain("user: What is 2+2?");
@@ -110,6 +120,12 @@ describeSession("session-memory hook", () => {
     const sessionsDir = path.join(tempDir, "sessions");
     await fs.mkdir(sessionsDir, { recursive: true });
 
+    expect(files.length).toBe(1);
+    expect(memoryContent).toContain("user: Please reset and keep notes");
+    expect(memoryContent).toContain("assistant: Captured before reset");
+  });
+
+  it("filters out non-message entries (tool calls, system)", async () => {
     // Create session with mixed entry types
     const sessionContent = createMockSessionContent([
       { role: "user", content: "Hello" },
@@ -157,6 +173,12 @@ describeSession("session-memory hook", () => {
     const sessionsDir = path.join(tempDir, "sessions");
     await fs.mkdir(sessionsDir, { recursive: true });
 
+    expect(memoryContent).not.toContain("Forwarded internal instruction");
+    expect(memoryContent).toContain("assistant: Acknowledged");
+    expect(memoryContent).toContain("user: External follow-up");
+  });
+
+  it("filters out command messages starting with /", async () => {
     const sessionContent = createMockSessionContent([
       { role: "user", content: "/help" },
       { role: "assistant", content: "Here is help info" },
@@ -206,10 +228,9 @@ describeSession("session-memory hook", () => {
       entries.push({ role: "user", content: `Message ${i}` });
     }
     const sessionContent = createMockSessionContent(entries);
-    const sessionFile = await writeWorkspaceFile({
-      dir: sessionsDir,
-      name: "test-session.jsonl",
-      content: sessionContent,
+    const { memoryContent } = await runNewWithPreviousSession({
+      sessionContent,
+      cfg: (tempDir) => makeSessionMemoryConfig(tempDir, 3),
     });
 
     // Configure to only include last 3 messages
@@ -266,10 +287,9 @@ describeSession("session-memory hook", () => {
       { role: "assistant", content: "Fourth message" },
     ];
     const sessionContent = createMockSessionContent(entries);
-    const sessionFile = await writeWorkspaceFile({
-      dir: sessionsDir,
-      name: "test-session.jsonl",
-      content: sessionContent,
+    const { memoryContent } = await runNewWithPreviousSession({
+      sessionContent,
+      cfg: (tempDir) => makeSessionMemoryConfig(tempDir, 3),
     });
 
     // Request 3 messages - if we sliced first, we'd only get 1-2 messages
@@ -321,20 +341,147 @@ describeSession("session-memory hook", () => {
       agents: { defaults: { workspace: tempDir } },
     };
 
-    const event = createHookEvent("command", "new", "agent:main:main", {
-      cfg,
+    const { memoryContent } = await runNewWithPreviousSessionEntry({
+      tempDir,
       previousSessionEntry: {
         sessionId: "test-123",
-        sessionFile,
+        sessionFile: activeSessionFile!,
       },
     });
 
-    // Should not throw
-    await handler(event);
+    expect(memoryContent).toContain("user: Message from rotated transcript");
+    expect(memoryContent).toContain("assistant: Recovered from reset fallback");
+  });
 
-    // Memory file should still be created with metadata
-    const memoryDir = path.join(tempDir, "memory");
-    const files = await fs.readdir(memoryDir);
+  it("handles reset-path session pointers from previousSessionEntry", async () => {
+    const { tempDir, sessionsDir } = await createSessionMemoryWorkspace();
+
+    const sessionId = "reset-pointer-session";
+    const resetSessionFile = await writeWorkspaceFile({
+      dir: sessionsDir,
+      name: `${sessionId}.jsonl.reset.2026-02-16T22-26-33.000Z`,
+      content: createMockSessionContent([
+        { role: "user", content: "Message from reset pointer" },
+        { role: "assistant", content: "Recovered directly from reset file" },
+      ]),
+    });
+
+    const { files, memoryContent } = await runNewWithPreviousSessionEntry({
+      tempDir,
+      cfg: makeSessionMemoryConfig(tempDir),
+      previousSessionEntry: {
+        sessionId,
+        sessionFile: resetSessionFile,
+      },
+    });
+    expect(files.length).toBe(1);
+
+    expect(memoryContent).toContain("user: Message from reset pointer");
+    expect(memoryContent).toContain("assistant: Recovered directly from reset file");
+  });
+
+  it("recovers transcript when previousSessionEntry.sessionFile is missing", async () => {
+    const { tempDir, sessionsDir } = await createSessionMemoryWorkspace();
+
+    const sessionId = "missing-session-file";
+    await writeWorkspaceFile({
+      dir: sessionsDir,
+      name: `${sessionId}.jsonl`,
+      content: "",
+    });
+    await writeWorkspaceFile({
+      dir: sessionsDir,
+      name: `${sessionId}.jsonl.reset.2026-02-16T22-26-33.000Z`,
+      content: createMockSessionContent([
+        { role: "user", content: "Recovered with missing sessionFile pointer" },
+        { role: "assistant", content: "Recovered by sessionId fallback" },
+      ]),
+    });
+
+    const { files, memoryContent } = await runNewWithPreviousSessionEntry({
+      tempDir,
+      cfg: makeSessionMemoryConfig(tempDir),
+      previousSessionEntry: {
+        sessionId,
+      },
+    });
+    expect(files.length).toBe(1);
+
+    expect(memoryContent).toContain("user: Recovered with missing sessionFile pointer");
+    expect(memoryContent).toContain("assistant: Recovered by sessionId fallback");
+  });
+
+  it("prefers the newest reset transcript when multiple reset candidates exist", async () => {
+    const { tempDir, sessionsDir, activeSessionFile } = await createSessionMemoryWorkspace({
+      activeSession: { name: "test-session.jsonl", content: "" },
+    });
+
+    await writeWorkspaceFile({
+      dir: sessionsDir,
+      name: "test-session.jsonl.reset.2026-02-16T22-26-33.000Z",
+      content: createMockSessionContent([
+        { role: "user", content: "Older rotated transcript" },
+        { role: "assistant", content: "Old summary" },
+      ]),
+    });
+    await writeWorkspaceFile({
+      dir: sessionsDir,
+      name: "test-session.jsonl.reset.2026-02-16T22-26-34.000Z",
+      content: createMockSessionContent([
+        { role: "user", content: "Newest rotated transcript" },
+        { role: "assistant", content: "Newest summary" },
+      ]),
+    });
+
+    const memoryContent = await loadMemoryFromActiveSessionPointer({
+      tempDir,
+      activeSessionFile: activeSessionFile!,
+    });
+
+    expectMemoryConversation({
+      memoryContent,
+      user: "Newest rotated transcript",
+      assistant: "Newest summary",
+      absent: "Older rotated transcript",
+    });
+  });
+
+  it("prefers active transcript when it is non-empty even with reset candidates", async () => {
+    const { tempDir, sessionsDir, activeSessionFile } = await createSessionMemoryWorkspace({
+      activeSession: {
+        name: "test-session.jsonl",
+        content: createMockSessionContent([
+          { role: "user", content: "Active transcript message" },
+          { role: "assistant", content: "Active transcript summary" },
+        ]),
+      },
+    });
+
+    await writeWorkspaceFile({
+      dir: sessionsDir,
+      name: "test-session.jsonl.reset.2026-02-16T22-26-34.000Z",
+      content: createMockSessionContent([
+        { role: "user", content: "Reset fallback message" },
+        { role: "assistant", content: "Reset fallback summary" },
+      ]),
+    });
+
+    const memoryContent = await loadMemoryFromActiveSessionPointer({
+      tempDir,
+      activeSessionFile: activeSessionFile!,
+    });
+
+    expectMemoryConversation({
+      memoryContent,
+      user: "Active transcript message",
+      assistant: "Active transcript summary",
+      absent: "Reset fallback message",
+    });
+  });
+
+  it("handles empty session files gracefully", async () => {
+    // Should not throw
+    const { files } = await runNewWithPreviousSession({ sessionContent: "" });
     expect(files.length).toBe(1);
   });
 

@@ -1,78 +1,20 @@
 import type { Command } from "commander";
-import { confirm, isCancel, select, spinner } from "@clack/prompts";
-import { spawnSync } from "node:child_process";
-import fs from "node:fs/promises";
-import os from "node:os";
-import path from "node:path";
-import {
-  checkShellCompletionStatus,
-  ensureCompletionCacheExists,
-} from "../commands/doctor-completion.js";
-import {
-  formatUpdateAvailableHint,
-  formatUpdateOneLiner,
-  resolveUpdateAvailability,
-} from "../commands/status.update.js";
-import { readConfigFileSnapshot, writeConfigFile } from "../config/config.js";
-import { resolveOpenClawPackageRoot } from "../infra/openclaw-root.js";
-import { trimLogTail } from "../infra/restart-sentinel.js";
-import { parseSemver } from "../infra/runtime-guard.js";
-import {
-  channelToNpmTag,
-  DEFAULT_GIT_CHANNEL,
-  DEFAULT_PACKAGE_CHANNEL,
-  formatUpdateChannelLabel,
-  normalizeUpdateChannel,
-  resolveEffectiveUpdateChannel,
-} from "../infra/update-channels.js";
-import {
-  checkUpdateStatus,
-  compareSemverStrings,
-  fetchNpmTagVersion,
-  resolveNpmChannelTag,
-} from "../infra/update-check.js";
-import {
-  detectGlobalInstallManagerByPresence,
-  detectGlobalInstallManagerForRoot,
-  cleanupGlobalRenameDirs,
-  globalInstallArgs,
-  resolveGlobalPackageRoot,
-  type GlobalInstallManager,
-} from "../infra/update-global.js";
-import {
-  runGatewayUpdate,
-  type UpdateRunResult,
-  type UpdateStepInfo,
-  type UpdateStepResult,
-  type UpdateStepProgress,
-} from "../infra/update-runner.js";
-import { syncPluginsForUpdateChannel, updateNpmInstalledPlugins } from "../plugins/update.js";
-import { runCommandWithTimeout } from "../process/exec.js";
 import { defaultRuntime } from "../runtime.js";
 import { formatDocsLink } from "../terminal/links.js";
-import { stylePromptHint, stylePromptMessage } from "../terminal/prompt-style.js";
-import { renderTable } from "../terminal/table.js";
 import { theme } from "../terminal/theme.js";
-import { replaceCliName, resolveCliName } from "./cli-name.js";
-import { formatCliCommand } from "./command-format.js";
-import { installCompletion } from "./completion-cli.js";
+import { inheritOptionFromParent } from "./command-options.js";
 import { formatHelpExamples } from "./help-format.js";
+import {
+  type UpdateCommandOptions,
+  type UpdateStatusOptions,
+  type UpdateWizardOptions,
+} from "./update-cli/shared.js";
+import { updateStatusCommand } from "./update-cli/status.js";
+import { updateCommand } from "./update-cli/update-command.js";
+import { updateWizardCommand } from "./update-cli/wizard.js";
 
-export type UpdateCommandOptions = {
-  json?: boolean;
-  restart?: boolean;
-  channel?: string;
-  tag?: string;
-  timeout?: string;
-  yes?: boolean;
-};
-export type UpdateStatusOptions = {
-  json?: boolean;
-  timeout?: string;
-};
-export type UpdateWizardOptions = {
-  timeout?: string;
-};
+export { updateCommand, updateStatusCommand, updateWizardCommand };
+export type { UpdateCommandOptions, UpdateStatusOptions, UpdateWizardOptions };
 
 const STEP_LABELS: Record<string, string> = {
   "clean check": "Working directory is clean",
@@ -1248,6 +1190,7 @@ export async function updateWizardCommand(opts: UpdateWizardOptions = {}): Promi
     defaultRuntime.error(String(err));
     defaultRuntime.exit(1);
   }
+  return inheritOptionFromParent<string>(command, "timeout");
 }
 
 export function registerUpdateCli(program: Command) {
@@ -1256,6 +1199,7 @@ export function registerUpdateCli(program: Command) {
     .description("Update GenSparx to the latest version")
     .option("--json", "Output result as JSON", false)
     .option("--no-restart", "Skip restarting the gateway service after a successful update")
+    .option("--dry-run", "Preview update actions without making changes", false)
     .option("--channel <stable|beta|dev>", "Persist update channel (git + npm)")
     .option("--tag <dist-tag|version>", "Override npm dist-tag or version for this update")
     .option("--timeout <seconds>", "Timeout for each update step in seconds (default: 1200)")
@@ -1288,6 +1232,7 @@ ${theme.heading("Switch channels:")}
 ${theme.heading("Non-interactive:")}
   - Use --yes to accept downgrade prompts
   - Combine with --channel/--tag/--restart/--json/--timeout as needed
+  - Use --dry-run to preview actions without writing config/installing/restarting
 
 ${theme.heading("Examples:")}
 ${fmtExamples}
@@ -1305,6 +1250,7 @@ ${theme.muted("Docs:")} ${formatDocsLink("/cli/update", "docs.gensparx.com/cli/u
         await updateCommand({
           json: Boolean(opts.json),
           restart: Boolean(opts.restart),
+          dryRun: Boolean(opts.dryRun),
           channel: opts.channel as string | undefined,
           tag: opts.tag as string | undefined,
           timeout: opts.timeout as string | undefined,
@@ -1324,10 +1270,10 @@ ${theme.muted("Docs:")} ${formatDocsLink("/cli/update", "docs.gensparx.com/cli/u
       "after",
       `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/update", "docs.gensparx.com/cli/update")}\n`,
     )
-    .action(async (opts) => {
+    .action(async (opts, command) => {
       try {
         await updateWizardCommand({
-          timeout: opts.timeout as string | undefined,
+          timeout: inheritedUpdateTimeout(opts, command),
         });
       } catch (err) {
         defaultRuntime.error(String(err));
@@ -1353,11 +1299,11 @@ ${theme.muted("Docs:")} ${formatDocsLink("/cli/update", "docs.gensparx.com/cli/u
           "Docs:",
         )} ${formatDocsLink("/cli/update", "docs.gensparx.com/cli/update")}`,
     )
-    .action(async (opts) => {
+    .action(async (opts, command) => {
       try {
         await updateStatusCommand({
-          json: Boolean(opts.json),
-          timeout: opts.timeout as string | undefined,
+          json: Boolean(opts.json) || inheritedUpdateJson(command),
+          timeout: inheritedUpdateTimeout(opts, command),
         });
       } catch (err) {
         defaultRuntime.error(String(err));

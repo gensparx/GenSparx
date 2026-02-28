@@ -21,6 +21,9 @@ gensparx acp
 # Remote Gateway
 gensparx acp --url wss://gateway-host:18789 --token <token>
 
+# Remote Gateway (token from file)
+openclaw acp --url wss://gateway-host:18789 --token-file ~/.openclaw/gateway.token
+
 # Attach to an existing session key
 gensparx acp --session agent:main:main
 
@@ -45,6 +48,13 @@ gensparx acp client --server-args --url wss://gateway-host:18789 --token <token>
 # Override the server command (default: gensparx)
 gensparx acp client --server "node" --server-args openclaw.mjs acp --url ws://127.0.0.1:19001
 ```
+
+Permission model (client debug mode):
+
+- Auto-approval is allowlist-based and only applies to trusted core tool IDs.
+- `read` auto-approval is scoped to the current working directory (`--cwd` when set).
+- Unknown/non-core tool names, out-of-scope reads, and dangerous tools always require explicit prompt approval.
+- Server-provided `toolCall.kind` is treated as untrusted metadata (not an authorization source).
 
 ## How to use this
 
@@ -153,13 +163,20 @@ Learn more about session keys at [/concepts/session](/concepts/session).
 
 - `--url <url>`: Gateway WebSocket URL (defaults to gateway.remote.url when configured).
 - `--token <token>`: Gateway auth token.
+- `--token-file <path>`: read Gateway auth token from file.
 - `--password <password>`: Gateway auth password.
+- `--password-file <path>`: read Gateway auth password from file.
 - `--session <key>`: default session key.
 - `--session-label <label>`: default session label to resolve.
 - `--require-existing`: fail if the session key/label does not exist.
 - `--reset-session`: reset the session key before first use.
 - `--no-prefix-cwd`: do not prefix prompts with the working directory.
 - `--verbose, -v`: verbose logging to stderr.
+
+Security note:
+
+- `--token` and `--password` can be visible in local process listings on some systems.
+- Prefer `--token-file`/`--password-file` or environment variables (`OPENCLAW_GATEWAY_TOKEN`, `OPENCLAW_GATEWAY_PASSWORD`).
 
 ### `acp client` options
 

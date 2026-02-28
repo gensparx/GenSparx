@@ -162,11 +162,13 @@ const callGateway = vi.fn().mockRejectedValue(new Error("gateway closed"));
 
 vi.mock("@clack/prompts", () => ({
   confirm,
-  intro: vi.fn(),
-  note,
-  outro: vi.fn(),
-  select,
-}));
+  createDoctorRuntime,
+  ensureAuthProfileStore,
+  mockDoctorConfigSnapshot,
+  serviceIsLoaded,
+  serviceRestart,
+  writeConfigFile,
+} from "./doctor.e2e-harness.js";
 
 vi.mock("../agents/skills-status.js", () => ({
   buildWorkspaceSkillStatus: () => ({ skills: [] }),
@@ -326,6 +328,11 @@ vi.mock("./doctor-state-migrations.js", () => ({
 }));
 
 describe("doctor command", () => {
+  beforeAll(async () => {
+    ({ doctorCommand } = await import("./doctor.js"));
+    ({ healthCommand } = await import("./health.js"));
+  });
+
   it("runs legacy state migrations in yes mode without prompting", async () => {
     readConfigFileSnapshot.mockResolvedValue({
       path: "/tmp/gensparx.json",
@@ -338,48 +345,23 @@ describe("doctor command", () => {
       legacyIssues: [],
     });
 
-    const { doctorCommand } = await import("./doctor.js");
-    const runtime = {
-      log: vi.fn(),
-      error: vi.fn(),
-      exit: vi.fn(),
-    };
+    await (doctorCommand as (runtime: unknown, opts: Record<string, unknown>) => Promise<void>)(
+      runtime,
+      { yes: true },
+    );
 
-    const { detectLegacyStateMigrations, runLegacyStateMigrations } =
-      await import("./doctor-state-migrations.js");
-    detectLegacyStateMigrations.mockResolvedValueOnce({
-      targetAgentId: "main",
-      targetMainKey: "main",
-      stateDir: "/tmp/state",
-      oauthDir: "/tmp/oauth",
-      sessions: {
-        legacyDir: "/tmp/state/sessions",
-        legacyStorePath: "/tmp/state/sessions/sessions.json",
-        targetDir: "/tmp/state/agents/main/sessions",
-        targetStorePath: "/tmp/state/agents/main/sessions/sessions.json",
-        hasLegacy: true,
-      },
-      agentDir: {
-        legacyDir: "/tmp/state/agent",
-        targetDir: "/tmp/state/agents/main/agent",
-        hasLegacy: false,
-      },
-      whatsappAuth: {
-        legacyDir: "/tmp/oauth",
-        targetDir: "/tmp/oauth/whatsapp/default",
-        hasLegacy: false,
-      },
-      preview: ["- Legacy sessions detected"],
-    });
-    runLegacyStateMigrations.mockResolvedValueOnce({
-      changes: ["migrated"],
-      warnings: [],
-    });
+    expect(runLegacyStateMigrations).toHaveBeenCalledTimes(1);
+    expect(confirm).not.toHaveBeenCalled();
+  }, 30_000);
 
-    runLegacyStateMigrations.mockClear();
-    confirm.mockClear();
+  it("runs legacy state migrations in non-interactive mode without prompting", async () => {
+    const { doctorCommand, runtime, runLegacyStateMigrations } =
+      await arrangeLegacyStateMigrationTest();
 
-    await doctorCommand(runtime, { yes: true });
+    await (doctorCommand as (runtime: unknown, opts: Record<string, unknown>) => Promise<void>)(
+      runtime,
+      { nonInteractive: true },
+    );
 
     expect(runLegacyStateMigrations).toHaveBeenCalledTimes(1);
     expect(confirm).not.toHaveBeenCalled();
@@ -397,21 +379,13 @@ describe("doctor command", () => {
       legacyIssues: [],
     });
 
-    const { healthCommand } = await import("./health.js");
-    healthCommand.mockRejectedValueOnce(new Error("gateway closed"));
+    vi.mocked(healthCommand).mockRejectedValueOnce(new Error("gateway closed"));
 
     serviceIsLoaded.mockResolvedValueOnce(true);
     serviceRestart.mockClear();
     confirm.mockClear();
 
-    const { doctorCommand } = await import("./doctor.js");
-    const runtime = {
-      log: vi.fn(),
-      error: vi.fn(),
-      exit: vi.fn(),
-    };
-
-    await doctorCommand(runtime, { nonInteractive: true });
+    await doctorCommand(createDoctorRuntime(), { nonInteractive: true });
 
     expect(serviceRestart).not.toHaveBeenCalled();
     expect(confirm).not.toHaveBeenCalled();
@@ -431,8 +405,6 @@ describe("doctor command", () => {
           },
         },
       },
-      issues: [],
-      legacyIssues: [],
     });
 
     ensureAuthProfileStore.mockReturnValueOnce({
@@ -449,8 +421,7 @@ describe("doctor command", () => {
       },
     });
 
-    const { doctorCommand } = await import("./doctor.js");
-    await doctorCommand({ log: vi.fn(), error: vi.fn(), exit: vi.fn() }, { yes: true });
+    await doctorCommand(createDoctorRuntime(), { yes: true });
 
     const written = writeConfigFile.mock.calls.at(-1)?.[0] as Record<string, unknown>;
     const profiles = (written.auth as { profiles: Record<string, unknown> }).profiles;

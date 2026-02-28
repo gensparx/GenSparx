@@ -7,7 +7,7 @@ metadata:
     "GenSparx":
       {
         "emoji": "💾",
-        "events": ["command:new"],
+        "events": ["command:new", "command:reset"],
         "requires": { "config": ["workspace.dir"] },
         "install": [{ "id": "bundled", "kind": "bundled", "label": "Bundled with GenSparx" }],
       },
@@ -16,11 +16,11 @@ metadata:
 
 # Session Memory Hook
 
-Automatically saves session context to your workspace memory when you issue the `/new` command.
+Automatically saves session context to your workspace memory when you issue `/new` or `/reset`.
 
 ## What It Does
 
-When you run `/new` to start a fresh session:
+When you run `/new` or `/reset` to start a fresh session:
 
 1. **Finds the previous session** - Uses the pre-reset session entry to locate the correct transcript
 2. **Extracts conversation** - Reads the last N user/assistant messages from the session (default: 15, configurable)

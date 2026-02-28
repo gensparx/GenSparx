@@ -27,6 +27,16 @@ import { probeTwitch } from "./probe.js";
 import { resolveTwitchTargets } from "./resolver.js";
 import { collectTwitchStatusIssues } from "./status.js";
 import { resolveTwitchToken } from "./token.js";
+import type {
+  ChannelAccountSnapshot,
+  ChannelCapabilities,
+  ChannelLogSink,
+  ChannelMeta,
+  ChannelPlugin,
+  ChannelResolveKind,
+  ChannelResolveResult,
+  TwitchAccountConfig,
+} from "./types.js";
 import { isAccountConfigured } from "./utils/twitch.js";
 
 /**

@@ -1,9 +1,10 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
   resolveDefaultConfigCandidates,
+  resolveConfigPathCandidate,
   resolveConfigPath,
   resolveOAuthDir,
   resolveOAuthPath,
@@ -44,8 +45,24 @@ describe("state + config path candidates", () => {
     expect(resolveStateDir(env, () => "/home/test")).toBe(path.resolve("/new/state"));
   });
 
+  it("uses OPENCLAW_HOME for default state/config locations", () => {
+    const env = {
+      OPENCLAW_HOME: "/srv/openclaw-home",
+    } as NodeJS.ProcessEnv;
+    expectOpenClawHomeDefaults(env);
+  });
+
+  it("prefers OPENCLAW_HOME over HOME for default state/config locations", () => {
+    const env = {
+      OPENCLAW_HOME: "/srv/openclaw-home",
+      HOME: "/home/other",
+    } as NodeJS.ProcessEnv;
+    expectOpenClawHomeDefaults(env);
+  });
+
   it("orders default config candidates in a stable order", () => {
     const home = "/home/test";
+    const resolvedHome = path.resolve(home);
     const candidates = resolveDefaultConfigCandidates({} as NodeJS.ProcessEnv, () => home);
     const expected = [
       path.join(home, ".gensparx", "gensparx.json"),
@@ -75,9 +92,16 @@ describe("state + config path candidates", () => {
       await fs.mkdir(newDir, { recursive: true });
       const resolved = resolveStateDir({} as NodeJS.ProcessEnv, () => root);
       expect(resolved).toBe(newDir);
-    } finally {
-      await fs.rm(root, { recursive: true, force: true });
-    }
+    });
+  });
+
+  it("falls back to existing legacy state dir when ~/.openclaw is missing", async () => {
+    await withTempRoot("openclaw-state-legacy-", async (root) => {
+      const legacyDir = path.join(root, ".clawdbot");
+      await fs.mkdir(legacyDir, { recursive: true });
+      const resolved = resolveStateDir({} as NodeJS.ProcessEnv, () => root);
+      expect(resolved).toBe(legacyDir);
+    });
   });
 
   it("CONFIG_PATH prefers existing config when present", async () => {

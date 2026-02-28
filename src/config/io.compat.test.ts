@@ -26,6 +26,13 @@ async function writeConfig(
   return configPath;
 }
 
+function createIoForHome(home: string, env: NodeJS.ProcessEnv = {} as NodeJS.ProcessEnv) {
+  return createConfigIO({
+    env,
+    homedir: () => home,
+  });
+}
+
 describe("config io paths", () => {
   it("uses ~/.gensparx/gensparx.json when config exists", async () => {
     await withTempHome(async (home) => {
@@ -58,6 +65,75 @@ describe("config io paths", () => {
       });
       expect(io.configPath).toBe(customPath);
       expect(io.loadConfig().gateway?.port).toBe(20002);
+    });
+  });
+
+  it("honors legacy CLAWDBOT_CONFIG_PATH override", async () => {
+    await withTempHome(async (home) => {
+      const customPath = await writeConfig(home, ".openclaw", 20003, "legacy-custom.json");
+      const io = createIoForHome(home, { CLAWDBOT_CONFIG_PATH: customPath } as NodeJS.ProcessEnv);
+      expect(io.configPath).toBe(customPath);
+      expect(io.loadConfig().gateway?.port).toBe(20003);
+    });
+  });
+
+  it("normalizes safe-bin config entries at config load time", async () => {
+    await withTempHome(async (home) => {
+      const configDir = path.join(home, ".openclaw");
+      await fs.mkdir(configDir, { recursive: true });
+      const configPath = path.join(configDir, "openclaw.json");
+      await fs.writeFile(
+        configPath,
+        JSON.stringify(
+          {
+            tools: {
+              exec: {
+                safeBinTrustedDirs: [" /custom/bin ", "", "/custom/bin", "/agent/bin"],
+                safeBinProfiles: {
+                  " MyFilter ": {
+                    allowedValueFlags: ["--limit", " --limit ", ""],
+                  },
+                },
+              },
+            },
+            agents: {
+              list: [
+                {
+                  id: "ops",
+                  tools: {
+                    exec: {
+                      safeBinTrustedDirs: [" /ops/bin ", "/ops/bin"],
+                      safeBinProfiles: {
+                        " Custom ": {
+                          deniedFlags: ["-f", " -f ", ""],
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          },
+          null,
+          2,
+        ),
+        "utf-8",
+      );
+      const io = createIoForHome(home);
+      expect(io.configPath).toBe(configPath);
+      const cfg = io.loadConfig();
+      expect(cfg.tools?.exec?.safeBinProfiles).toEqual({
+        myfilter: {
+          allowedValueFlags: ["--limit"],
+        },
+      });
+      expect(cfg.tools?.exec?.safeBinTrustedDirs).toEqual(["/custom/bin", "/agent/bin"]);
+      expect(cfg.agents?.list?.[0]?.tools?.exec?.safeBinProfiles).toEqual({
+        custom: {
+          deniedFlags: ["-f"],
+        },
+      });
+      expect(cfg.agents?.list?.[0]?.tools?.exec?.safeBinTrustedDirs).toEqual(["/ops/bin"]);
     });
   });
 });

@@ -1,9 +1,9 @@
 import { spawnSync } from "node:child_process";
-import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { chmod, copyFile, mkdir, mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 const repoRoot = resolve(fileURLToPath(new URL(".", import.meta.url)), "..");
 
@@ -36,14 +36,51 @@ exit 0
   await writeFile(logPath, "");
 }
 
-describe("docker-setup.sh", () => {
-  it("handles unset optional env vars under strict mode", async () => {
-    const assocCheck = spawnSync("bash", ["-c", "declare -A _t=()"], {
-      encoding: "utf8",
-    });
-    if (assocCheck.status !== 0) {
-      return;
+async function createDockerSetupSandbox(): Promise<DockerSetupSandbox> {
+  const rootDir = await mkdtemp(join(tmpdir(), "openclaw-docker-setup-"));
+  const scriptPath = join(rootDir, "docker-setup.sh");
+  const dockerfilePath = join(rootDir, "Dockerfile");
+  const composePath = join(rootDir, "docker-compose.yml");
+  const binDir = join(rootDir, "bin");
+  const logPath = join(rootDir, "docker-stub.log");
+
+  await copyFile(join(repoRoot, "docker-setup.sh"), scriptPath);
+  await chmod(scriptPath, 0o755);
+  await writeFile(dockerfilePath, "FROM scratch\n");
+  await writeFile(
+    composePath,
+    "services:\n  openclaw-gateway:\n    image: noop\n  openclaw-cli:\n    image: noop\n",
+  );
+  await writeDockerStub(binDir, logPath);
+
+  return { rootDir, scriptPath, logPath, binDir };
+}
+
+function createEnv(
+  sandbox: DockerSetupSandbox,
+  overrides: Record<string, string | undefined> = {},
+): NodeJS.ProcessEnv {
+  const env: NodeJS.ProcessEnv = {
+    PATH: `${sandbox.binDir}:${process.env.PATH ?? ""}`,
+    HOME: process.env.HOME ?? sandbox.rootDir,
+    LANG: process.env.LANG,
+    LC_ALL: process.env.LC_ALL,
+    TMPDIR: process.env.TMPDIR,
+    DOCKER_STUB_LOG: sandbox.logPath,
+    OPENCLAW_GATEWAY_TOKEN: "test-token",
+    OPENCLAW_CONFIG_DIR: join(sandbox.rootDir, "config"),
+    OPENCLAW_WORKSPACE_DIR: join(sandbox.rootDir, "openclaw"),
+  };
+
+  for (const [key, value] of Object.entries(overrides)) {
+    if (value === undefined) {
+      delete env[key];
+    } else {
+      env[key] = value;
     }
+  }
+  return env;
+}
 
     const rootDir = await mkdtemp(join(tmpdir(), "gensparx-docker-setup-"));
     const scriptPath = join(rootDir, "docker-setup.sh");
@@ -79,7 +116,8 @@ describe("docker-setup.sh", () => {
       },
     );
 
-    expect(result.status).toBe(0);
+describe("docker-setup.sh", () => {
+  let sandbox: DockerSetupSandbox | null = null;
 
     const envFile = await readFile(join(rootDir, ".env"), "utf8");
     expect(envFile).toContain("GENSPARX_DOCKER_APT_PACKAGES=");
@@ -94,6 +132,9 @@ describe("docker-setup.sh", () => {
     if (assocCheck.status !== 0) {
       return;
     }
+    await rm(sandbox.rootDir, { recursive: true, force: true });
+    sandbox = null;
+  });
 
     const rootDir = await mkdtemp(join(tmpdir(), "gensparx-docker-setup-"));
     const scriptPath = join(rootDir, "docker-setup.sh");
@@ -134,6 +175,9 @@ describe("docker-setup.sh", () => {
     );
 
     expect(result.status).toBe(0);
+    const identityDirStat = await stat(join(configDir, "identity"));
+    expect(identityDirStat.isDirectory()).toBe(true);
+  });
 
     const envFile = await readFile(join(rootDir, ".env"), "utf8");
     expect(envFile).toContain("GENSPARX_DOCKER_APT_PACKAGES=ffmpeg build-essential");

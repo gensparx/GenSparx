@@ -1,8 +1,5 @@
-import fs from "node:fs";
-import os from "node:os";
-import path from "node:path";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { normalizeLegacyConfigValues } from "./doctor-legacy-config.js";
+import { describe, expect, it } from "vitest";
+import { normalizeCompatibilityConfigValues } from "./doctor-legacy-config.js";
 
 describe("normalizeLegacyConfigValues", () => {
   let previousOauthDir: string | undefined;
@@ -36,23 +33,24 @@ describe("normalizeLegacyConfigValues", () => {
       messages: { ackReaction: "👀" },
     });
 
-    expect(res.config.channels?.whatsapp).toBeUndefined();
-    expect(res.changes).toEqual([]);
+    expect(res.config.channels?.telegram?.streaming).toBe("off");
+    expect(res.config.channels?.telegram?.streamMode).toBeUndefined();
+    expect(res.changes).toEqual(["Normalized channels.telegram.streaming boolean → enum (off)."]);
   });
 
-  it("copies legacy ack reaction when whatsapp config exists", () => {
-    const res = normalizeLegacyConfigValues({
-      messages: { ackReaction: "👀", ackReactionScope: "group-mentions" },
-      channels: { whatsapp: {} },
+  it("normalizes discord boolean streaming aliases to enum", () => {
+    const res = normalizeCompatibilityConfigValues({
+      channels: {
+        discord: {
+          streaming: true,
+        },
+      },
     });
 
-    expect(res.config.channels?.whatsapp?.ackReaction).toEqual({
-      emoji: "👀",
-      direct: false,
-      group: "mentions",
-    });
+    expect(res.config.channels?.discord?.streaming).toBe("partial");
+    expect(res.config.channels?.discord?.streamMode).toBeUndefined();
     expect(res.changes).toEqual([
-      "Copied messages.ackReaction → channels.whatsapp.ackReaction (scope: group-mentions).",
+      "Normalized channels.discord.streaming boolean → enum (partial).",
     ]);
   });
 

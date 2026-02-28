@@ -20,6 +20,35 @@ import "./test-helpers/fast-core-tools.js";
 import { createGenSparxTools } from "./gensparx-tools.js";
 
 describe("agents_list", () => {
+  type AgentConfig = NonNullable<NonNullable<typeof configOverride.agents>["list"]>[number];
+
+  function setConfigWithAgentList(agentList: AgentConfig[]) {
+    configOverride = {
+      session: {
+        mainKey: "main",
+        scope: "per-sender",
+      },
+      agents: {
+        list: agentList,
+      },
+    };
+  }
+
+  function requireAgentsListTool() {
+    const tool = createOpenClawTools({
+      agentSessionKey: "main",
+    }).find((candidate) => candidate.name === "agents_list");
+    if (!tool) {
+      throw new Error("missing agents_list tool");
+    }
+    return tool;
+  }
+
+  function readAgentList(result: unknown) {
+    return (result as { details?: { agents?: Array<{ id: string; configured?: boolean }> } })
+      .details?.agents;
+  }
+
   beforeEach(() => {
     configOverride = {
       session: {
@@ -42,30 +71,22 @@ describe("agents_list", () => {
       requester: "main",
       allowAny: false,
     });
-    const agents = (result.details as { agents?: Array<{ id: string }> }).agents;
+    const agents = readAgentList(result);
     expect(agents?.map((agent) => agent.id)).toEqual(["main"]);
   });
 
   it("includes allowlisted targets plus requester", async () => {
-    configOverride = {
-      session: {
-        mainKey: "main",
-        scope: "per-sender",
+    setConfigWithAgentList([
+      {
+        id: "main",
+        name: "Main",
+        subagents: {
+          allowAgents: ["research"],
+        },
       },
-      agents: {
-        list: [
-          {
-            id: "main",
-            name: "Main",
-            subagents: {
-              allowAgents: ["research"],
-            },
-          },
-          {
-            id: "research",
-            name: "Research",
-          },
-        ],
+      {
+        id: "research",
+        name: "Research",
       },
     };
 
@@ -76,38 +97,23 @@ describe("agents_list", () => {
       throw new Error("missing agents_list tool");
     }
 
+    const tool = requireAgentsListTool();
     const result = await tool.execute("call2", {});
-    const agents = (
-      result.details as {
-        agents?: Array<{ id: string }>;
-      }
-    ).agents;
+    const agents = readAgentList(result);
     expect(agents?.map((agent) => agent.id)).toEqual(["main", "research"]);
   });
 
   it("returns configured agents when allowlist is *", async () => {
-    configOverride = {
-      session: {
-        mainKey: "main",
-        scope: "per-sender",
+    setConfigWithAgentList([
+      {
+        id: "main",
+        subagents: {
+          allowAgents: ["*"],
+        },
       },
-      agents: {
-        list: [
-          {
-            id: "main",
-            subagents: {
-              allowAgents: ["*"],
-            },
-          },
-          {
-            id: "research",
-            name: "Research",
-          },
-          {
-            id: "coder",
-            name: "Coder",
-          },
-        ],
+      {
+        id: "research",
+        name: "Research",
       },
     };
 
@@ -118,23 +124,22 @@ describe("agents_list", () => {
       throw new Error("missing agents_list tool");
     }
 
+    const tool = requireAgentsListTool();
     const result = await tool.execute("call3", {});
     expect(result.details).toMatchObject({
       allowAny: true,
     });
-    const agents = (
-      result.details as {
-        agents?: Array<{ id: string }>;
-      }
-    ).agents;
+    const agents = readAgentList(result);
     expect(agents?.map((agent) => agent.id)).toEqual(["main", "coder", "research"]);
   });
 
   it("marks allowlisted-but-unconfigured agents", async () => {
-    configOverride = {
-      session: {
-        mainKey: "main",
-        scope: "per-sender",
+    setConfigWithAgentList([
+      {
+        id: "main",
+        subagents: {
+          allowAgents: ["research"],
+        },
       },
       agents: {
         list: [
@@ -155,12 +160,9 @@ describe("agents_list", () => {
       throw new Error("missing agents_list tool");
     }
 
+    const tool = requireAgentsListTool();
     const result = await tool.execute("call4", {});
-    const agents = (
-      result.details as {
-        agents?: Array<{ id: string; configured: boolean }>;
-      }
-    ).agents;
+    const agents = readAgentList(result);
     expect(agents?.map((agent) => agent.id)).toEqual(["main", "research"]);
     const research = agents?.find((agent) => agent.id === "research");
     expect(research?.configured).toBe(false);

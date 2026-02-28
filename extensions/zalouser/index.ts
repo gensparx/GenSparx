@@ -24,7 +24,7 @@ const plugin = {
         "friends (list/search friends), groups (list groups), me (profile info), status (auth check).",
       parameters: ZalouserToolSchema,
       execute: executeZalouserTool,
-    });
+    } as AnyAgentTool);
   },
 };
 

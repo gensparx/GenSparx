@@ -1,5 +1,5 @@
 ---
-summary: "How the installer scripts work (install.sh + install-cli.sh), flags, and automation"
+summary: "How the installer scripts work (install.sh, install-cli.sh, install.ps1), flags, and automation"
 read_when:
   - You want to understand `gensparx.com/install.sh`
   - You want to automate installs (CI / headless)
@@ -15,13 +15,15 @@ GenSparx ships two installer scripts (served from `gensparx.com`):
 - `https://gensparx.com/install-cli.sh` — non-root-friendly CLI installer (installs into a prefix with its own Node)
 - `https://gensparx.com/install.ps1` — Windows PowerShell installer (npm by default; optional git install)
 
-To see the current flags/behavior, run:
+## Quick commands
 
 ```bash
 curl -fsSL https://gensparx.com/install.sh | bash -s -- --help
 ```
 
-Windows (PowerShell) help:
+    ```bash
+    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --help
+    ```
 
 ```powershell
 & ([scriptblock]::Create((iwr -useb https://gensparx.com/install.ps1))) -?
@@ -29,9 +31,15 @@ Windows (PowerShell) help:
 
 If the installer completes but `gensparx` is not found in a new terminal, it’s usually a Node/npm PATH issue. See: [Install](/install#nodejs--npm-path-sanity).
 
-## install.sh (recommended)
+  </Tab>
+  <Tab title="install.ps1">
+    ```powershell
+    iwr -useb https://openclaw.ai/install.ps1 | iex
+    ```
 
-What it does (high level):
+    ```powershell
+    & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -Tag beta -NoOnboard -DryRun
+    ```
 
 - Detect OS (macOS / Linux / WSL).
 - Ensure Node.js **22+** (macOS via Homebrew; Linux via NodeSource).
@@ -43,48 +51,104 @@ What it does (high level):
 - For git installs: runs `gensparx doctor --non-interactive` after install/update (best effort).
 - Mitigates `sharp` native install gotchas by defaulting `SHARP_IGNORE_GLOBAL_LIBVIPS=1` (avoids building against system libvips).
 
-If you _want_ `sharp` to link against a globally-installed libvips (or you’re debugging), set:
+<Note>
+If install succeeds but `openclaw` is not found in a new terminal, see [Node.js troubleshooting](/install/node#troubleshooting).
+</Note>
 
 ```bash
 SHARP_IGNORE_GLOBAL_LIBVIPS=0 curl -fsSL https://gensparx.com/install.sh | bash
 ```
 
-### Discoverability / “git install” prompt
+## install.sh
 
 If you run the installer while **already inside a GenSparx source checkout** (detected via `package.json` + `pnpm-workspace.yaml`), it prompts:
 
-- update and use this checkout (`git`)
-- or migrate to the global npm install (`npm`)
+### Flow (install.sh)
 
-In non-interactive contexts (no TTY / `--no-prompt`), you must pass `--install-method git|npm` (or set `OPENCLAW_INSTALL_METHOD`), otherwise the script exits with code `2`.
+<Steps>
+  <Step title="Detect OS">
+    Supports macOS and Linux (including WSL). If macOS is detected, installs Homebrew if missing.
+  </Step>
+  <Step title="Ensure Node.js 22+">
+    Checks Node version and installs Node 22 if needed (Homebrew on macOS, NodeSource setup scripts on Linux apt/dnf/yum).
+  </Step>
+  <Step title="Ensure Git">
+    Installs Git if missing.
+  </Step>
+  <Step title="Install OpenClaw">
+    - `npm` method (default): global npm install
+    - `git` method: clone/update repo, install deps with pnpm, build, then install wrapper at `~/.local/bin/openclaw`
+  </Step>
+  <Step title="Post-install tasks">
+    - Runs `openclaw doctor --non-interactive` on upgrades and git installs (best effort)
+    - Attempts onboarding when appropriate (TTY available, onboarding not disabled, and bootstrap/config checks pass)
+    - Defaults `SHARP_IGNORE_GLOBAL_LIBVIPS=1`
+  </Step>
+</Steps>
 
-### Why Git is needed
+### Source checkout detection
 
-Git is required for the `--install-method git` path (clone / pull).
+If run inside an OpenClaw checkout (`package.json` + `pnpm-workspace.yaml`), the script offers:
 
-For `npm` installs, Git is _usually_ not required, but some environments still end up needing it (e.g. when a package or dependency is fetched via a git URL). The installer currently ensures Git is present to avoid `spawn git ENOENT` surprises on fresh distros.
+- use checkout (`git`), or
+- use global install (`npm`)
 
-### Why npm hits `EACCES` on fresh Linux
+If no TTY is available and no install method is set, it defaults to `npm` and warns.
 
-On some Linux setups (especially after installing Node via the system package manager or NodeSource), npm's global prefix points at a root-owned location. Then `npm install -g ...` fails with `EACCES` / `mkdir` permission errors.
+The script exits with code `2` for invalid method selection or invalid `--install-method` values.
 
-`install.sh` mitigates this by switching the prefix to:
+### Examples (install.sh)
 
-- `~/.npm-global` (and adding it to `PATH` in `~/.bashrc` / `~/.zshrc` when present)
+<Tabs>
+  <Tab title="Default">
+    ```bash
+    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash
+    ```
+  </Tab>
+  <Tab title="Skip onboarding">
+    ```bash
+    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --no-onboard
+    ```
+  </Tab>
+  <Tab title="Git install">
+    ```bash
+    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git
+    ```
+  </Tab>
+  <Tab title="Dry run">
+    ```bash
+    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --dry-run
+    ```
+  </Tab>
+</Tabs>
 
-## install-cli.sh (non-root CLI installer)
+<AccordionGroup>
+  <Accordion title="Flags reference">
 
 This script installs `gensparx` into a prefix (default: `~/.openclaw`) and also installs a dedicated Node runtime under that prefix, so it can work on machines where you don’t want to touch the system Node/npm.
 
-Help:
+  </Accordion>
 
 ```bash
 curl -fsSL https://gensparx.com/install-cli.sh | bash -s -- --help
 ```
 
-## install.ps1 (Windows PowerShell)
+| Variable                                    | Description                                   |
+| ------------------------------------------- | --------------------------------------------- |
+| `OPENCLAW_INSTALL_METHOD=git\|npm`          | Install method                                |
+| `OPENCLAW_VERSION=latest\|next\|<semver>`   | npm version or dist-tag                       |
+| `OPENCLAW_BETA=0\|1`                        | Use beta if available                         |
+| `OPENCLAW_GIT_DIR=<path>`                   | Checkout directory                            |
+| `OPENCLAW_GIT_UPDATE=0\|1`                  | Toggle git updates                            |
+| `OPENCLAW_NO_PROMPT=1`                      | Disable prompts                               |
+| `OPENCLAW_NO_ONBOARD=1`                     | Skip onboarding                               |
+| `OPENCLAW_DRY_RUN=1`                        | Dry run mode                                  |
+| `OPENCLAW_VERBOSE=1`                        | Debug mode                                    |
+| `OPENCLAW_NPM_LOGLEVEL=error\|warn\|notice` | npm log level                                 |
+| `SHARP_IGNORE_GLOBAL_LIBVIPS=0\|1`          | Control sharp/libvips behavior (default: `1`) |
 
-What it does (high level):
+  </Accordion>
+</AccordionGroup>
 
 - Ensure Node.js **22+** (winget/Chocolatey/Scoop or manual).
 - Choose install method:
@@ -92,7 +156,7 @@ What it does (high level):
   - `git`: clone/build a source checkout and install a wrapper script
 - Runs `gensparx doctor --non-interactive` on upgrades and git installs (best effort).
 
-Examples:
+## install-cli.sh
 
 ```powershell
 iwr -useb https://gensparx.com/install.ps1 | iex
@@ -106,17 +170,46 @@ iwr -useb https://gensparx.com/install.ps1 | iex -InstallMethod git
 iwr -useb https://gensparx.com/install.ps1 | iex -InstallMethod git -GitDir "C:\\gensparx"
 ```
 
-Environment variables:
+### Examples (install-cli.sh)
 
-- `OPENCLAW_INSTALL_METHOD=git|npm`
-- `OPENCLAW_GIT_DIR=...`
+<Tabs>
+  <Tab title="Default">
+    ```bash
+    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash
+    ```
+  </Tab>
+  <Tab title="Custom prefix + version">
+    ```bash
+    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --prefix /opt/openclaw --version latest
+    ```
+  </Tab>
+  <Tab title="Automation JSON output">
+    ```bash
+    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --json --prefix /opt/openclaw
+    ```
+  </Tab>
+  <Tab title="Run onboarding">
+    ```bash
+    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --onboard
+    ```
+  </Tab>
+</Tabs>
 
-Git requirement:
+<AccordionGroup>
+  <Accordion title="Flags reference">
 
-If you choose `-InstallMethod git` and Git is missing, the installer will print the
-Git for Windows link (`https://git-scm.com/download/win`) and exit.
+| Flag                   | Description                                                                     |
+| ---------------------- | ------------------------------------------------------------------------------- |
+| `--prefix <path>`      | Install prefix (default: `~/.openclaw`)                                         |
+| `--version <ver>`      | OpenClaw version or dist-tag (default: `latest`)                                |
+| `--node-version <ver>` | Node version (default: `22.22.0`)                                               |
+| `--json`               | Emit NDJSON events                                                              |
+| `--onboard`            | Run `openclaw onboard` after install                                            |
+| `--no-onboard`         | Skip onboarding (default)                                                       |
+| `--set-npm-prefix`     | On Linux, force npm prefix to `~/.npm-global` if current prefix is not writable |
+| `--help`               | Show usage (`-h`)                                                               |
 
-Common Windows issues:
+  </Accordion>
 
 - **npm error spawn git / ENOENT**: install Git for Windows and reopen PowerShell, then rerun the installer.
 - **"gensparx" is not recognized**: your npm global bin folder is not on PATH. Most systems use

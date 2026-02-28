@@ -1,5 +1,3 @@
-import fs from "node:fs/promises";
-import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { ensureGenSparxCliOnPath } from "./path-env.js";
@@ -35,9 +33,29 @@ describe("ensureGenSparxCliOnPath", () => {
           process.env.GENSPARX_PATH_BOOTSTRAPPED = originalFlag;
         }
       }
-    } finally {
-      await fs.rm(tmp, { recursive: true, force: true });
     }
+  });
+
+  it("prepends the bundled app bin dir when a sibling openclaw exists", () => {
+    const tmp = abs("/tmp/openclaw-path/case-bundled");
+    const appBinDir = path.join(tmp, "AppBin");
+    const cliPath = path.join(appBinDir, "openclaw");
+    setDir(tmp);
+    setDir(appBinDir);
+    setExe(cliPath);
+
+    process.env.PATH = "/usr/bin";
+    delete process.env.OPENCLAW_PATH_BOOTSTRAPPED;
+
+    ensureOpenClawCliOnPath({
+      execPath: cliPath,
+      cwd: tmp,
+      homeDir: tmp,
+      platform: "darwin",
+    });
+
+    const updated = process.env.PATH ?? "";
+    expect(updated.split(path.delimiter)[0]).toBe(appBinDir);
   });
 
   it("is idempotent", () => {
@@ -130,10 +148,11 @@ describe("ensureGenSparxCliOnPath", () => {
       const execDir = path.join(tmp, "exec");
       await fs.mkdir(execDir, { recursive: true });
 
-      const linuxbrewBin = path.join(tmp, ".linuxbrew", "bin");
-      const linuxbrewSbin = path.join(tmp, ".linuxbrew", "sbin");
-      await fs.mkdir(linuxbrewBin, { recursive: true });
-      await fs.mkdir(linuxbrewSbin, { recursive: true });
+    const localBinDir = path.join(tmp, "node_modules", ".bin");
+    const localCli = path.join(localBinDir, "openclaw");
+    setDir(path.join(tmp, "node_modules"));
+    setDir(localBinDir);
+    setExe(localCli);
 
       process.env.PATH = "/usr/bin";
       delete process.env.GENSPARX_PATH_BOOTSTRAPPED;

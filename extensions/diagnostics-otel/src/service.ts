@@ -1,10 +1,11 @@
 import type { SeverityNumber } from "@opentelemetry/api-logs";
 import type { DiagnosticEventPayload, GenSparxPluginService } from "GenSparx/plugin-sdk";
 import { metrics, trace, SpanStatusCode } from "@opentelemetry/api";
-import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http";
-import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-http";
-import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
-import { Resource } from "@opentelemetry/resources";
+import type { SeverityNumber } from "@opentelemetry/api-logs";
+import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-proto";
+import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-proto";
+import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-proto";
+import { resourceFromAttributes } from "@opentelemetry/resources";
 import { BatchLogRecordProcessor, LoggerProvider } from "@opentelemetry/sdk-logs";
 import { PeriodicExportingMetricReader } from "@opentelemetry/sdk-metrics";
 import { NodeSDK } from "@opentelemetry/sdk-node";
@@ -23,7 +24,8 @@ function resolveOtelUrl(endpoint: string | undefined, path: string): string | un
   if (!endpoint) {
     return undefined;
   }
-  if (endpoint.includes("/v1/")) {
+  const endpointWithoutQueryOrFragment = endpoint.split(/[?#]/, 1)[0] ?? endpoint;
+  if (/\/v1\/(?:traces|metrics|logs)$/i.test(endpointWithoutQueryOrFragment)) {
     return endpoint;
   }
   return `${endpoint}/${path}`;
@@ -73,8 +75,8 @@ export function createDiagnosticsOtelService(): GenSparxPluginService {
         return;
       }
 
-      const resource = new Resource({
-        [SemanticResourceAttributes.SERVICE_NAME]: serviceName,
+      const resource = resourceFromAttributes({
+        [ATTR_SERVICE_NAME]: serviceName,
       });
 
       const traceUrl = resolveOtelUrl(endpoint, "v1/traces");
@@ -117,7 +119,12 @@ export function createDiagnosticsOtelService(): GenSparxPluginService {
             : {}),
         });
 
-        sdk.start();
+        try {
+          await sdk.start();
+        } catch (err) {
+          ctx.logger.error(`diagnostics-otel: failed to start SDK: ${formatError(err)}`);
+          throw err;
+        }
       }
 
       const logSeverityMap: Record<string, SeverityNumber> = {
@@ -220,47 +227,45 @@ export function createDiagnosticsOtelService(): GenSparxPluginService {
           ...(logUrl ? { url: logUrl } : {}),
           ...(headers ? { headers } : {}),
         });
-        logProvider = new LoggerProvider({ resource });
-        logProvider.addLogRecordProcessor(
-          new BatchLogRecordProcessor(
-            logExporter,
-            typeof otel.flushIntervalMs === "number"
-              ? { scheduledDelayMillis: Math.max(1000, otel.flushIntervalMs) }
-              : {},
-          ),
+        const logProcessor = new BatchLogRecordProcessor(
+          logExporter,
+          typeof otel.flushIntervalMs === "number"
+            ? { scheduledDelayMillis: Math.max(1000, otel.flushIntervalMs) }
+            : {},
         );
         const otelLogger = logProvider.getLogger("GenSparx");
 
         stopLogTransport = registerLogTransport((logObj) => {
-          const safeStringify = (value: unknown) => {
-            try {
-              return JSON.stringify(value);
-            } catch {
-              return String(value);
-            }
-          };
-          const meta = (logObj as Record<string, unknown>)._meta as
-            | {
-                logLevelName?: string;
-                date?: Date;
-                name?: string;
-                parentNames?: string[];
-                path?: {
-                  filePath?: string;
-                  fileLine?: string;
-                  fileColumn?: string;
-                  filePathWithLine?: string;
-                  method?: string;
-                };
+          try {
+            const safeStringify = (value: unknown) => {
+              try {
+                return JSON.stringify(value);
+              } catch {
+                return String(value);
               }
-            | undefined;
-          const logLevelName = meta?.logLevelName ?? "INFO";
-          const severityNumber = logSeverityMap[logLevelName] ?? (9 as SeverityNumber);
+            };
+            const meta = (logObj as Record<string, unknown>)._meta as
+              | {
+                  logLevelName?: string;
+                  date?: Date;
+                  name?: string;
+                  parentNames?: string[];
+                  path?: {
+                    filePath?: string;
+                    fileLine?: string;
+                    fileColumn?: string;
+                    filePathWithLine?: string;
+                    method?: string;
+                  };
+                }
+              | undefined;
+            const logLevelName = meta?.logLevelName ?? "INFO";
+            const severityNumber = logSeverityMap[logLevelName] ?? (9 as SeverityNumber);
 
-          const numericArgs = Object.entries(logObj)
-            .filter(([key]) => /^\d+$/.test(key))
-            .toSorted((a, b) => Number(a[0]) - Number(b[0]))
-            .map(([, value]) => value);
+            const numericArgs = Object.entries(logObj)
+              .filter(([key]) => /^\d+$/.test(key))
+              .toSorted((a, b) => Number(a[0]) - Number(b[0]))
+              .map(([, value]) => value);
 
           let bindings: Record<string, unknown> | undefined;
           if (typeof numericArgs[0] === "string" && numericArgs[0].trim().startsWith("{")) {
@@ -324,13 +329,66 @@ export function createDiagnosticsOtelService(): GenSparxPluginService {
             attributes["GenSparx.code.location"] = meta.path.filePathWithLine;
           }
 
-          otelLogger.emit({
-            body: message,
-            severityText: logLevelName,
-            severityNumber,
-            attributes,
-            timestamp: meta?.date ?? new Date(),
-          });
+            let message = "";
+            if (numericArgs.length > 0 && typeof numericArgs[numericArgs.length - 1] === "string") {
+              message = String(numericArgs.pop());
+            } else if (numericArgs.length === 1) {
+              message = safeStringify(numericArgs[0]);
+              numericArgs.length = 0;
+            }
+            if (!message) {
+              message = "log";
+            }
+
+            const attributes: Record<string, string | number | boolean> = {
+              "openclaw.log.level": logLevelName,
+            };
+            if (meta?.name) {
+              attributes["openclaw.logger"] = meta.name;
+            }
+            if (meta?.parentNames?.length) {
+              attributes["openclaw.logger.parents"] = meta.parentNames.join(".");
+            }
+            if (bindings) {
+              for (const [key, value] of Object.entries(bindings)) {
+                if (
+                  typeof value === "string" ||
+                  typeof value === "number" ||
+                  typeof value === "boolean"
+                ) {
+                  attributes[`openclaw.${key}`] = value;
+                } else if (value != null) {
+                  attributes[`openclaw.${key}`] = safeStringify(value);
+                }
+              }
+            }
+            if (numericArgs.length > 0) {
+              attributes["openclaw.log.args"] = safeStringify(numericArgs);
+            }
+            if (meta?.path?.filePath) {
+              attributes["code.filepath"] = meta.path.filePath;
+            }
+            if (meta?.path?.fileLine) {
+              attributes["code.lineno"] = Number(meta.path.fileLine);
+            }
+            if (meta?.path?.method) {
+              attributes["code.function"] = meta.path.method;
+            }
+            if (meta?.path?.filePathWithLine) {
+              attributes["openclaw.code.location"] = meta.path.filePathWithLine;
+            }
+
+            // OTLP can leave the host boundary, so redact string fields before export.
+            otelLogger.emit({
+              body: redactSensitiveText(message),
+              severityText: logLevelName,
+              severityNumber,
+              attributes: redactOtelAttributes(attributes),
+              timestamp: meta?.date ?? new Date(),
+            });
+          } catch (err) {
+            ctx.logger.error(`diagnostics-otel: log transport failed: ${formatError(err)}`);
+          }
         });
       }
 
@@ -454,6 +512,7 @@ export function createDiagnosticsOtelService(): GenSparxPluginService {
         if (!tracesEnabled) {
           return;
         }
+        const redactedError = redactSensitiveText(evt.error);
         const spanAttrs: Record<string, string | number> = {
           ...attrs,
           "GenSparx.error": evt.error,
@@ -464,7 +523,7 @@ export function createDiagnosticsOtelService(): GenSparxPluginService {
         const span = tracer.startSpan("GenSparx.webhook.error", {
           attributes: spanAttrs,
         });
-        span.setStatus({ code: SpanStatusCode.ERROR, message: evt.error });
+        span.setStatus({ code: SpanStatusCode.ERROR, message: redactedError });
         span.end();
       };
 
@@ -478,6 +537,18 @@ export function createDiagnosticsOtelService(): GenSparxPluginService {
         messageQueuedCounter.add(1, attrs);
         if (typeof evt.queueDepth === "number") {
           queueDepthHistogram.record(evt.queueDepth, attrs);
+        }
+      };
+
+      const addSessionIdentityAttrs = (
+        spanAttrs: Record<string, string | number>,
+        evt: { sessionKey?: string; sessionId?: string },
+      ) => {
+        if (evt.sessionKey) {
+          spanAttrs["openclaw.sessionKey"] = evt.sessionKey;
+        }
+        if (evt.sessionId) {
+          spanAttrs["openclaw.sessionId"] = evt.sessionId;
         }
       };
 
@@ -583,48 +654,54 @@ export function createDiagnosticsOtelService(): GenSparxPluginService {
       };
 
       unsubscribe = onDiagnosticEvent((evt: DiagnosticEventPayload) => {
-        switch (evt.type) {
-          case "model.usage":
-            recordModelUsage(evt);
-            return;
-          case "webhook.received":
-            recordWebhookReceived(evt);
-            return;
-          case "webhook.processed":
-            recordWebhookProcessed(evt);
-            return;
-          case "webhook.error":
-            recordWebhookError(evt);
-            return;
-          case "message.queued":
-            recordMessageQueued(evt);
-            return;
-          case "message.processed":
-            recordMessageProcessed(evt);
-            return;
-          case "queue.lane.enqueue":
-            recordLaneEnqueue(evt);
-            return;
-          case "queue.lane.dequeue":
-            recordLaneDequeue(evt);
-            return;
-          case "session.state":
-            recordSessionState(evt);
-            return;
-          case "session.stuck":
-            recordSessionStuck(evt);
-            return;
-          case "run.attempt":
-            recordRunAttempt(evt);
-            return;
-          case "diagnostic.heartbeat":
-            recordHeartbeat(evt);
-            return;
+        try {
+          switch (evt.type) {
+            case "model.usage":
+              recordModelUsage(evt);
+              return;
+            case "webhook.received":
+              recordWebhookReceived(evt);
+              return;
+            case "webhook.processed":
+              recordWebhookProcessed(evt);
+              return;
+            case "webhook.error":
+              recordWebhookError(evt);
+              return;
+            case "message.queued":
+              recordMessageQueued(evt);
+              return;
+            case "message.processed":
+              recordMessageProcessed(evt);
+              return;
+            case "queue.lane.enqueue":
+              recordLaneEnqueue(evt);
+              return;
+            case "queue.lane.dequeue":
+              recordLaneDequeue(evt);
+              return;
+            case "session.state":
+              recordSessionState(evt);
+              return;
+            case "session.stuck":
+              recordSessionStuck(evt);
+              return;
+            case "run.attempt":
+              recordRunAttempt(evt);
+              return;
+            case "diagnostic.heartbeat":
+              recordHeartbeat(evt);
+              return;
+          }
+        } catch (err) {
+          ctx.logger.error(
+            `diagnostics-otel: event handler failed (${evt.type}): ${formatError(err)}`,
+          );
         }
       });
 
       if (logsEnabled) {
-        ctx.logger.info("diagnostics-otel: logs exporter enabled (OTLP/HTTP)");
+        ctx.logger.info("diagnostics-otel: logs exporter enabled (OTLP/Protobuf)");
       }
     },
     async stop() {

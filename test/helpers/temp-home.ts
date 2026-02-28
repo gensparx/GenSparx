@@ -9,6 +9,7 @@ type EnvSnapshot = {
   userProfile: string | undefined;
   homeDrive: string | undefined;
   homePath: string | undefined;
+  openclawHome: string | undefined;
   stateDir: string | undefined;
 };
 
@@ -104,12 +105,19 @@ export async function withTempHome<T>(
     restoreExtraEnv(envSnapshot);
     restoreEnv(snapshot);
     try {
-      await fs.rm(base, {
-        recursive: true,
-        force: true,
-        maxRetries: 10,
-        retryDelay: 50,
-      });
+      if (process.platform === "win32") {
+        await fs.rm(base, {
+          recursive: true,
+          force: true,
+          maxRetries: 10,
+          retryDelay: 50,
+        });
+      } else {
+        await fs.rm(base, {
+          recursive: true,
+          force: true,
+        });
+      }
     } catch {
       // ignore cleanup failures in tests
     }

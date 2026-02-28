@@ -1,6 +1,6 @@
-import type { ChannelAccountSnapshot, ChannelStatusIssue } from "../types.js";
 import { formatCliCommand } from "../../../cli/command-format.js";
-import { asString, isRecord } from "./shared.js";
+import type { ChannelAccountSnapshot, ChannelStatusIssue } from "../types.js";
+import { asString, collectIssuesForEnabledAccounts, isRecord } from "./shared.js";
 
 type WhatsAppAccountStatus = {
   accountId?: unknown;
@@ -30,23 +30,16 @@ function readWhatsAppAccountStatus(value: ChannelAccountSnapshot): WhatsAppAccou
 export function collectWhatsAppStatusIssues(
   accounts: ChannelAccountSnapshot[],
 ): ChannelStatusIssue[] {
-  const issues: ChannelStatusIssue[] = [];
-  for (const entry of accounts) {
-    const account = readWhatsAppAccountStatus(entry);
-    if (!account) {
-      continue;
-    }
-    const accountId = asString(account.accountId) ?? "default";
-    const enabled = account.enabled !== false;
-    if (!enabled) {
-      continue;
-    }
-    const linked = account.linked === true;
-    const running = account.running === true;
-    const connected = account.connected === true;
-    const reconnectAttempts =
-      typeof account.reconnectAttempts === "number" ? account.reconnectAttempts : null;
-    const lastError = asString(account.lastError);
+  return collectIssuesForEnabledAccounts({
+    accounts,
+    readAccount: readWhatsAppAccountStatus,
+    collectIssues: ({ account, accountId, issues }) => {
+      const linked = account.linked === true;
+      const running = account.running === true;
+      const connected = account.connected === true;
+      const reconnectAttempts =
+        typeof account.reconnectAttempts === "number" ? account.reconnectAttempts : null;
+      const lastError = asString(account.lastError);
 
     if (!linked) {
       issues.push({

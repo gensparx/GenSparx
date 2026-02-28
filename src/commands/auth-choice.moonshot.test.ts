@@ -1,10 +1,15 @@
-import fs from "node:fs/promises";
-import os from "node:os";
-import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { RuntimeEnv } from "../runtime.js";
+import { resolveAgentModelPrimaryValue } from "../config/model-input.js";
 import type { WizardPrompter } from "../wizard/prompts.js";
 import { applyAuthChoice } from "./auth-choice.js";
+import {
+  createAuthTestLifecycle,
+  createExitThrowingRuntime,
+  createWizardPrompter,
+  readAuthProfilesForAgent,
+  requireOpenClawAgentDir,
+  setupAuthTestEnv,
+} from "./test-wizard-helpers.js";
 
 const noopAsync = async () => {};
 const noop = () => {};
@@ -58,27 +63,7 @@ describe("applyAuthChoice (moonshot)", () => {
     process.env.PI_CODING_AGENT_DIR = process.env.GENSPARX_AGENT_DIR;
     delete process.env.MOONSHOT_API_KEY;
 
-    const text = vi.fn().mockResolvedValue("sk-moonshot-cn-test");
-    const prompter: WizardPrompter = {
-      intro: vi.fn(noopAsync),
-      outro: vi.fn(noopAsync),
-      note: vi.fn(noopAsync),
-      select: vi.fn(async () => "" as never),
-      multiselect: vi.fn(async () => []),
-      text,
-      confirm: vi.fn(async () => false),
-      progress: vi.fn(() => ({ update: noop, stop: noop })),
-    };
-    const runtime: RuntimeEnv = {
-      log: vi.fn(),
-      error: vi.fn(),
-      exit: vi.fn((code: number) => {
-        throw new Error(`exit:${code}`);
-      }),
-    };
-
-    const result = await applyAuthChoice({
-      authChoice: "moonshot-api-key-cn",
+    const { result, text } = await runMoonshotCnFlow({
       config: {
         agents: {
           defaults: {
@@ -86,23 +71,20 @@ describe("applyAuthChoice (moonshot)", () => {
           },
         },
       },
-      prompter,
-      runtime,
       setDefaultModel: false,
     });
 
     expect(text).toHaveBeenCalledWith(
       expect.objectContaining({ message: "Enter Moonshot API key (.cn)" }),
     );
-    expect(result.config.agents?.defaults?.model?.primary).toBe("anthropic/claude-opus-4-5");
+    expect(resolveAgentModelPrimaryValue(result.config.agents?.defaults?.model)).toBe(
+      "anthropic/claude-opus-4-5",
+    );
     expect(result.config.models?.providers?.moonshot?.baseUrl).toBe("https://api.moonshot.cn/v1");
+    expect(result.config.models?.providers?.moonshot?.models?.[0]?.input).toContain("image");
     expect(result.agentModelOverride).toBe("moonshot/kimi-k2.5");
 
-    const authProfilePath = authProfilePathFor(requireAgentDir());
-    const raw = await fs.readFile(authProfilePath, "utf8");
-    const parsed = JSON.parse(raw) as {
-      profiles?: Record<string, { key?: string }>;
-    };
+    const parsed = await readAuthProfiles();
     expect(parsed.profiles?.["moonshot:default"]?.key).toBe("sk-moonshot-cn-test");
   });
 
@@ -113,42 +95,19 @@ describe("applyAuthChoice (moonshot)", () => {
     process.env.PI_CODING_AGENT_DIR = process.env.GENSPARX_AGENT_DIR;
     delete process.env.MOONSHOT_API_KEY;
 
-    const text = vi.fn().mockResolvedValue("sk-moonshot-cn-test");
-    const prompter: WizardPrompter = {
-      intro: vi.fn(noopAsync),
-      outro: vi.fn(noopAsync),
-      note: vi.fn(noopAsync),
-      select: vi.fn(async () => "" as never),
-      multiselect: vi.fn(async () => []),
-      text,
-      confirm: vi.fn(async () => false),
-      progress: vi.fn(() => ({ update: noop, stop: noop })),
-    };
-    const runtime: RuntimeEnv = {
-      log: vi.fn(),
-      error: vi.fn(),
-      exit: vi.fn((code: number) => {
-        throw new Error(`exit:${code}`);
-      }),
-    };
-
-    const result = await applyAuthChoice({
-      authChoice: "moonshot-api-key-cn",
+    const { result } = await runMoonshotCnFlow({
       config: {},
-      prompter,
-      runtime,
       setDefaultModel: true,
     });
 
-    expect(result.config.agents?.defaults?.model?.primary).toBe("moonshot/kimi-k2.5");
+    expect(resolveAgentModelPrimaryValue(result.config.agents?.defaults?.model)).toBe(
+      "moonshot/kimi-k2.5",
+    );
     expect(result.config.models?.providers?.moonshot?.baseUrl).toBe("https://api.moonshot.cn/v1");
+    expect(result.config.models?.providers?.moonshot?.models?.[0]?.input).toContain("image");
     expect(result.agentModelOverride).toBeUndefined();
 
-    const authProfilePath = authProfilePathFor(requireAgentDir());
-    const raw = await fs.readFile(authProfilePath, "utf8");
-    const parsed = JSON.parse(raw) as {
-      profiles?: Record<string, { key?: string }>;
-    };
+    const parsed = await readAuthProfiles();
     expect(parsed.profiles?.["moonshot:default"]?.key).toBe("sk-moonshot-cn-test");
   });
 });

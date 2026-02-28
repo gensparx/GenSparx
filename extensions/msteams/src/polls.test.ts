@@ -21,7 +21,7 @@ const runtimeStub = {
 
 describe("msteams polls", () => {
   beforeEach(() => {
-    setMSTeamsRuntime(runtimeStub);
+    setMSTeamsRuntime(msteamsRuntimeStub);
   });
 
   it("builds poll cards with fallback text", () => {

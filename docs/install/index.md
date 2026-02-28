@@ -6,7 +6,7 @@ read_when:
 title: "Install Overview"
 ---
 
-# Install Overview
+# Install
 
 Use the installer unless you have a reason not to. It sets up the CLI and runs onboarding.
 
@@ -30,13 +30,15 @@ gensparx onboard --install-daemon
 
 ## System requirements
 
-- **Node >=22**
-- macOS, Linux, or Windows via WSL2
+- **[Node 22+](/install/node)** (the [installer script](#install-methods) will install it if missing)
+- macOS, Linux, or Windows
 - `pnpm` only if you build from source
 
-## Choose your install path
+<Note>
+On Windows, we strongly recommend running OpenClaw under [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install).
+</Note>
 
-### 1) Installer script (recommended)
+## Install methods
 
 Installs `gensparx` globally via npm and runs onboarding.
 
@@ -44,52 +46,79 @@ Installs `gensparx` globally via npm and runs onboarding.
 curl -fsSL https://gensparx.com/install.sh | bash
 ```
 
-Installer flags:
+<AccordionGroup>
+  <Accordion title="Installer script" icon="rocket" defaultOpen>
+    Downloads the CLI, installs it globally via npm, and launches the onboarding wizard.
 
 ```bash
 curl -fsSL https://gensparx.com/install.sh | bash -s -- --help
 ```
 
-Details: [Installer internals](/install/installer).
+    That's it — the script handles Node detection, installation, and onboarding.
 
-Non-interactive (skip onboarding):
+    To skip onboarding and just install the binary:
 
 ```bash
 curl -fsSL https://gensparx.com/install.sh | bash -s -- --no-onboard
 ```
 
-### 2) Global install (manual)
+    For all flags, env vars, and CI/automation options, see [Installer internals](/install/installer).
 
-If you already have Node:
+  </Accordion>
 
 ```bash
 npm install -g gensparx@latest
 ```
 
-If you have libvips installed globally (common on macOS via Homebrew) and `sharp` fails to install, force prebuilt binaries:
+    <Tabs>
+      <Tab title="npm">
+        ```bash
+        npm install -g openclaw@latest
+        openclaw onboard --install-daemon
+        ```
 
 ```bash
 SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g gensparx@latest
 ```
 
-If you see `sharp: Please add node-gyp to your dependencies`, either install build tooling (macOS: Xcode CLT + `npm install -g node-gyp`) or use the `SHARP_IGNORE_GLOBAL_LIBVIPS=1` workaround above to skip the native build.
+          ```bash
+          SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g openclaw@latest
+          ```
 
-Or with pnpm:
+          If you see `sharp: Please add node-gyp to your dependencies`, either install build tooling (macOS: Xcode CLT + `npm install -g node-gyp`) or use the env var above.
+        </Accordion>
+      </Tab>
+      <Tab title="pnpm">
+        ```bash
+        pnpm add -g openclaw@latest
+        pnpm approve-builds -g        # approve openclaw, node-llama-cpp, sharp, etc.
+        openclaw onboard --install-daemon
+        ```
 
 ```bash
 pnpm add -g gensparx@latest
 pnpm approve-builds -g                # approve gensparx, node-llama-cpp, sharp, etc.
 ```
 
-pnpm requires explicit approval for packages with build scripts. After the first install shows the "Ignored build scripts" warning, run `pnpm approve-builds -g` and select the listed packages.
+  </Accordion>
 
-Then:
+  <Accordion title="From source" icon="github">
+    For contributors or anyone who wants to run from a local checkout.
 
 ```bash
 gensparx onboard --install-daemon
 ```
 
-### 3) From source (contributors/dev)
+        ```bash
+        git clone https://github.com/openclaw/openclaw.git
+        cd openclaw
+        pnpm install
+        pnpm ui:build
+        pnpm build
+        ```
+      </Step>
+      <Step title="Link the CLI">
+        Make the `openclaw` command available globally:
 
 ```bash
 git clone https://github.com/GenSparx/GenSparx.git
@@ -102,14 +131,30 @@ gensparx onboard --install-daemon
 
 Tip: if you don’t have a global install yet, run repo commands via `pnpm gensparx ...`.
 
-For deeper development workflows, see [Setup](/start/setup).
+    For deeper development workflows, see [Setup](/start/setup).
 
-### 4) Other install options
+  </Accordion>
+</AccordionGroup>
 
-- Docker: [Docker](/install/docker)
-- Nix: [Nix](/install/nix)
-- Ansible: [Ansible](/install/ansible)
-- Bun (CLI only): [Bun](/install/bun)
+## Other install methods
+
+<CardGroup cols={2}>
+  <Card title="Docker" href="/install/docker" icon="container">
+    Containerized or headless deployments.
+  </Card>
+  <Card title="Podman" href="/install/podman" icon="container">
+    Rootless container: run `setup-podman.sh` once, then the launch script.
+  </Card>
+  <Card title="Nix" href="/install/nix" icon="snowflake">
+    Declarative install via Nix.
+  </Card>
+  <Card title="Ansible" href="/install/ansible" icon="server">
+    Automated fleet provisioning.
+  </Card>
+  <Card title="Bun" href="/install/bun" icon="zap">
+    CLI-only usage via the Bun runtime.
+  </Card>
+</CardGroup>
 
 ## After install
 
@@ -135,7 +180,7 @@ curl -fsSL https://gensparx.com/install.sh | bash -s -- --install-method npm
 curl -fsSL https://gensparx.com/install.sh | bash -s -- --install-method git
 ```
 
-Common flags:
+If you need custom runtime paths, use:
 
 - `--install-method npm|git`
 - `--git-dir <path>` (default: `~/GenSparx`)
@@ -144,9 +189,9 @@ Common flags:
 - `--dry-run` (print what would happen; make no changes)
 - `--no-onboard` (skip onboarding)
 
-### Environment variables
+See [Environment vars](/help/environment) for precedence and full details.
 
-Equivalent env vars (useful for automation):
+## Troubleshooting: `openclaw` not found
 
 - `OPENCLAW_INSTALL_METHOD=git|npm`
 - `OPENCLAW_GIT_DIR=...`
@@ -169,16 +214,16 @@ echo "$PATH"
 
 If `$(npm prefix -g)/bin` (macOS/Linux) or `$(npm prefix -g)` (Windows) is **not** present inside `echo "$PATH"`, your shell can’t find global npm binaries (including `gensparx`).
 
-Fix: add it to your shell startup file (zsh: `~/.zshrc`, bash: `~/.bashrc`):
+Fix — add it to your shell startup file (`~/.zshrc` or `~/.bashrc`):
 
 ```bash
-# macOS / Linux
 export PATH="$(npm prefix -g)/bin:$PATH"
 ```
 
 On Windows, add the output of `npm prefix -g` to your PATH.
 
 Then open a new terminal (or `rehash` in zsh / `hash -r` in bash).
+</Accordion>
 
 ## Update / uninstall
 

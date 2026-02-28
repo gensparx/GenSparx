@@ -3,12 +3,12 @@ import { createLobsterTool } from "./src/lobster-tool.js";
 
 export default function register(api: GenSparxPluginApi) {
   api.registerTool(
-    (ctx) => {
+    ((ctx) => {
       if (ctx.sandboxed) {
         return null;
       }
-      return createLobsterTool(api);
-    },
+      return createLobsterTool(api) as AnyAgentTool;
+    }) as OpenClawPluginToolFactory,
     { optional: true },
   );
 }

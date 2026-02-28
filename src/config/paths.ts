@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { expandHomePrefix, resolveRequiredHomeDir } from "../infra/home-dir.js";
 import type { OpenClawConfig } from "./types.js";
 
 /**
@@ -82,8 +83,8 @@ export function resolveStateDir(
   if (override) {
     return resolveUserPath(override, env);
   }
-  const newDir = newStateDir(homedir);
-  const legacyDirs = legacyStateDirs(homedir);
+  const newDir = newStateDir(effectiveHomedir);
+  const legacyDirs = legacyStateDirs(effectiveHomedir);
   const hasNew = fs.existsSync(newDir);
   if (hasNew) {
     return newDir;
@@ -226,7 +227,7 @@ export function resolveDefaultConfigCandidates(
     candidates.push(...LEGACY_CONFIG_FILENAMES.map((name) => path.join(resolved, name)));
   }
 
-  const defaultDirs = [newStateDir(homedir), ...legacyStateDirs(homedir)];
+  const defaultDirs = [newStateDir(effectiveHomedir), ...legacyStateDirs(effectiveHomedir)];
   for (const dir of defaultDirs) {
     candidates.push(path.join(dir, CONFIG_FILENAME));
     candidates.push(...LEGACY_CONFIG_FILENAMES.map((name) => path.join(dir, name)));
@@ -269,7 +270,7 @@ export function resolveOAuthDir(
 
 export function resolveOAuthPath(
   env: NodeJS.ProcessEnv = process.env,
-  stateDir: string = resolveStateDir(env, os.homedir),
+  stateDir: string = resolveStateDir(env, envHomedir(env)),
 ): string {
   return path.join(resolveOAuthDir(env, stateDir), OAUTH_FILENAME);
 }

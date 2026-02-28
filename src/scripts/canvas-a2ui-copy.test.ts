@@ -9,12 +9,36 @@ describe("canvas a2ui copy", () => {
     const dir = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-a2ui-"));
 
     try {
-      await expect(copyA2uiAssets({ srcDir: dir, outDir: path.join(dir, "out") })).rejects.toThrow(
-        'Run "pnpm canvas:a2ui:bundle"',
-      );
+      await run(dir);
     } finally {
       await fs.rm(dir, { recursive: true, force: true });
     }
+  }
+
+  it("throws a helpful error when assets are missing", async () => {
+    await withA2uiFixture(async (dir) => {
+      await expect(copyA2uiAssets({ srcDir: dir, outDir: path.join(dir, "out") })).rejects.toThrow(
+        'Run "pnpm canvas:a2ui:bundle"',
+      );
+    });
+  });
+
+  it("skips missing assets when OPENCLAW_A2UI_SKIP_MISSING=1", async () => {
+    await withA2uiFixture(async (dir) => {
+      const previous = process.env.OPENCLAW_A2UI_SKIP_MISSING;
+      process.env.OPENCLAW_A2UI_SKIP_MISSING = "1";
+      try {
+        await expect(
+          copyA2uiAssets({ srcDir: dir, outDir: path.join(dir, "out") }),
+        ).resolves.toBeUndefined();
+      } finally {
+        if (previous === undefined) {
+          delete process.env.OPENCLAW_A2UI_SKIP_MISSING;
+        } else {
+          process.env.OPENCLAW_A2UI_SKIP_MISSING = previous;
+        }
+      }
+    });
   });
 
   it("copies bundled assets to dist", async () => {
@@ -31,8 +55,6 @@ describe("canvas a2ui copy", () => {
 
       await expect(fs.stat(path.join(outDir, "index.html"))).resolves.toBeTruthy();
       await expect(fs.stat(path.join(outDir, "a2ui.bundle.js"))).resolves.toBeTruthy();
-    } finally {
-      await fs.rm(dir, { recursive: true, force: true });
-    }
+    });
   });
 });

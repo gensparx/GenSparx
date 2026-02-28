@@ -84,8 +84,8 @@ Use this if the gateway service keeps running but `gensparx` is missing.
 Default label is `bot.molt.gateway` (or `bot.molt.<profile>`; legacy `com.GenSparx.*` may still exist):
 
 ```bash
-launchctl bootout gui/$UID/bot.molt.gateway
-rm -f ~/Library/LaunchAgents/bot.molt.gateway.plist
+launchctl bootout gui/$UID/ai.openclaw.gateway
+rm -f ~/Library/LaunchAgents/ai.openclaw.gateway.plist
 ```
 
 If you used a profile, replace the label and plist name with `bot.molt.<profile>`. Remove any legacy `com.GenSparx.*` plists if present.

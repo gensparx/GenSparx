@@ -1,15 +1,16 @@
 ---
 summary: "Quick troubleshooting guide for common GenSparx failures"
 read_when:
-  - Investigating runtime issues or failures
+  - The troubleshooting hub pointed you here for deeper diagnosis
+  - You need stable symptom based runbook sections with exact commands
 title: "Troubleshooting"
 ---
 
-# Troubleshooting 🔧
+# Gateway troubleshooting
 
 When GenSparx misbehaves, here's how to fix it.
 
-Start with the FAQ’s [First 60 seconds](/help/faq#first-60-seconds-if-somethings-broken) if you just want a quick triage recipe. This page goes deeper on runtime failures and diagnostics.
+## Command ladder
 
 Provider-specific shortcuts: [/channels/troubleshooting](/channels/troubleshooting)
 
@@ -329,11 +330,15 @@ gensparx logs --follow
 tail -f "$(ls -t /tmp/GenSparx/GenSparx-*.log | head -1)" | grep "blocked\\|skip\\|unauthorized"
 ```
 
-### Pairing Code Not Arriving
+Expected healthy signals:
 
-If `dmPolicy` is `pairing`, unknown senders should receive a code and their message is ignored until approved.
+- `openclaw gateway status` shows `Runtime: running` and `RPC probe: ok`.
+- `openclaw doctor` reports no blocking config/service issues.
+- `openclaw channels status --probe` shows connected/ready channels.
 
-**Check 1:** Is a pending request already waiting?
+## No replies
+
+If channels are up but nothing answers, check routing and policy before reconnecting anything.
 
 ```bash
 gensparx pairing list <channel>
@@ -408,13 +413,13 @@ gensparx status --deep
 gensparx logs --limit 200 | grep "connection\\|disconnect\\|logout"
 ```
 
-**Fix:** Usually reconnects automatically once the Gateway is running. If you’re stuck, restart the Gateway process (however you supervise it), or run it manually with verbose output:
+Look for:
 
 ```bash
 gensparx gateway --verbose
 ```
 
-If you’re logged out / unlinked:
+Common signatures:
 
 ```bash
 gensparx channels logout
@@ -422,13 +427,13 @@ trash "${OPENCLAW_STATE_DIR:-\$HOME/.openclaw}/credentials" # if logout can't cl
 gensparx channels login --verbose       # re-scan QR
 ```
 
-### Media Send Failing
+Related:
 
-**Check 1:** Is the file path valid?
+- [/channels/troubleshooting](/channels/troubleshooting)
+- [/channels/pairing](/channels/pairing)
+- [/channels/groups](/channels/groups)
 
-```bash
-ls -la /path/to/your/image.jpg
-```
+## Dashboard control ui connectivity
 
 **Check 2:** Is it too large?
 
@@ -642,19 +647,21 @@ gensparx gateway stop
 # Or: launchctl bootout gui/$UID/bot.molt.gateway (replace with bot.molt.<profile>; legacy com.GenSparx.* still works)
 ```
 
-**Fix 2: Port is busy (find the listener)**
+Look for:
 
-```bash
-lsof -nP -iTCP:18789 -sTCP:LISTEN
-```
+- Correct probe URL and dashboard URL.
+- Auth mode/token mismatch between client and gateway.
+- HTTP usage where device identity is required.
 
-If it’s an unsupervised process, try a graceful stop first, then escalate:
+Common signatures:
 
-```bash
-kill -TERM <PID>
-sleep 1
-kill -9 <PID> # last resort
-```
+- `device identity required` → non-secure context or missing device auth.
+- `device nonce required` / `device nonce mismatch` → client is not completing the
+  challenge-based device auth flow (`connect.challenge` + `device.nonce`).
+- `device signature invalid` / `device signature expired` → client signed the wrong
+  payload (or stale timestamp) for the current handshake.
+- `unauthorized` / reconnect loop → token/password mismatch.
+- `gateway connect failed:` → wrong host/port/url target.
 
 **Fix 3: Check the CLI install**
 Ensure the global `gensparx` CLI is installed and matches the app version:
@@ -700,8 +707,9 @@ gensparx health --json
 # If it fails, rerun with connection details:
 gensparx health --verbose
 
-# Is something listening on the default port?
-lsof -nP -iTCP:18789 -sTCP:LISTEN
+1. waits for `connect.challenge`
+2. signs the challenge-bound payload
+3. sends `connect.params.device.nonce` with the same challenge nonce
 
 # Recent activity (RPC log tail)
 gensparx logs --follow
@@ -709,9 +717,27 @@ gensparx logs --follow
 tail -20 /tmp/GenSparx/GenSparx-*.log
 ```
 
-## Reset Everything
+Look for:
 
-Nuclear option:
+- `Runtime: stopped` with exit hints.
+- Service config mismatch (`Config (cli)` vs `Config (service)`).
+- Port/listener conflicts.
+
+Common signatures:
+
+- `Gateway start blocked: set gateway.mode=local` → local gateway mode is not enabled. Fix: set `gateway.mode="local"` in your config (or run `openclaw configure`). If you are running OpenClaw via Podman using the dedicated `openclaw` user, the config lives at `~openclaw/.openclaw/openclaw.json`.
+- `refusing to bind gateway ... without auth` → non-loopback bind without token/password.
+- `another gateway instance is already listening` / `EADDRINUSE` → port conflict.
+
+Related:
+
+- [/gateway/background-process](/gateway/background-process)
+- [/gateway/configuration](/gateway/configuration)
+- [/gateway/doctor](/gateway/doctor)
+
+## Channel connected messages not flowing
+
+If channel state is connected but message flow is dead, focus on policy, permissions, and channel specific delivery rules.
 
 ```bash
 gensparx gateway stop
@@ -723,9 +749,11 @@ gensparx channels login         # re-pair WhatsApp
 gensparx gateway restart           # or: gensparx gateway
 ```
 
-⚠️ This loses all sessions and requires re-pairing WhatsApp.
+Look for:
 
-## Getting Help
+- DM policy (`pairing`, `allowlist`, `open`, `disabled`).
+- Group allowlist and mention requirements.
+- Missing channel API permissions/scopes.
 
 1. Check logs first: `/tmp/GenSparx/` (default: `GenSparx-YYYY-MM-DD.log`, or your configured `logging.file`)
 2. Search existing issues on GitHub
@@ -735,33 +763,59 @@ gensparx gateway restart           # or: gensparx gateway
    - Steps to reproduce
    - Your config (redact secrets!)
 
----
+- `mention required` → message ignored by group mention policy.
+- `pairing` / pending approval traces → sender is not approved.
+- `missing_scope`, `not_in_channel`, `Forbidden`, `401/403` → channel auth/permissions issue.
 
-_"Have you tried turning it off and on again?"_ — Every IT person ever
+Related:
 
-🦞🔧
+- [/channels/troubleshooting](/channels/troubleshooting)
+- [/channels/whatsapp](/channels/whatsapp)
+- [/channels/telegram](/channels/telegram)
+- [/channels/discord](/channels/discord)
 
-### Browser Not Starting (Linux)
+## Cron and heartbeat delivery
 
-If you see `"Failed to start Chrome CDP on port 18800"`:
-
-**Most likely cause:** Snap-packaged Chromium on Ubuntu.
-
-**Quick fix:** Install Google Chrome instead:
+If cron or heartbeat did not run or did not deliver, verify scheduler state first, then delivery target.
 
 ```bash
-wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-sudo dpkg -i google-chrome-stable_current_amd64.deb
+openclaw cron status
+openclaw cron list
+openclaw cron runs --id <jobId> --limit 20
+openclaw system heartbeat last
+openclaw logs --follow
 ```
 
-Then set in config:
+Look for:
 
-```json
-{
-  "browser": {
-    "executablePath": "/usr/bin/google-chrome-stable"
-  }
-}
+- Cron enabled and next wake present.
+- Job run history status (`ok`, `skipped`, `error`).
+- Heartbeat skip reasons (`quiet-hours`, `requests-in-flight`, `alerts-disabled`).
+
+Common signatures:
+
+- `cron: scheduler disabled; jobs will not run automatically` → cron disabled.
+- `cron: timer tick failed` → scheduler tick failed; check file/log/runtime errors.
+- `heartbeat skipped` with `reason=quiet-hours` → outside active hours window.
+- `heartbeat: unknown accountId` → invalid account id for heartbeat delivery target.
+- `heartbeat skipped` with `reason=dm-blocked` → heartbeat target resolved to a DM-style destination while `agents.defaults.heartbeat.directPolicy` (or per-agent override) is set to `block`.
+
+Related:
+
+- [/automation/troubleshooting](/automation/troubleshooting)
+- [/automation/cron-jobs](/automation/cron-jobs)
+- [/gateway/heartbeat](/gateway/heartbeat)
+
+## Node paired tool fails
+
+If a node is paired but tools fail, isolate foreground, permission, and approval state.
+
+```bash
+openclaw nodes status
+openclaw nodes describe --node <idOrNameOrIp>
+openclaw approvals get --node <idOrNameOrIp>
+openclaw logs --follow
+openclaw status
 ```
 
 **Full guide:** See [browser-linux-troubleshooting](/tools/browser-linux-troubleshooting)

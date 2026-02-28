@@ -1,6 +1,5 @@
-import type { AnyAgentTool } from "../agents/tools/common.js";
-import type { OpenClawPluginToolContext } from "./types.js";
 import { normalizeToolName } from "../agents/tool-policy.js";
+import type { AnyAgentTool } from "../agents/tools/common.js";
 import { createSubsystemLogger } from "../logging/subsystem.js";
 import { loadGenSparxPlugins } from "./loader.js";
 
@@ -44,16 +43,12 @@ export function resolvePluginTools(params: {
   context: OpenClawPluginToolContext;
   existingToolNames?: Set<string>;
   toolAllowlist?: string[];
+  suppressNameConflicts?: boolean;
 }): AnyAgentTool[] {
   const registry = loadGenSparxPlugins({
     config: params.context.config,
     workspaceDir: params.context.workspaceDir,
-    logger: {
-      info: (msg) => log.info(msg),
-      warn: (msg) => log.warn(msg),
-      error: (msg) => log.error(msg),
-      debug: (msg) => log.debug(msg),
-    },
+    logger: createPluginLoaderLogger(log),
   });
 
   const tools: AnyAgentTool[] = [];
@@ -69,13 +64,15 @@ export function resolvePluginTools(params: {
     const pluginIdKey = normalizeToolName(entry.pluginId);
     if (existingNormalized.has(pluginIdKey)) {
       const message = `plugin id conflicts with core tool name (${entry.pluginId})`;
-      log.error(message);
-      registry.diagnostics.push({
-        level: "error",
-        pluginId: entry.pluginId,
-        source: entry.source,
-        message,
-      });
+      if (!params.suppressNameConflicts) {
+        log.error(message);
+        registry.diagnostics.push({
+          level: "error",
+          pluginId: entry.pluginId,
+          source: entry.source,
+          message,
+        });
+      }
       blockedPlugins.add(entry.pluginId);
       continue;
     }
@@ -106,13 +103,15 @@ export function resolvePluginTools(params: {
     for (const tool of list) {
       if (nameSet.has(tool.name) || existing.has(tool.name)) {
         const message = `plugin tool name conflict (${entry.pluginId}): ${tool.name}`;
-        log.error(message);
-        registry.diagnostics.push({
-          level: "error",
-          pluginId: entry.pluginId,
-          source: entry.source,
-          message,
-        });
+        if (!params.suppressNameConflicts) {
+          log.error(message);
+          registry.diagnostics.push({
+            level: "error",
+            pluginId: entry.pluginId,
+            source: entry.source,
+            message,
+          });
+        }
         continue;
       }
       nameSet.add(tool.name);

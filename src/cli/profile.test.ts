@@ -82,6 +82,24 @@ describe("applyCliProfileEnv", () => {
     expect(env.GENSPARX_GATEWAY_PORT).toBe("19099");
     expect(env.GENSPARX_CONFIG_PATH).toBe(path.join("/custom", "gensparx.json"));
   });
+
+  it("uses OPENCLAW_HOME when deriving profile state dir", () => {
+    const env: Record<string, string | undefined> = {
+      OPENCLAW_HOME: "/srv/openclaw-home",
+      HOME: "/home/other",
+    };
+    applyCliProfileEnv({
+      profile: "work",
+      env,
+      homedir: () => "/home/fallback",
+    });
+
+    const resolvedHome = path.resolve("/srv/openclaw-home");
+    expect(env.OPENCLAW_STATE_DIR).toBe(path.join(resolvedHome, ".openclaw-work"));
+    expect(env.OPENCLAW_CONFIG_PATH).toBe(
+      path.join(resolvedHome, ".openclaw-work", "openclaw.json"),
+    );
+  });
 });
 
 describe("formatCliCommand", () => {

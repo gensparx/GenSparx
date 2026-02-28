@@ -107,7 +107,7 @@ Should show **only port 22** (SSH) open. All other services (gateway, Docker) ar
 
 Docker is installed for **agent sandboxes** (isolated tool execution), not for running the gateway itself. The gateway binds to localhost only and is accessible via Tailscale VPN.
 
-See [Multi-Agent Sandbox & Tools](/multi-agent-sandbox-tools) for sandbox configuration.
+See [Multi-Agent Sandbox & Tools](/tools/multi-agent-sandbox-tools) for sandbox configuration.
 
 ## Manual Installation
 

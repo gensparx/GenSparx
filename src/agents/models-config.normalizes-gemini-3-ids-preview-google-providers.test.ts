@@ -33,15 +33,7 @@ const _MODELS_CONFIG: GenSparxConfig = {
 };
 
 describe("models-config", () => {
-  let previousHome: string | undefined;
-
-  beforeEach(() => {
-    previousHome = process.env.HOME;
-  });
-
-  afterEach(() => {
-    process.env.HOME = previousHome;
-  });
+  installModelsConfigTestHooks();
 
   it("normalizes gemini 3 ids to preview for google providers", async () => {
     await withTempHome(async () => {
@@ -89,7 +81,7 @@ describe("models-config", () => {
       const raw = await fs.readFile(modelPath, "utf8");
       const parsed = JSON.parse(raw) as {
         providers: Record<string, { models: Array<{ id: string }> }>;
-      };
+      }>();
       const ids = parsed.providers.google?.models?.map((model) => model.id);
       expect(ids).toEqual(["gemini-3-pro-preview", "gemini-3-flash-preview"]);
     });

@@ -1,7 +1,6 @@
-import fs from "node:fs/promises";
-import path from "node:path";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { withTempHome } from "./test-helpers.js";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { loadConfig, validateConfigObject } from "./config.js";
+import { withTempHomeConfig } from "./test-helpers.js";
 
 describe("config discord", () => {
   let previousHome: string | undefined;
@@ -49,15 +48,22 @@ describe("config discord", () => {
               },
             },
           },
-          null,
-          2,
-        ),
-        "utf-8",
-      );
+        },
+      },
+      async () => {
+        const cfg = loadConfig();
 
-      vi.resetModules();
-      const { loadConfig } = await import("./config.js");
-      const cfg = loadConfig();
+        expect(cfg.channels?.discord?.enabled).toBe(true);
+        expect(cfg.channels?.discord?.dm?.groupEnabled).toBe(true);
+        expect(cfg.channels?.discord?.dm?.groupChannels).toEqual(["openclaw-dm"]);
+        expect(cfg.channels?.discord?.actions?.emojiUploads).toBe(true);
+        expect(cfg.channels?.discord?.actions?.stickerUploads).toBe(false);
+        expect(cfg.channels?.discord?.actions?.channels).toBe(true);
+        expect(cfg.channels?.discord?.guilds?.["123"]?.slug).toBe("friends-of-openclaw");
+        expect(cfg.channels?.discord?.guilds?.["123"]?.channels?.general?.allow).toBe(true);
+      },
+    );
+  });
 
       expect(cfg.channels?.discord?.enabled).toBe(true);
       expect(cfg.channels?.discord?.dm?.groupEnabled).toBe(true);
@@ -68,5 +74,12 @@ describe("config discord", () => {
       expect(cfg.channels?.discord?.guilds?.["123"]?.slug).toBe("friends-of-gensparx");
       expect(cfg.channels?.discord?.guilds?.["123"]?.channels?.general?.allow).toBe(true);
     });
+
+    expect(res.ok).toBe(false);
+    if (!res.ok) {
+      expect(
+        res.issues.some((issue) => issue.message.includes("Discord IDs must be strings")),
+      ).toBe(true);
+    }
   });
 });

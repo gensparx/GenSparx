@@ -19,17 +19,23 @@ describe("whatsapp_login tool gating", () => {
     const tools = createGenSparxCodingTools({ senderIsOwner: false });
     const toolNames = tools.map((tool) => tool.name);
     expect(toolNames).not.toContain("whatsapp_login");
+    expect(toolNames).not.toContain("cron");
+    expect(toolNames).not.toContain("gateway");
   });
 
   it("keeps whatsapp_login for authorized senders", () => {
     const tools = createGenSparxCodingTools({ senderIsOwner: true });
     const toolNames = tools.map((tool) => tool.name);
     expect(toolNames).toContain("whatsapp_login");
+    expect(toolNames).toContain("cron");
+    expect(toolNames).toContain("gateway");
   });
 
   it("defaults to removing whatsapp_login when owner status is unknown", () => {
     const tools = createGenSparxCodingTools();
     const toolNames = tools.map((tool) => tool.name);
     expect(toolNames).not.toContain("whatsapp_login");
+    expect(toolNames).not.toContain("cron");
+    expect(toolNames).not.toContain("gateway");
   });
 });

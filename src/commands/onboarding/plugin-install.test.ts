@@ -43,6 +43,39 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
+function mockRepoLocalPathExists() {
+  vi.mocked(fs.existsSync).mockImplementation((value) => {
+    const raw = String(value);
+    return raw.endsWith(`${path.sep}.git`) || raw.endsWith(`${path.sep}extensions${path.sep}zalo`);
+  });
+}
+
+async function runInitialValueForChannel(channel: "dev" | "beta") {
+  const runtime = makeRuntime();
+  const select = vi.fn((async <T extends string>() => "skip" as T) as WizardPrompter["select"]);
+  const prompter = makePrompter({ select: select as unknown as WizardPrompter["select"] });
+  const cfg: OpenClawConfig = { update: { channel } };
+  mockRepoLocalPathExists();
+
+  await ensureOnboardingPluginInstalled({
+    cfg,
+    entry: baseEntry,
+    prompter,
+    runtime,
+  });
+
+  const call = select.mock.calls[0];
+  return call?.[0]?.initialValue;
+}
+
+function expectPluginLoadedFromLocalPath(
+  result: Awaited<ReturnType<typeof ensureOnboardingPluginInstalled>>,
+) {
+  const expectedPath = path.resolve(process.cwd(), "extensions/zalo");
+  expect(result.installed).toBe(true);
+  expect(result.cfg.plugins?.load?.paths).toContain(expectedPath);
+}
+
 describe("ensureOnboardingPluginInstalled", () => {
   it("installs from npm and enables the plugin", async () => {
     const runtime = makeRuntime();
@@ -96,9 +129,7 @@ describe("ensureOnboardingPluginInstalled", () => {
       runtime,
     });
 
-    const expectedPath = path.resolve(process.cwd(), "extensions/zalo");
-    expect(result.installed).toBe(true);
-    expect(result.cfg.plugins?.load?.paths).toContain(expectedPath);
+    expectPluginLoadedFromLocalPath(result);
     expect(result.cfg.plugins?.entries?.zalo?.enabled).toBe(true);
   });
 
@@ -176,9 +207,7 @@ describe("ensureOnboardingPluginInstalled", () => {
       runtime,
     });
 
-    const expectedPath = path.resolve(process.cwd(), "extensions/zalo");
-    expect(result.installed).toBe(true);
-    expect(result.cfg.plugins?.load?.paths).toContain(expectedPath);
+    expectPluginLoadedFromLocalPath(result);
     expect(note).toHaveBeenCalled();
     expect(runtime.error).not.toHaveBeenCalled();
   });

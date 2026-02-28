@@ -1,19 +1,39 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { DEFAULT_AGENT_MAX_CONCURRENT, DEFAULT_SUBAGENT_MAX_CONCURRENT } from "./agent-limits.js";
-import { withTempHome } from "./test-helpers.js";
+import { loadConfig } from "./config.js";
+import { withTempHome } from "./home-env.test-harness.js";
 
 describe("config identity defaults", () => {
-  let previousHome: string | undefined;
+  const defaultIdentity = {
+    name: "Samantha",
+    theme: "helpful sloth",
+    emoji: "🦥",
+  };
 
-  beforeEach(() => {
-    previousHome = process.env.HOME;
+  const configWithDefaultIdentity = (messages: Record<string, unknown>) => ({
+    agents: {
+      list: [
+        {
+          id: "main",
+          identity: defaultIdentity,
+        },
+      ],
+    },
+    messages,
   });
 
-  afterEach(() => {
-    process.env.HOME = previousHome;
-  });
+  const writeAndLoadConfig = async (home: string, config: Record<string, unknown>) => {
+    const configDir = path.join(home, ".openclaw");
+    await fs.mkdir(configDir, { recursive: true });
+    await fs.writeFile(
+      path.join(configDir, "openclaw.json"),
+      JSON.stringify(config, null, 2),
+      "utf-8",
+    );
+    return loadConfig();
+  };
 
   it("does not derive mentionPatterns when identity is set", async () => {
     await withTempHome(async (home) => {
@@ -111,6 +131,12 @@ describe("config identity defaults", () => {
 
       expect(cfg.messages?.ackReaction).toBeUndefined();
       expect(cfg.messages?.ackReactionScope).toBe("group-mentions");
+      expect(cfg.messages?.responsePrefix).toBeUndefined();
+      expect(cfg.messages?.groupChat?.mentionPatterns).toBeUndefined();
+      expect(cfg.agents?.list).toBeUndefined();
+      expect(cfg.agents?.defaults?.maxConcurrent).toBe(DEFAULT_AGENT_MAX_CONCURRENT);
+      expect(cfg.agents?.defaults?.subagents?.maxConcurrent).toBe(DEFAULT_SUBAGENT_MAX_CONCURRENT);
+      expect(cfg.session).toBeUndefined();
     });
   });
 
@@ -135,19 +161,12 @@ describe("config identity defaults", () => {
                 },
               ],
             },
-            messages: {
-              responsePrefix: "✅",
-            },
-          },
-          null,
-          2,
-        ),
-        "utf-8",
-      );
-
-      vi.resetModules();
-      const { loadConfig } = await import("./config.js");
-      const cfg = loadConfig();
+          ],
+        },
+        messages: {
+          responsePrefix: "✅",
+        },
+      });
 
       expect(cfg.messages?.responsePrefix).toBe("✅");
       expect(cfg.agents?.list?.[0]?.groupChat?.mentionPatterns).toEqual(["@gensparx"]);
@@ -178,15 +197,10 @@ describe("config identity defaults", () => {
               imessage: { enabled: true, textChunkLimit: 1111 },
             },
           },
-          null,
-          2,
-        ),
-        "utf-8",
-      );
-
-      vi.resetModules();
-      const { loadConfig } = await import("./config.js");
-      const cfg = loadConfig();
+          signal: { enabled: true, textChunkLimit: 2222 },
+          imessage: { enabled: true, textChunkLimit: 1111 },
+        },
+      });
 
       expect(cfg.channels?.whatsapp?.textChunkLimit).toBe(4444);
       expect(cfg.channels?.telegram?.textChunkLimit).toBe(3333);
@@ -232,18 +246,11 @@ describe("config identity defaults", () => {
                     },
                   ],
                 },
-              },
+              ],
             },
           },
-          null,
-          2,
-        ),
-        "utf-8",
-      );
-
-      vi.resetModules();
-      const { loadConfig } = await import("./config.js");
-      const cfg = loadConfig();
+        },
+      });
 
       expect(cfg.models?.providers?.minimax?.baseUrl).toBe("https://api.minimax.io/anthropic");
     });

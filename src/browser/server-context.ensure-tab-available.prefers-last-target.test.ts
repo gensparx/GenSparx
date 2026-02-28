@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
+import { withFetchPreconnect } from "../test-utils/fetch-mock.js";
 import type { BrowserServerState } from "./server-context.js";
+import "./server-context.chrome-test-harness.js";
 import { createBrowserRouteContext } from "./server-context.js";
 
 vi.mock("./chrome.js", () => ({
@@ -14,7 +16,6 @@ vi.mock("./chrome.js", () => ({
 
 describe("browser server-context ensureTabAvailable", () => {
   it("sticks to the last selected target when targetId is omitted", async () => {
-    const fetchMock = vi.fn();
     // 1st call (snapshot): stable ordering A then B (twice)
     // 2nd call (act): reversed ordering B then A (twice)
     const responses = [
@@ -94,7 +95,6 @@ describe("browser server-context ensureTabAvailable", () => {
   });
 
   it("falls back to the only attached tab when an invalid targetId is provided (extension)", async () => {
-    const fetchMock = vi.fn();
     const responses = [
       [{ id: "A", type: "page", url: "https://a.example", webSocketDebuggerUrl: "ws://x/a" }],
       [{ id: "A", type: "page", url: "https://a.example", webSocketDebuggerUrl: "ws://x/a" }],
@@ -149,7 +149,6 @@ describe("browser server-context ensureTabAvailable", () => {
   });
 
   it("returns a descriptive message when no extension tabs are attached", async () => {
-    const fetchMock = vi.fn();
     const responses = [[]];
     fetchMock.mockImplementation(async (url: unknown) => {
       const u = String(url);

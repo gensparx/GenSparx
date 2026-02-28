@@ -79,11 +79,26 @@ vi.mock("../infra/provider-usage.js", () => ({
 import "./test-helpers/fast-core-tools.js";
 import { createGenSparxTools } from "./gensparx-tools.js";
 
+function resetSessionStore(store: Record<string, unknown>) {
+  loadSessionStoreMock.mockClear();
+  updateSessionStoreMock.mockClear();
+  loadSessionStoreMock.mockReturnValue(store);
+}
+
+function getSessionStatusTool(agentSessionKey = "main") {
+  const tool = createOpenClawTools({ agentSessionKey }).find(
+    (candidate) => candidate.name === "session_status",
+  );
+  expect(tool).toBeDefined();
+  if (!tool) {
+    throw new Error("missing session_status tool");
+  }
+  return tool;
+}
+
 describe("session_status tool", () => {
   it("returns a status card for the current session", async () => {
-    loadSessionStoreMock.mockReset();
-    updateSessionStoreMock.mockReset();
-    loadSessionStoreMock.mockReturnValue({
+    resetSessionStore({
       main: {
         sessionId: "s1",
         updatedAt: 10,
@@ -107,9 +122,7 @@ describe("session_status tool", () => {
   });
 
   it("errors for unknown session keys", async () => {
-    loadSessionStoreMock.mockReset();
-    updateSessionStoreMock.mockReset();
-    loadSessionStoreMock.mockReturnValue({
+    resetSessionStore({
       main: { sessionId: "s1", updatedAt: 10 },
     });
 
@@ -128,10 +141,8 @@ describe("session_status tool", () => {
   });
 
   it("resolves sessionId inputs", async () => {
-    loadSessionStoreMock.mockReset();
-    updateSessionStoreMock.mockReset();
     const sessionId = "sess-main";
-    loadSessionStoreMock.mockReturnValue({
+    resetSessionStore({
       "agent:main:main": {
         sessionId,
         updatedAt: 10,
@@ -153,9 +164,7 @@ describe("session_status tool", () => {
   });
 
   it("uses non-standard session keys without sessionId resolution", async () => {
-    loadSessionStoreMock.mockReset();
-    updateSessionStoreMock.mockReset();
-    loadSessionStoreMock.mockReturnValue({
+    resetSessionStore({
       "temp:slug-generator": {
         sessionId: "sess-temp",
         updatedAt: 10,
@@ -177,9 +186,7 @@ describe("session_status tool", () => {
   });
 
   it("blocks cross-agent session_status without agent-to-agent access", async () => {
-    loadSessionStoreMock.mockReset();
-    updateSessionStoreMock.mockReset();
-    loadSessionStoreMock.mockReturnValue({
+    resetSessionStore({
       "agent:other:main": {
         sessionId: "s2",
         updatedAt: 10,
@@ -200,8 +207,8 @@ describe("session_status tool", () => {
   });
 
   it("scopes bare session keys to the requester agent", async () => {
-    loadSessionStoreMock.mockReset();
-    updateSessionStoreMock.mockReset();
+    loadSessionStoreMock.mockClear();
+    updateSessionStoreMock.mockClear();
     const stores = new Map<string, Record<string, unknown>>([
       [
         "/tmp/main/sessions.json",
@@ -243,9 +250,7 @@ describe("session_status tool", () => {
   });
 
   it("resets per-session model override via model=default", async () => {
-    loadSessionStoreMock.mockReset();
-    updateSessionStoreMock.mockReset();
-    loadSessionStoreMock.mockReturnValue({
+    resetSessionStore({
       main: {
         sessionId: "s1",
         updatedAt: 10,

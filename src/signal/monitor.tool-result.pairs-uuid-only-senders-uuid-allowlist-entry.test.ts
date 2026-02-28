@@ -1,26 +1,19 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { resetInboundDedupe } from "../auto-reply/reply/inbound-dedupe.js";
-import { resetSystemEventsForTest } from "../infra/system-events.js";
-import { monitorSignalProvider } from "./monitor.js";
+import { describe, expect, it, vi } from "vitest";
+import {
+  config,
+  flush,
+  getSignalToolResultTestMocks,
+  installSignalToolResultTestHooks,
+  setSignalToolResultTestConfig,
+} from "./monitor.tool-result.test-harness.js";
 
-const sendMock = vi.fn();
-const replyMock = vi.fn();
-const updateLastRouteMock = vi.fn();
-let config: Record<string, unknown> = {};
-const readAllowFromStoreMock = vi.fn();
-const upsertPairingRequestMock = vi.fn();
+installSignalToolResultTestHooks();
 
-vi.mock("../config/config.js", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../config/config.js")>();
-  return {
-    ...actual,
-    loadConfig: () => config,
-  };
-});
+// Import after the harness registers `vi.mock(...)` for Signal internals.
+const { monitorSignalProvider } = await import("./monitor.js");
 
-vi.mock("../auto-reply/reply.js", () => ({
-  getReplyFromConfig: (...args: unknown[]) => replyMock(...args),
-}));
+const { replyMock, sendMock, streamMock, upsertPairingRequestMock } =
+  getSignalToolResultTestMocks();
 
 vi.mock("./send.js", () => ({
   sendMessageSignal: (...args: unknown[]) => sendMock(...args),
@@ -75,20 +68,25 @@ beforeEach(() => {
   resetSystemEventsForTest();
 });
 
+async function runMonitorWithMocks(opts: MonitorSignalProviderOptions) {
+  return monitorSignalProvider(opts);
+}
 describe("monitorSignalProvider tool results", () => {
   it("pairs uuid-only senders with a uuid allowlist entry", async () => {
-    config = {
+    const baseChannels = (config.channels ?? {}) as Record<string, unknown>;
+    const baseSignal = (baseChannels.signal ?? {}) as Record<string, unknown>;
+    setSignalToolResultTestConfig({
       ...config,
       channels: {
-        ...config.channels,
+        ...baseChannels,
         signal: {
-          ...config.channels?.signal,
+          ...baseSignal,
           autoStart: false,
           dmPolicy: "pairing",
           allowFrom: [],
         },
       },
-    };
+    });
     const abortController = new AbortController();
     const uuid = "123e4567-e89b-12d3-a456-426614174000";
 
@@ -110,7 +108,7 @@ describe("monitorSignalProvider tool results", () => {
       abortController.abort();
     });
 
-    await monitorSignalProvider({
+    await runMonitorWithMocks({
       autoStart: false,
       baseUrl: "http://127.0.0.1:8080",
       abortSignal: abortController.signal,
@@ -152,9 +150,15 @@ describe("monitorSignalProvider tool results", () => {
         autoStart: false,
         baseUrl: "http://127.0.0.1:8080",
         abortSignal: abortController.signal,
+        reconnectPolicy: {
+          initialMs: 1,
+          maxMs: 1,
+          factor: 1,
+          jitter: 0,
+        },
       });
 
-      await vi.advanceTimersByTimeAsync(1_000);
+      await vi.advanceTimersByTimeAsync(5);
       await monitorPromise;
 
       expect(streamMock).toHaveBeenCalledTimes(2);

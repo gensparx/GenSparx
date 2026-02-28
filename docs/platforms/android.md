@@ -98,10 +98,13 @@ Pairing details: [Gateway pairing](/gateway/pairing).
 ### 5) Verify the node is connected
 
 - Via nodes status:
+
   ```bash
   gensparx nodes status
   ```
+
 - Via Gateway:
+
   ```bash
   gensparx gateway call node.list --params "{}"
   ```
@@ -120,7 +123,7 @@ The Android node’s Chat sheet uses the gateway’s **primary session key** (`m
 
 If you want the node to show real HTML/CSS/JS that the agent can edit on disk, point the node at the Gateway canvas host.
 
-Note: nodes use the standalone canvas host on `canvasHost.port` (default `18793`).
+Note: nodes load canvas from the Gateway HTTP server (same port as `gateway.port`, default `18789`).
 
 1. Create `~/.openclaw/workspace/canvas/index.html` on the gateway host.
 
@@ -130,10 +133,10 @@ Note: nodes use the standalone canvas host on `canvasHost.port` (default `18793`
 gensparx nodes invoke --node "<Android Node>" --command canvas.navigate --params '{"url":"http://<gateway-hostname>.local:18793/__openclaw__/canvas/"}'
 ```
 
-Tailnet (optional): if both devices are on Tailscale, use a MagicDNS name or tailnet IP instead of `.local`, e.g. `http://<gateway-magicdns>:18793/__openclaw__/canvas/`.
+Tailnet (optional): if both devices are on Tailscale, use a MagicDNS name or tailnet IP instead of `.local`, e.g. `http://<gateway-magicdns>:18789/__openclaw__/canvas/`.
 
 This server injects a live-reload client into HTML and reloads on file changes.
-The A2UI host lives at `http://<gateway-host>:18793/__openclaw__/a2ui/`.
+The A2UI host lives at `http://<gateway-host>:18789/__openclaw__/a2ui/`.
 
 Canvas commands (foreground only):
 

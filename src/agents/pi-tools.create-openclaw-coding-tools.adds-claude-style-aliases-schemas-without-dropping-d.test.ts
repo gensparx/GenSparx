@@ -1,7 +1,6 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 import "./test-helpers/fast-coding-tools.js";
 import { createGenSparxCodingTools } from "./pi-tools.js";
@@ -16,28 +15,18 @@ describe("createGenSparxCodingTools", () => {
     const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-read-"));
     try {
       const imagePath = path.join(tmpDir, "sample.png");
-      const png = await sharp({
-        create: {
-          width: 8,
-          height: 8,
-          channels: 3,
-          background: { r: 0, g: 128, b: 255 },
-        },
-      })
-        .png()
-        .toBuffer();
-      await fs.writeFile(imagePath, png);
+      await fs.writeFile(imagePath, tinyPngBuffer);
 
-      const result = await readTool?.execute("tool-1", {
+      const imageResult = await readTool?.execute("tool-1", {
         path: imagePath,
       });
 
-      expect(result?.content?.some((block) => block.type === "image")).toBe(true);
-      const text = result?.content?.find((block) => block.type === "text") as
+      expect(imageResult?.content?.some((block) => block.type === "image")).toBe(true);
+      const imageText = imageResult?.content?.find((block) => block.type === "text") as
         | { text?: string }
         | undefined;
-      expect(text?.text ?? "").toContain("Read image file [image/png]");
-      const image = result?.content?.find((block) => block.type === "image") as
+      expect(imageText?.text ?? "").toContain("Read image file [image/png]");
+      const image = imageResult?.content?.find((block) => block.type === "image") as
         | { mimeType?: string }
         | undefined;
       expect(image?.mimeType).toBe("image/png");
@@ -56,12 +45,12 @@ describe("createGenSparxCodingTools", () => {
       const contents = "Hello from gensparx read tool.";
       await fs.writeFile(textPath, contents, "utf8");
 
-      const result = await readTool?.execute("tool-2", {
+      const textResult = await readTool?.execute("tool-2", {
         path: textPath,
       });
 
-      expect(result?.content?.some((block) => block.type === "image")).toBe(false);
-      const textBlocks = result?.content?.filter((block) => block.type === "text") as
+      expect(textResult?.content?.some((block) => block.type === "image")).toBe(false);
+      const textBlocks = textResult?.content?.filter((block) => block.type === "text") as
         | Array<{ text?: string }>
         | undefined;
       expect(textBlocks?.length ?? 0).toBeGreaterThan(0);

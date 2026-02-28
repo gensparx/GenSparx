@@ -1,14 +1,14 @@
-import { randomUUID } from "node:crypto";
-import fs from "node:fs";
-import os from "node:os";
-import path from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { resolvePluginTools } from "./tools.js";
 
-type TempPlugin = { dir: string; file: string; id: string };
+type MockRegistryToolEntry = {
+  pluginId: string;
+  optional: boolean;
+  source: string;
+  factory: (ctx: unknown) => unknown;
+};
 
-const tempDirs: string[] = [];
-const EMPTY_PLUGIN_SCHEMA = { type: "object", additionalProperties: false, properties: {} };
+const loadOpenClawPluginsMock = vi.fn();
 
 function makeTempDir() {
   const dir = path.join(os.tmpdir(), `gensparx-plugin-tools-${randomUUID()}`);
@@ -165,24 +165,152 @@ export default { register(api) {
     async execute() {
       return { content: [{ type: "text", text: "ok" }] };
     },
+  };
+}
+
+function createContext() {
+  return {
+    config: {
+      plugins: {
+        enabled: true,
+        allow: ["optional-demo", "message", "multi"],
+        load: { paths: ["/tmp/plugin.js"] },
+      },
+    },
+    workspaceDir: "/tmp",
+  };
+}
+
+function setRegistry(entries: MockRegistryToolEntry[]) {
+  const registry = {
+    tools: entries,
+    diagnostics: [] as Array<{
+      level: string;
+      pluginId: string;
+      source: string;
+      message: string;
+    }>,
+  };
+  loadOpenClawPluginsMock.mockReturnValue(registry);
+  return registry;
+}
+
+function setMultiToolRegistry() {
+  return setRegistry([
+    {
+      pluginId: "multi",
+      optional: false,
+      source: "/tmp/multi.js",
+      factory: () => [makeTool("message"), makeTool("other_tool")],
+    },
+  ]);
+}
+
+function resolveWithConflictingCoreName(options?: { suppressNameConflicts?: boolean }) {
+  return resolvePluginTools({
+    context: createContext() as never,
+    existingToolNames: new Set(["message"]),
+    ...(options?.suppressNameConflicts ? { suppressNameConflicts: true } : {}),
   });
-} }
-`,
-    });
+}
+
+describe("resolvePluginTools optional tools", () => {
+  beforeEach(() => {
+    loadOpenClawPluginsMock.mockClear();
+  });
+
+  it("skips optional tools without explicit allowlist", () => {
+    setRegistry([
+      {
+        pluginId: "optional-demo",
+        optional: true,
+        source: "/tmp/optional-demo.js",
+        factory: () => makeTool("optional_tool"),
+      },
+    ]);
 
     const tools = resolvePluginTools({
-      context: {
-        config: {
-          plugins: {
-            load: { paths: [plugin.file] },
-            allow: [plugin.id],
-          },
-        },
-        workspaceDir: plugin.dir,
+      context: createContext() as never,
+    });
+
+    expect(tools).toHaveLength(0);
+  });
+
+  it("allows optional tools by tool name", () => {
+    setRegistry([
+      {
+        pluginId: "optional-demo",
+        optional: true,
+        source: "/tmp/optional-demo.js",
+        factory: () => makeTool("optional_tool"),
       },
+    ]);
+
+    const tools = resolvePluginTools({
+      context: createContext() as never,
+      toolAllowlist: ["optional_tool"],
+    });
+
+    expect(tools.map((tool) => tool.name)).toEqual(["optional_tool"]);
+  });
+
+  it("allows optional tools via plugin-scoped allowlist entries", () => {
+    setRegistry([
+      {
+        pluginId: "optional-demo",
+        optional: true,
+        source: "/tmp/optional-demo.js",
+        factory: () => makeTool("optional_tool"),
+      },
+    ]);
+
+    const toolsByPlugin = resolvePluginTools({
+      context: createContext() as never,
+      toolAllowlist: ["optional-demo"],
+    });
+    const toolsByGroup = resolvePluginTools({
+      context: createContext() as never,
+      toolAllowlist: ["group:plugins"],
+    });
+
+    expect(toolsByPlugin.map((tool) => tool.name)).toEqual(["optional_tool"]);
+    expect(toolsByGroup.map((tool) => tool.name)).toEqual(["optional_tool"]);
+  });
+
+  it("rejects plugin id collisions with core tool names", () => {
+    const registry = setRegistry([
+      {
+        pluginId: "message",
+        optional: false,
+        source: "/tmp/message.js",
+        factory: () => makeTool("optional_tool"),
+      },
+    ]);
+
+    const tools = resolvePluginTools({
+      context: createContext() as never,
       existingToolNames: new Set(["message"]),
     });
 
+    expect(tools).toHaveLength(0);
+    expect(registry.diagnostics).toHaveLength(1);
+    expect(registry.diagnostics[0]?.message).toContain("plugin id conflicts with core tool name");
+  });
+
+  it("skips conflicting tool names but keeps other tools", () => {
+    const registry = setMultiToolRegistry();
+    const tools = resolveWithConflictingCoreName();
+
     expect(tools.map((tool) => tool.name)).toEqual(["other_tool"]);
+    expect(registry.diagnostics).toHaveLength(1);
+    expect(registry.diagnostics[0]?.message).toContain("plugin tool name conflict");
+  });
+
+  it("suppresses conflict diagnostics when requested", () => {
+    const registry = setMultiToolRegistry();
+    const tools = resolveWithConflictingCoreName({ suppressNameConflicts: true });
+
+    expect(tools.map((tool) => tool.name)).toEqual(["other_tool"]);
+    expect(registry.diagnostics).toHaveLength(0);
   });
 });

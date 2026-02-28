@@ -1,6 +1,5 @@
 import type { AgentMessage } from "@mariozechner/pi-agent-core";
 import { SessionManager } from "@mariozechner/pi-coding-agent";
-import fs from "node:fs/promises";
 import { describe, expect, it, vi } from "vitest";
 import type { GenSparxConfig } from "../config/config.js";
 import { ensureGenSparxModelsJson } from "./models-config.js";
@@ -101,13 +100,12 @@ const _readSessionMessages = async (sessionFile: string) => {
 };
 
 describe("applyGoogleTurnOrderingFix", () => {
-  const makeAssistantFirst = () =>
-    [
-      {
-        role: "assistant",
-        content: [{ type: "toolCall", id: "call_1", name: "exec", arguments: {} }],
-      },
-    ] satisfies AgentMessage[];
+  const makeAssistantFirst = (): AgentMessage[] => [
+    {
+      role: "assistant",
+      content: [{ type: "toolCall", id: "call_1", name: "exec", arguments: {} }],
+    } as unknown as AgentMessage,
+  ];
 
   it("prepends a bootstrap once and records a marker for Google models", () => {
     const sessionManager = SessionManager.inMemory();
@@ -141,6 +139,7 @@ describe("applyGoogleTurnOrderingFix", () => {
     });
     expect(warn).toHaveBeenCalledTimes(1);
   });
+
   it("skips non-Google models", () => {
     const sessionManager = SessionManager.inMemory();
     const warn = vi.fn();

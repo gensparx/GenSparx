@@ -1,8 +1,8 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
-import { sleep } from "../utils.js";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { withEnv } from "../test-utils/env.js";
 import {
   buildGroupDisplayName,
   deriveSessionKey,
@@ -17,39 +17,74 @@ import {
 } from "./sessions.js";
 
 describe("sessions", () => {
-  it("returns normalized per-sender key", () => {
-    expect(deriveSessionKey("per-sender", { From: "whatsapp:+1555" })).toBe("+1555");
+  let fixtureRoot = "";
+  let fixtureCount = 0;
+
+  const createCaseDir = async (prefix: string) => {
+    const dir = path.join(fixtureRoot, `${prefix}-${fixtureCount++}`);
+    await fs.mkdir(dir, { recursive: true });
+    return dir;
+  };
+
+  beforeAll(async () => {
+    fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-sessions-suite-"));
   });
 
-  it("falls back to unknown when sender missing", () => {
-    expect(deriveSessionKey("per-sender", {})).toBe("unknown");
+  afterAll(async () => {
+    await fs.rm(fixtureRoot, { recursive: true, force: true });
   });
 
-  it("global scope returns global", () => {
-    expect(deriveSessionKey("global", { From: "+1" })).toBe("global");
-  });
+  const withStateDir = <T>(stateDir: string, fn: () => T): T =>
+    withEnv({ OPENCLAW_STATE_DIR: stateDir }, fn);
 
-  it("keeps group chats distinct", () => {
-    expect(deriveSessionKey("per-sender", { From: "12345-678@g.us" })).toBe(
-      "whatsapp:group:12345-678@g.us",
-    );
-  });
+  async function createSessionStoreFixture(params: {
+    prefix: string;
+    entries: Record<string, Record<string, unknown>>;
+  }): Promise<{ storePath: string }> {
+    const dir = await createCaseDir(params.prefix);
+    const storePath = path.join(dir, "sessions.json");
+    await fs.writeFile(storePath, JSON.stringify(params.entries, null, 2), "utf-8");
+    return { storePath };
+  }
 
-  it("prefixes group keys with provider when available", () => {
-    expect(
-      deriveSessionKey("per-sender", {
-        From: "12345-678@g.us",
-        ChatType: "group",
-        Provider: "whatsapp",
-      }),
-    ).toBe("whatsapp:group:12345-678@g.us");
-  });
+  const deriveSessionKeyCases = [
+    {
+      name: "returns normalized per-sender key",
+      scope: "per-sender" as const,
+      ctx: { From: "whatsapp:+1555" },
+      expected: "+1555",
+    },
+    {
+      name: "falls back to unknown when sender missing",
+      scope: "per-sender" as const,
+      ctx: {},
+      expected: "unknown",
+    },
+    {
+      name: "global scope returns global",
+      scope: "global" as const,
+      ctx: { From: "+1" },
+      expected: "global",
+    },
+    {
+      name: "keeps group chats distinct",
+      scope: "per-sender" as const,
+      ctx: { From: "12345-678@g.us" },
+      expected: "whatsapp:group:12345-678@g.us",
+    },
+    {
+      name: "prefixes group keys with provider when available",
+      scope: "per-sender" as const,
+      ctx: { From: "12345-678@g.us", ChatType: "group", Provider: "whatsapp" },
+      expected: "whatsapp:group:12345-678@g.us",
+    },
+  ] as const;
 
-  it("keeps explicit provider when provided in group key", () => {
-    expect(
-      resolveSessionKey("per-sender", { From: "discord:group:12345", ChatType: "group" }, "main"),
-    ).toBe("agent:main:discord:group:12345");
-  });
+  for (const testCase of deriveSessionKeyCases) {
+    it(testCase.name, () => {
+      expect(deriveSessionKey(testCase.scope, testCase.ctx)).toBe(testCase.expected);
+    });
+  }
 
   it("builds discord display name with guild+channel slugs", () => {
     expect(
@@ -63,35 +98,65 @@ describe("sessions", () => {
     ).toBe("discord:friends-of-gensparx#general");
   });
 
-  it("collapses direct chats to main by default", () => {
-    expect(resolveSessionKey("per-sender", { From: "+1555" })).toBe("agent:main:main");
-  });
+  const resolveSessionKeyCases = [
+    {
+      name: "keeps explicit provider when provided in group key",
+      scope: "per-sender" as const,
+      ctx: { From: "discord:group:12345", ChatType: "group" },
+      mainKey: "main",
+      expected: "agent:main:discord:group:12345",
+    },
+    {
+      name: "collapses direct chats to main by default",
+      scope: "per-sender" as const,
+      ctx: { From: "+1555" },
+      mainKey: undefined,
+      expected: "agent:main:main",
+    },
+    {
+      name: "collapses direct chats to main even when sender missing",
+      scope: "per-sender" as const,
+      ctx: {},
+      mainKey: undefined,
+      expected: "agent:main:main",
+    },
+    {
+      name: "maps direct chats to main key when provided",
+      scope: "per-sender" as const,
+      ctx: { From: "whatsapp:+1555" },
+      mainKey: "main",
+      expected: "agent:main:main",
+    },
+    {
+      name: "uses custom main key when provided",
+      scope: "per-sender" as const,
+      ctx: { From: "+1555" },
+      mainKey: "primary",
+      expected: "agent:main:primary",
+    },
+    {
+      name: "keeps global scope untouched",
+      scope: "global" as const,
+      ctx: { From: "+1555" },
+      mainKey: undefined,
+      expected: "global",
+    },
+    {
+      name: "leaves groups untouched even with main key",
+      scope: "per-sender" as const,
+      ctx: { From: "12345-678@g.us" },
+      mainKey: "main",
+      expected: "agent:main:whatsapp:group:12345-678@g.us",
+    },
+  ] as const;
 
-  it("collapses direct chats to main even when sender missing", () => {
-    expect(resolveSessionKey("per-sender", {})).toBe("agent:main:main");
-  });
-
-  it("maps direct chats to main key when provided", () => {
-    expect(resolveSessionKey("per-sender", { From: "whatsapp:+1555" }, "main")).toBe(
-      "agent:main:main",
-    );
-  });
-
-  it("uses custom main key when provided", () => {
-    expect(resolveSessionKey("per-sender", { From: "+1555" }, "primary")).toBe(
-      "agent:main:primary",
-    );
-  });
-
-  it("keeps global scope untouched", () => {
-    expect(resolveSessionKey("global", { From: "+1555" })).toBe("global");
-  });
-
-  it("leaves groups untouched even with main key", () => {
-    expect(resolveSessionKey("per-sender", { From: "12345-678@g.us" }, "main")).toBe(
-      "agent:main:whatsapp:group:12345-678@g.us",
-    );
-  });
+  for (const testCase of resolveSessionKeyCases) {
+    it(testCase.name, () => {
+      expect(resolveSessionKey(testCase.scope, testCase.ctx, testCase.mainKey)).toBe(
+        testCase.expected,
+      );
+    });
+  }
 
   it("updateLastRoute persists channel and target", async () => {
     const mainSessionKey = "agent:main:main";
@@ -176,6 +241,50 @@ describe("sessions", () => {
     });
   });
 
+  it("updateLastRoute clears threadId when explicit route omits threadId", async () => {
+    const mainSessionKey = "agent:main:main";
+    const dir = await createCaseDir("updateLastRoute");
+    const storePath = path.join(dir, "sessions.json");
+    await fs.writeFile(
+      storePath,
+      JSON.stringify(
+        {
+          [mainSessionKey]: {
+            sessionId: "sess-1",
+            updatedAt: 123,
+            deliveryContext: {
+              channel: "telegram",
+              to: "222",
+              threadId: "42",
+            },
+            lastChannel: "telegram",
+            lastTo: "222",
+            lastThreadId: "42",
+          },
+        },
+        null,
+        2,
+      ),
+      "utf-8",
+    );
+
+    await updateLastRoute({
+      storePath,
+      sessionKey: mainSessionKey,
+      deliveryContext: {
+        channel: "telegram",
+        to: "222",
+      },
+    });
+
+    const store = loadSessionStore(storePath);
+    expect(store[mainSessionKey]?.deliveryContext).toEqual({
+      channel: "telegram",
+      to: "222",
+    });
+    expect(store[mainSessionKey]?.lastThreadId).toBeUndefined();
+  });
+
   it("updateLastRoute records origin + group metadata when ctx is provided", async () => {
     const sessionKey = "agent:main:whatsapp:group:123@g.us";
     const dir = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-sessions-"));
@@ -220,11 +329,8 @@ describe("sessions", () => {
             reasoningLevel: "on",
           },
         },
-        null,
-        2,
-      ),
-      "utf-8",
-    );
+      },
+    });
 
     await updateSessionStoreEntry({
       storePath,
@@ -237,6 +343,44 @@ describe("sessions", () => {
     expect(store[sessionKey]?.reasoningLevel).toBe("on");
   });
 
+  it("updateSessionStoreEntry returns null when session key does not exist", async () => {
+    const { storePath } = await createSessionStoreFixture({
+      prefix: "updateSessionStoreEntry-missing",
+      entries: {},
+    });
+    const update = async () => ({ thinkingLevel: "high" as const });
+    const result = await updateSessionStoreEntry({
+      storePath,
+      sessionKey: "agent:main:missing",
+      update,
+    });
+    expect(result).toBeNull();
+  });
+
+  it("updateSessionStoreEntry keeps existing entry when patch callback returns null", async () => {
+    const sessionKey = "agent:main:main";
+    const { storePath } = await createSessionStoreFixture({
+      prefix: "updateSessionStoreEntry-noop",
+      entries: {
+        [sessionKey]: {
+          sessionId: "sess-1",
+          updatedAt: 123,
+          thinkingLevel: "low",
+        },
+      },
+    });
+
+    const result = await updateSessionStoreEntry({
+      storePath,
+      sessionKey,
+      update: async () => null,
+    });
+    expect(result).toEqual(expect.objectContaining({ sessionId: "sess-1", thinkingLevel: "low" }));
+
+    const store = loadSessionStore(storePath);
+    expect(store[sessionKey]?.thinkingLevel).toBe("low");
+  });
+
   it("updateSessionStore preserves concurrent additions", async () => {
     const dir = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-sessions-"));
     const storePath = path.join(dir, "sessions.json");
@@ -244,10 +388,10 @@ describe("sessions", () => {
 
     await Promise.all([
       updateSessionStore(storePath, (store) => {
-        store["agent:main:one"] = { sessionId: "sess-1", updatedAt: 1 };
+        store["agent:main:one"] = { sessionId: "sess-1", updatedAt: Date.now() };
       }),
       updateSessionStore(storePath, (store) => {
-        store["agent:main:two"] = { sessionId: "sess-2", updatedAt: 2 };
+        store["agent:main:two"] = { sessionId: "sess-2", updatedAt: Date.now() };
       }),
     ]);
 
@@ -262,7 +406,7 @@ describe("sessions", () => {
     await fs.writeFile(storePath, "[]", "utf-8");
 
     await updateSessionStore(storePath, (store) => {
-      store["agent:main:main"] = { sessionId: "sess-1", updatedAt: 1 };
+      store["agent:main:main"] = { sessionId: "sess-1", updatedAt: Date.now() };
     });
 
     const store = loadSessionStore(storePath);
@@ -280,7 +424,7 @@ describe("sessions", () => {
     await updateSessionStore(storePath, (store) => {
       store["agent:main:main"] = {
         sessionId: "sess-normalized",
-        updatedAt: 1,
+        updatedAt: Date.now(),
         lastChannel: " WhatsApp ",
         lastTo: " +1555 ",
         lastAccountId: " acct-1 ",
@@ -305,8 +449,8 @@ describe("sessions", () => {
       storePath,
       JSON.stringify(
         {
-          "agent:main:old": { sessionId: "sess-old", updatedAt: 1 },
-          "agent:main:keep": { sessionId: "sess-keep", updatedAt: 2 },
+          "agent:main:old": { sessionId: "sess-old", updatedAt: Date.now() },
+          "agent:main:keep": { sessionId: "sess-keep", updatedAt: Date.now() },
         },
         null,
         2,
@@ -319,7 +463,7 @@ describe("sessions", () => {
         delete store["agent:main:old"];
       }),
       updateSessionStore(storePath, (store) => {
-        store["agent:main:new"] = { sessionId: "sess-new", updatedAt: 3 };
+        store["agent:main:new"] = { sessionId: "sess-new", updatedAt: Date.now() };
       }),
     ]);
 
@@ -423,34 +567,87 @@ describe("sessions", () => {
             thinkingLevel: "low",
           },
         },
-        null,
-        2,
-      ),
-      "utf-8",
-    );
+      },
+    });
 
-    await Promise.all([
-      updateSessionStoreEntry({
-        storePath,
-        sessionKey: mainSessionKey,
-        update: async () => {
-          await sleep(50);
-          return { modelOverride: "anthropic/claude-opus-4-5" };
-        },
-      }),
-      updateSessionStoreEntry({
-        storePath,
-        sessionKey: mainSessionKey,
-        update: async () => {
-          await sleep(10);
-          return { thinkingLevel: "high" };
-        },
-      }),
-    ]);
+    const createDeferred = <T>() => {
+      let resolve!: (value: T) => void;
+      let reject!: (reason?: unknown) => void;
+      const promise = new Promise<T>((res, rej) => {
+        resolve = res;
+        reject = rej;
+      });
+      return { promise, resolve, reject };
+    };
+    const firstStarted = createDeferred<void>();
+    const releaseFirst = createDeferred<void>();
+
+    const p1 = updateSessionStoreEntry({
+      storePath,
+      sessionKey: mainSessionKey,
+      update: async () => {
+        firstStarted.resolve();
+        await releaseFirst.promise;
+        return { modelOverride: "anthropic/claude-opus-4-5" };
+      },
+    });
+    const p2 = updateSessionStoreEntry({
+      storePath,
+      sessionKey: mainSessionKey,
+      update: async () => {
+        await firstStarted.promise;
+        return { thinkingLevel: "high" };
+      },
+    });
+
+    await firstStarted.promise;
+    releaseFirst.resolve();
+    await Promise.all([p1, p2]);
 
     const store = loadSessionStore(storePath);
     expect(store[mainSessionKey]?.modelOverride).toBe("anthropic/claude-opus-4-5");
     expect(store[mainSessionKey]?.thinkingLevel).toBe("high");
     await expect(fs.stat(`${storePath}.lock`)).rejects.toThrow();
+  });
+
+  it("updateSessionStoreEntry re-reads disk inside lock instead of using stale cache", async () => {
+    const mainSessionKey = "agent:main:main";
+    const { storePath } = await createSessionStoreFixture({
+      prefix: "updateSessionStoreEntry-cache-bypass",
+      entries: {
+        [mainSessionKey]: {
+          sessionId: "sess-1",
+          updatedAt: 123,
+          thinkingLevel: "low",
+        },
+      },
+    });
+
+    // Prime the in-process cache with the original entry.
+    expect(loadSessionStore(storePath)[mainSessionKey]?.thinkingLevel).toBe("low");
+    const originalStat = await fs.stat(storePath);
+
+    // Simulate an external writer that updates the store but preserves mtime.
+    const externalStore = JSON.parse(await fs.readFile(storePath, "utf-8")) as Record<
+      string,
+      Record<string, unknown>
+    >;
+    externalStore[mainSessionKey] = {
+      ...externalStore[mainSessionKey],
+      providerOverride: "anthropic",
+      updatedAt: 124,
+    };
+    await fs.writeFile(storePath, JSON.stringify(externalStore, null, 2), "utf-8");
+    await fs.utimes(storePath, originalStat.atime, originalStat.mtime);
+
+    await updateSessionStoreEntry({
+      storePath,
+      sessionKey: mainSessionKey,
+      update: async () => ({ thinkingLevel: "high" }),
+    });
+
+    const store = loadSessionStore(storePath);
+    expect(store[mainSessionKey]?.providerOverride).toBe("anthropic");
+    expect(store[mainSessionKey]?.thinkingLevel).toBe("high");
   });
 });

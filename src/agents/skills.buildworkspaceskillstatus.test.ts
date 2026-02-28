@@ -1,29 +1,40 @@
-import fs from "node:fs/promises";
-import os from "node:os";
-import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { withEnv } from "../test-utils/env.js";
 import { buildWorkspaceSkillStatus } from "./skills-status.js";
+import type { SkillEntry } from "./skills/types.js";
 
-async function writeSkill(params: {
-  dir: string;
+function makeEntry(params: {
   name: string;
-  description: string;
-  metadata?: string;
-  body?: string;
-}) {
-  const { dir, name, description, metadata, body } = params;
-  await fs.mkdir(dir, { recursive: true });
-  await fs.writeFile(
-    path.join(dir, "SKILL.md"),
-    `---
-name: ${name}
-description: ${description}${metadata ? `\nmetadata: ${metadata}` : ""}
----
-
-${body ?? `# ${name}\n`}
-`,
-    "utf-8",
-  );
+  source?: string;
+  os?: string[];
+  requires?: { bins?: string[]; env?: string[]; config?: string[] };
+  install?: Array<{
+    id: string;
+    kind: "brew" | "download";
+    bins?: string[];
+    formula?: string;
+    os?: string[];
+    url?: string;
+    label?: string;
+  }>;
+}): SkillEntry {
+  return {
+    skill: {
+      name: params.name,
+      description: `desc:${params.name}`,
+      source: params.source ?? "openclaw-workspace",
+      filePath: `/tmp/${params.name}/SKILL.md`,
+      baseDir: `/tmp/${params.name}`,
+      disableModelInvocation: false,
+    },
+    frontmatter: {},
+    metadata: {
+      ...(params.os ? { os: params.os } : {}),
+      ...(params.requires ? { requires: params.requires } : {}),
+      ...(params.install ? { install: params.install } : {}),
+      ...(params.requires?.env?.[0] ? { primaryEnv: params.requires.env[0] } : {}),
+    },
+  };
 }
 
 describe("buildWorkspaceSkillStatus", () => {
@@ -39,10 +50,12 @@ describe("buildWorkspaceSkillStatus", () => {
         '{"gensparx":{"requires":{"bins":["fakebin"],"env":["ENV_KEY"],"config":["browser.enabled"]},"install":[{"id":"brew","kind":"brew","formula":"fakebin","bins":["fakebin"],"label":"Install fakebin"}]}}',
     });
 
-    const report = buildWorkspaceSkillStatus(workspaceDir, {
-      managedSkillsDir: path.join(workspaceDir, ".managed"),
-      config: { browser: { enabled: false } },
-    });
+    const report = withEnv({ PATH: "" }, () =>
+      buildWorkspaceSkillStatus("/tmp/ws", {
+        entries: [entry],
+        config: { browser: { enabled: false } },
+      }),
+    );
     const skill = report.skills.find((entry) => entry.name === "status-skill");
 
     expect(skill).toBeDefined();
@@ -63,9 +76,7 @@ describe("buildWorkspaceSkillStatus", () => {
       metadata: '{"gensparx":{"os":["darwin"]}}',
     });
 
-    const report = buildWorkspaceSkillStatus(workspaceDir, {
-      managedSkillsDir: path.join(workspaceDir, ".managed"),
-    });
+    const report = buildWorkspaceSkillStatus("/tmp/ws", { entries: [entry] });
     const skill = report.skills.find((entry) => entry.name === "os-skill");
 
     expect(skill).toBeDefined();
@@ -86,8 +97,7 @@ describe("buildWorkspaceSkillStatus", () => {
     await writeSkill({
       dir: bundledSkillDir,
       name: "peekaboo",
-      description: "Capture UI",
-      body: "# Peekaboo\n",
+      source: "openclaw-bundled",
     });
 
     try {
@@ -122,10 +132,12 @@ describe("buildWorkspaceSkillStatus", () => {
         '{"gensparx":{"requires":{"bins":["missing-bin"]},"install":[{"id":"mac","kind":"download","os":["darwin"],"url":"https://example.com/mac.tar.bz2"},{"id":"linux","kind":"download","os":["linux"],"url":"https://example.com/linux.tar.bz2"},{"id":"win","kind":"download","os":["win32"],"url":"https://example.com/win.tar.bz2"}]}}',
     });
 
-    const report = buildWorkspaceSkillStatus(workspaceDir, {
-      managedSkillsDir: path.join(workspaceDir, ".managed"),
-    });
-    const skill = report.skills.find((entry) => entry.name === "install-skill");
+    const report = withEnv({ PATH: "" }, () =>
+      buildWorkspaceSkillStatus("/tmp/ws", {
+        entries: [entry],
+      }),
+    );
+    const skill = report.skills.find((reportEntry) => reportEntry.name === "install-skill");
 
     expect(skill).toBeDefined();
     if (process.platform === "darwin") {

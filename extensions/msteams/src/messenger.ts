@@ -18,6 +18,7 @@ import {
   uploadAndShareSharePoint,
 } from "./graph-upload.js";
 import { extractFilename, extractMessageId, getMimeType, isLocalPath } from "./media-helpers.js";
+import { parseMentions } from "./mentions.js";
 import { getMSTeamsRuntime } from "./runtime.js";
 
 /**
@@ -166,16 +167,6 @@ function clampMs(value: number, maxMs: number): number {
   return Math.min(value, maxMs);
 }
 
-async function sleep(ms: number): Promise<void> {
-  const delay = Math.max(0, ms);
-  if (delay === 0) {
-    return;
-  }
-  await new Promise<void>((resolve) => {
-    setTimeout(resolve, delay);
-  });
-}
-
 function resolveRetryOptions(
   retry: false | MSTeamsSendRetryOptions | undefined,
 ): Required<MSTeamsSendRetryOptions> & { enabled: boolean } {
@@ -278,7 +269,14 @@ async function buildActivity(
   const activity: Record<string, unknown> = { type: "message" };
 
   if (msg.text) {
-    activity.text = msg.text;
+    // Parse mentions from text (format: @[Name](id))
+    const { text: formattedText, entities } = parseMentions(msg.text);
+    activity.text = formattedText;
+
+    // Add mention entities if any mentions were found
+    if (entities.length > 0) {
+      activity.entities = entities;
+    }
   }
 
   if (msg.mediaUrl) {
@@ -296,7 +294,7 @@ async function buildActivity(
       // Teams only accepts base64 data URLs for images
       const conversationType = conversationRef.conversation?.conversationType?.toLowerCase();
       const isPersonal = conversationType === "personal";
-      const isImage = contentType?.startsWith("image/") ?? false;
+      const isImage = media.kind === "image";
 
       if (
         requiresFileConsent({
@@ -348,7 +346,7 @@ async function buildActivity(
         return activity;
       }
 
-      if (!isPersonal && !isImage && tokenProvider) {
+      if (!isPersonal && media.kind !== "image" && tokenProvider) {
         // Fallback: no SharePoint site configured, try OneDrive upload
         const uploaded = await uploadAndShareOneDrive({
           buffer: media.buffer,
@@ -359,7 +357,8 @@ async function buildActivity(
 
         // Bot Framework doesn't support "reference" attachment type for sending
         const fileLink = `📎 [${uploaded.name}](${uploaded.shareUrl})`;
-        activity.text = msg.text ? `${msg.text}\n\n${fileLink}` : fileLink;
+        const existingText = typeof activity.text === "string" ? activity.text : undefined;
+        activity.text = existingText ? `${existingText}\n\n${fileLink}` : fileLink;
         return activity;
       }
 
@@ -441,11 +440,7 @@ export async function sendMSTeamsMessages(params: {
     }
   };
 
-  if (params.replyStyle === "thread") {
-    const ctx = params.context;
-    if (!ctx) {
-      throw new Error("Missing context for replyStyle=thread");
-    }
+  const sendMessagesInContext = async (ctx: SendContext): Promise<string[]> => {
     const messageIds: string[] = [];
     for (const [idx, message] of messages.entries()) {
       const response = await sendWithRetry(
@@ -464,6 +459,14 @@ export async function sendMSTeamsMessages(params: {
       messageIds.push(extractMessageId(response) ?? "unknown");
     }
     return messageIds;
+  };
+
+  if (params.replyStyle === "thread") {
+    const ctx = params.context;
+    if (!ctx) {
+      throw new Error("Missing context for replyStyle=thread");
+    }
+    return await sendMessagesInContext(ctx);
   }
 
   const baseRef = buildConversationReference(params.conversationRef);
@@ -474,22 +477,7 @@ export async function sendMSTeamsMessages(params: {
 
   const messageIds: string[] = [];
   await params.adapter.continueConversation(params.appId, proactiveRef, async (ctx) => {
-    for (const [idx, message] of messages.entries()) {
-      const response = await sendWithRetry(
-        async () =>
-          await ctx.sendActivity(
-            await buildActivity(
-              message,
-              params.conversationRef,
-              params.tokenProvider,
-              params.sharePointSiteId,
-              params.mediaMaxBytes,
-            ),
-          ),
-        { messageIndex: idx, messageCount: messages.length },
-      );
-      messageIds.push(extractMessageId(response) ?? "unknown");
-    }
+    messageIds.push(...(await sendMessagesInContext(ctx)));
   });
   return messageIds;
 }

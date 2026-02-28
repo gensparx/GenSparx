@@ -32,17 +32,39 @@ const MODELS_CONFIG: GenSparxConfig = {
   },
 };
 
+async function runEnvProviderCase(params: {
+  envVar: "MINIMAX_API_KEY" | "SYNTHETIC_API_KEY";
+  envValue: string;
+  providerKey: "minimax" | "synthetic";
+  expectedBaseUrl: string;
+  expectedApiKeyRef: string;
+  expectedModelIds: string[];
+}) {
+  const previousValue = process.env[params.envVar];
+  process.env[params.envVar] = params.envValue;
+  try {
+    await ensureOpenClawModelsJson({});
+
+    const modelPath = path.join(resolveOpenClawAgentDir(), "models.json");
+    const raw = await fs.readFile(modelPath, "utf8");
+    const parsed = JSON.parse(raw) as { providers: Record<string, ProviderConfig> };
+    const provider = parsed.providers[params.providerKey];
+    expect(provider?.baseUrl).toBe(params.expectedBaseUrl);
+    expect(provider?.apiKey).toBe(params.expectedApiKeyRef);
+    const ids = provider?.models?.map((model) => model.id) ?? [];
+    for (const expectedId of params.expectedModelIds) {
+      expect(ids).toContain(expectedId);
+    }
+  } finally {
+    if (previousValue === undefined) {
+      delete process.env[params.envVar];
+    } else {
+      process.env[params.envVar] = previousValue;
+    }
+  }
+}
+
 describe("models-config", () => {
-  let previousHome: string | undefined;
-
-  beforeEach(() => {
-    previousHome = process.env.HOME;
-  });
-
-  afterEach(() => {
-    process.env.HOME = previousHome;
-  });
-
   it("skips writing models.json when no env token or profile exists", async () => {
     await withTempHome(async (home) => {
       const previous = process.env.COPILOT_GITHUB_TOKEN;
@@ -78,55 +100,10 @@ describe("models-config", () => {
 
         await expect(fs.stat(path.join(agentDir, "models.json"))).rejects.toThrow();
         expect(result.wrote).toBe(false);
-      } finally {
-        if (previous === undefined) {
-          delete process.env.COPILOT_GITHUB_TOKEN;
-        } else {
-          process.env.COPILOT_GITHUB_TOKEN = previous;
-        }
-        if (previousGh === undefined) {
-          delete process.env.GH_TOKEN;
-        } else {
-          process.env.GH_TOKEN = previousGh;
-        }
-        if (previousGithub === undefined) {
-          delete process.env.GITHUB_TOKEN;
-        } else {
-          process.env.GITHUB_TOKEN = previousGithub;
-        }
-        if (previousKimiCode === undefined) {
-          delete process.env.KIMI_API_KEY;
-        } else {
-          process.env.KIMI_API_KEY = previousKimiCode;
-        }
-        if (previousMinimax === undefined) {
-          delete process.env.MINIMAX_API_KEY;
-        } else {
-          process.env.MINIMAX_API_KEY = previousMinimax;
-        }
-        if (previousMoonshot === undefined) {
-          delete process.env.MOONSHOT_API_KEY;
-        } else {
-          process.env.MOONSHOT_API_KEY = previousMoonshot;
-        }
-        if (previousSynthetic === undefined) {
-          delete process.env.SYNTHETIC_API_KEY;
-        } else {
-          process.env.SYNTHETIC_API_KEY = previousSynthetic;
-        }
-        if (previousVenice === undefined) {
-          delete process.env.VENICE_API_KEY;
-        } else {
-          process.env.VENICE_API_KEY = previousVenice;
-        }
-        if (previousXiaomi === undefined) {
-          delete process.env.XIAOMI_API_KEY;
-        } else {
-          process.env.XIAOMI_API_KEY = previousXiaomi;
-        }
-      }
+      });
     });
   });
+
   it("writes models.json for configured providers", async () => {
     await withTempHome(async () => {
       vi.resetModules();
@@ -144,6 +121,7 @@ describe("models-config", () => {
       expect(parsed.providers["custom-proxy"]?.baseUrl).toBe("http://localhost:4000/v1");
     });
   });
+
   it("adds minimax provider when MINIMAX_API_KEY is set", async () => {
     await withTempHome(async () => {
       vi.resetModules();
@@ -181,6 +159,7 @@ describe("models-config", () => {
       }
     });
   });
+
   it("adds synthetic provider when SYNTHETIC_API_KEY is set", async () => {
     await withTempHome(async () => {
       vi.resetModules();

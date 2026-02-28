@@ -19,6 +19,40 @@ const baseConfig = {
 } satisfies GenSparxConfig;
 
 describe("gmail hook config", () => {
+  function resolveWithGmailOverrides(
+    overrides: Partial<NonNullable<OpenClawConfig["hooks"]>["gmail"]>,
+  ) {
+    return resolveGmailHookRuntimeConfig(
+      {
+        hooks: {
+          token: "hook-token",
+          gmail: {
+            account: "openclaw@gmail.com",
+            topic: "projects/demo/topics/gog-gmail-watch",
+            pushToken: "push-token",
+            ...overrides,
+          },
+        },
+      },
+      {},
+    );
+  }
+
+  function expectResolvedPaths(
+    result: ReturnType<typeof resolveGmailHookRuntimeConfig>,
+    expected: { servePath: string; publicPath: string; target?: string },
+  ) {
+    expect(result.ok).toBe(true);
+    if (!result.ok) {
+      return;
+    }
+    expect(result.value.serve.path).toBe(expected.servePath);
+    expect(result.value.tailscale.path).toBe(expected.publicPath);
+    if (expected.target !== undefined) {
+      expect(result.value.tailscale.target).toBe(expected.target);
+    }
+  }
+
   it("builds default hook url", () => {
     expect(buildDefaultHookUrl("/hooks", DEFAULT_GATEWAY_PORT)).toBe(
       `http://127.0.0.1:${DEFAULT_GATEWAY_PORT}/hooks/gmail`,

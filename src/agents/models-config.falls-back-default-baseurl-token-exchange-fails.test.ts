@@ -33,20 +33,15 @@ const _MODELS_CONFIG: GenSparxConfig = {
 };
 
 describe("models-config", () => {
-  let previousHome: string | undefined;
-
-  beforeEach(() => {
-    previousHome = process.env.HOME;
-  });
-
-  afterEach(() => {
-    process.env.HOME = previousHome;
-  });
-
   it("falls back to default baseUrl when token exchange fails", async () => {
     await withTempHome(async () => {
-      const previous = process.env.COPILOT_GITHUB_TOKEN;
-      process.env.COPILOT_GITHUB_TOKEN = "gh-token";
+      await withEnvAsync({ COPILOT_GITHUB_TOKEN: "gh-token" }, async () => {
+        const fetchMock = vi.fn().mockResolvedValue({
+          ok: false,
+          status: 500,
+          json: async () => ({ message: "boom" }),
+        });
+        globalThis.fetch = fetchMock as unknown as typeof fetch;
 
       try {
         vi.resetModules();
@@ -73,18 +68,11 @@ describe("models-config", () => {
       }
     });
   });
+
   it("uses agentDir override auth profiles for copilot injection", async () => {
     await withTempHome(async (home) => {
-      const previous = process.env.COPILOT_GITHUB_TOKEN;
-      const previousGh = process.env.GH_TOKEN;
-      const previousGithub = process.env.GITHUB_TOKEN;
-      delete process.env.COPILOT_GITHUB_TOKEN;
-      delete process.env.GH_TOKEN;
-      delete process.env.GITHUB_TOKEN;
-
-      try {
-        vi.resetModules();
-
+      await withUnsetCopilotTokenEnv(async () => {
+        mockCopilotTokenExchangeSuccess();
         const agentDir = path.join(home, "agent-override");
         await fs.mkdir(agentDir, { recursive: true });
         await fs.writeFile(
@@ -119,29 +107,8 @@ describe("models-config", () => {
 
         await ensureGenSparxModelsJson({ models: { providers: {} } }, agentDir);
 
-        const raw = await fs.readFile(path.join(agentDir, "models.json"), "utf8");
-        const parsed = JSON.parse(raw) as {
-          providers: Record<string, { baseUrl?: string }>;
-        };
-
-        expect(parsed.providers["github-copilot"]?.baseUrl).toBe("https://api.copilot.example");
-      } finally {
-        if (previous === undefined) {
-          delete process.env.COPILOT_GITHUB_TOKEN;
-        } else {
-          process.env.COPILOT_GITHUB_TOKEN = previous;
-        }
-        if (previousGh === undefined) {
-          delete process.env.GH_TOKEN;
-        } else {
-          process.env.GH_TOKEN = previousGh;
-        }
-        if (previousGithub === undefined) {
-          delete process.env.GITHUB_TOKEN;
-        } else {
-          process.env.GITHUB_TOKEN = previousGithub;
-        }
-      }
+        expect(await readCopilotBaseUrl(agentDir)).toBe("https://api.copilot.example");
+      });
     });
   });
 });

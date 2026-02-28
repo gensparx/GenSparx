@@ -1,4 +1,5 @@
 ---
+title: "Session Pruning"
 summary: "Session pruning: tool-result trimming to reduce context bloat"
 read_when:
   - You want to reduce LLM context growth from tool outputs
@@ -14,7 +15,7 @@ Session pruning trims **old tool results** from the in-memory context right befo
 - When `mode: "cache-ttl"` is enabled and the last Anthropic call for the session is older than `ttl`.
 - Only affects the messages sent to the model for that request.
 - Only active for Anthropic API calls (and OpenRouter Anthropic models).
-- For best results, match `ttl` to your model `cacheControlTtl`.
+- For best results, match `ttl` to your model `cacheRetention` policy (`short` = 5m, `long` = 1h).
 - After a prune, the TTL window resets so subsequent requests keep cache until `ttl` expires again.
 
 ## Smart defaults (Anthropic)
@@ -90,9 +91,7 @@ Default (off):
 
 ```json5
 {
-  agent: {
-    contextPruning: { mode: "off" },
-  },
+  agents: { defaults: { contextPruning: { mode: "off" } } },
 }
 ```
 
@@ -100,9 +99,7 @@ Enable TTL-aware pruning:
 
 ```json5
 {
-  agent: {
-    contextPruning: { mode: "cache-ttl", ttl: "5m" },
-  },
+  agents: { defaults: { contextPruning: { mode: "cache-ttl", ttl: "5m" } } },
 }
 ```
 
@@ -110,10 +107,12 @@ Restrict pruning to specific tools:
 
 ```json5
 {
-  agent: {
-    contextPruning: {
-      mode: "cache-ttl",
-      tools: { allow: ["exec", "read"], deny: ["*image*"] },
+  agents: {
+    defaults: {
+      contextPruning: {
+        mode: "cache-ttl",
+        tools: { allow: ["exec", "read"], deny: ["*image*"] },
+      },
     },
   },
 }

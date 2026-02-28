@@ -2,11 +2,12 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { DoctorPrompter } from "./doctor-prompter.js";
+import type { OpenClawConfig } from "../config/config.js";
+import { captureEnv } from "../test-utils/env.js";
 import { maybeRemoveDeprecatedCliAuthProfiles } from "./doctor-auth.js";
+import type { DoctorPrompter } from "./doctor-prompter.js";
 
-let originalAgentDir: string | undefined;
-let originalPiAgentDir: string | undefined;
+let envSnapshot: ReturnType<typeof captureEnv>;
 let tempAgentDir: string | undefined;
 
 function makePrompter(confirmValue: boolean): DoctorPrompter {
@@ -93,7 +94,10 @@ describe("maybeRemoveDeprecatedCliAuthProfiles", () => {
       },
     } as const;
 
-    const next = await maybeRemoveDeprecatedCliAuthProfiles(cfg, makePrompter(true));
+    const next = await maybeRemoveDeprecatedCliAuthProfiles(
+      cfg as unknown as OpenClawConfig,
+      makePrompter(true),
+    );
 
     const raw = JSON.parse(fs.readFileSync(authPath, "utf8")) as {
       profiles?: Record<string, unknown>;

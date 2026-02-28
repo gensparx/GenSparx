@@ -1,6 +1,3 @@
-import fs from "node:fs/promises";
-import os from "node:os";
-import path from "node:path";
 import { describe, expect, it } from "vitest";
 import type { MsgContext } from "../auto-reply/templating.js";
 import type { GenSparxConfig } from "../config/config.js";
@@ -22,14 +19,10 @@ describe("runCapability auto audio entries", () => {
     const cache = createMediaAttachmentCache(media);
 
     let seenModel: string | undefined;
-    const providerRegistry = buildProviderRegistry({
-      openai: {
-        id: "openai",
-        capabilities: ["audio"],
-        transcribeAudio: async (req) => {
-          seenModel = req.model;
-          return { text: "ok", model: req.model };
-        },
+    const result = await runAutoAudioCase({
+      transcribeAudio: async (req) => {
+        seenModel = req.model;
+        return { text: "ok", model: req.model ?? "unknown" };
       },
     });
 
@@ -72,11 +65,21 @@ describe("runCapability auto audio entries", () => {
     const media = normalizeMediaAttachments(ctx);
     const cache = createMediaAttachmentCache(media);
 
-    const providerRegistry = buildProviderRegistry({
-      openai: {
-        id: "openai",
-        capabilities: ["audio"],
-        transcribeAudio: async () => ({ text: "ok", model: "whisper-1" }),
+  it("prefers explicitly configured audio model entries", async () => {
+    let seenModel: string | undefined;
+    const result = await runAutoAudioCase({
+      transcribeAudio: async (req) => {
+        seenModel = req.model;
+        return { text: "ok", model: req.model ?? "unknown" };
+      },
+      cfgExtra: {
+        tools: {
+          media: {
+            audio: {
+              models: [{ provider: "openai", model: "whisper-1" }],
+            },
+          },
+        },
       },
     });
 
@@ -98,21 +101,76 @@ describe("runCapability auto audio entries", () => {
       },
     } as unknown as GenSparxConfig;
 
+  it("uses mistral when only mistral key is configured", async () => {
+    const priorEnv: Record<string, string | undefined> = {
+      OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+      GROQ_API_KEY: process.env.GROQ_API_KEY,
+      DEEPGRAM_API_KEY: process.env.DEEPGRAM_API_KEY,
+      GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+      MISTRAL_API_KEY: process.env.MISTRAL_API_KEY,
+    };
+    delete process.env.OPENAI_API_KEY;
+    delete process.env.GROQ_API_KEY;
+    delete process.env.DEEPGRAM_API_KEY;
+    delete process.env.GEMINI_API_KEY;
+    process.env.MISTRAL_API_KEY = "mistral-test-key";
+    let runResult: Awaited<ReturnType<typeof runCapability>> | undefined;
     try {
-      const result = await runCapability({
-        capability: "audio",
-        cfg,
-        ctx,
-        attachments: cache,
-        media,
-        providerRegistry,
+      await withAudioFixture("openclaw-auto-audio-mistral", async ({ ctx, media, cache }) => {
+        const providerRegistry = buildProviderRegistry({
+          openai: {
+            id: "openai",
+            capabilities: ["audio"],
+            transcribeAudio: async () => ({ text: "openai", model: "gpt-4o-mini-transcribe" }),
+          },
+          mistral: {
+            id: "mistral",
+            capabilities: ["audio"],
+            transcribeAudio: async (req) => ({ text: "mistral", model: req.model ?? "unknown" }),
+          },
+        });
+        const cfg = {
+          models: {
+            providers: {
+              mistral: {
+                apiKey: "mistral-test-key",
+                models: [],
+              },
+            },
+          },
+          tools: {
+            media: {
+              audio: {
+                enabled: true,
+              },
+            },
+          },
+        } as unknown as OpenClawConfig;
+
+        runResult = await runCapability({
+          capability: "audio",
+          cfg,
+          ctx,
+          attachments: cache,
+          media,
+          providerRegistry,
+        });
       });
-      expect(result.outputs).toHaveLength(0);
-      expect(result.decision.outcome).toBe("disabled");
     } finally {
-      process.env.PATH = originalPath;
-      await cache.cleanup();
-      await fs.unlink(tmpPath).catch(() => {});
+      for (const [key, value] of Object.entries(priorEnv)) {
+        if (value === undefined) {
+          delete process.env[key];
+        } else {
+          process.env[key] = value;
+        }
+      }
     }
+    if (!runResult) {
+      throw new Error("Expected auto audio mistral result");
+    }
+    expect(runResult.decision.outcome).toBe("success");
+    expect(runResult.outputs[0]?.provider).toBe("mistral");
+    expect(runResult.outputs[0]?.model).toBe("voxtral-mini-latest");
+    expect(runResult.outputs[0]?.text).toBe("mistral");
   });
 });

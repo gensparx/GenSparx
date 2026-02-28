@@ -1,8 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { captureEnv } from "../test-utils/env.js";
 import { buildPairingReply } from "./pairing-messages.js";
 
 describe("buildPairingReply", () => {
-  let previousProfile: string | undefined;
+  let envSnapshot: ReturnType<typeof captureEnv>;
 
   beforeEach(() => {
     previousProfile = process.env.GENSPARX_PROFILE;
@@ -18,6 +19,11 @@ describe("buildPairingReply", () => {
   });
 
   const cases = [
+    {
+      channel: "telegram",
+      idLine: "Your Telegram user id: 42",
+      code: "QRS678",
+    },
     {
       channel: "discord",
       idLine: "Your Discord user id: 1",

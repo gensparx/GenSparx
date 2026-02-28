@@ -104,7 +104,7 @@ function createStubTool(name: string): AgentTool<unknown, unknown> {
     name,
     label: name,
     description: "",
-    parameters: {},
+    parameters: Type.Object({}),
     execute: async () => ({}) as AgentToolResult<unknown>,
   };
 }
@@ -132,6 +132,7 @@ describe("splitSdkTools", () => {
       "browser",
     ]);
   });
+
   it("routes all tools to customTools even when not sandboxed", () => {
     const { builtInTools, customTools } = splitSdkTools({
       tools,

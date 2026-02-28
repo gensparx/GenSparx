@@ -1,5 +1,5 @@
-import { describe, expect, it, vi } from "vitest";
-import { buildTelegramMessageContext } from "./bot-message-context.js";
+import { describe, expect, it } from "vitest";
+import { buildTelegramMessageContextForTest } from "./bot-message-context.test-harness.js";
 
 describe("buildTelegramMessageContext sender prefix", () => {
   it("prefixes group bodies with sender label", async () => {
@@ -43,6 +43,10 @@ describe("buildTelegramMessageContext sender prefix", () => {
         topicConfig: undefined,
       }),
     });
+  }
+
+  it("prefixes group bodies with sender label", async () => {
+    const ctx = await buildCtx({ messageId: 1 });
 
     expect(ctx).not.toBeNull();
     const body = ctx?.ctxPayload?.Body ?? "";
@@ -96,19 +100,8 @@ describe("buildTelegramMessageContext sender prefix", () => {
   });
 
   it("respects messageIdOverride option", async () => {
-    const ctx = await buildTelegramMessageContext({
-      primaryCtx: {
-        message: {
-          message_id: 12345,
-          chat: { id: -99, type: "supergroup", title: "Dev Chat" },
-          date: 1700000000,
-          text: "hello",
-          from: { id: 42, first_name: "Alice" },
-        },
-        me: { id: 7, username: "bot" },
-      } as never,
-      allMedia: [],
-      storeAllowFrom: [],
+    const ctx = await buildCtx({
+      messageId: 12345,
       options: { messageIdOverride: "67890" },
       bot: {
         api: {

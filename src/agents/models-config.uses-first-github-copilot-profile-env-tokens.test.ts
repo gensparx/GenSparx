@@ -33,28 +33,10 @@ const _MODELS_CONFIG: GenSparxConfig = {
 };
 
 describe("models-config", () => {
-  let previousHome: string | undefined;
-
-  beforeEach(() => {
-    previousHome = process.env.HOME;
-  });
-
-  afterEach(() => {
-    process.env.HOME = previousHome;
-  });
-
   it("uses the first github-copilot profile when env tokens are missing", async () => {
     await withTempHome(async (home) => {
-      const previous = process.env.COPILOT_GITHUB_TOKEN;
-      const previousGh = process.env.GH_TOKEN;
-      const previousGithub = process.env.GITHUB_TOKEN;
-      delete process.env.COPILOT_GITHUB_TOKEN;
-      delete process.env.GH_TOKEN;
-      delete process.env.GITHUB_TOKEN;
-
-      try {
-        vi.resetModules();
-
+      await withUnsetCopilotTokenEnv(async () => {
+        const fetchMock = mockCopilotTokenExchangeSuccess();
         const agentDir = path.join(home, "agent-profiles");
         await fs.mkdir(agentDir, { recursive: true });
         await fs.writeFile(
@@ -96,28 +78,12 @@ describe("models-config", () => {
 
         await ensureGenSparxModelsJson({ models: { providers: {} } }, agentDir);
 
-        expect(resolveCopilotApiToken).toHaveBeenCalledWith(
-          expect.objectContaining({ githubToken: "alpha-token" }),
-        );
-      } finally {
-        if (previous === undefined) {
-          delete process.env.COPILOT_GITHUB_TOKEN;
-        } else {
-          process.env.COPILOT_GITHUB_TOKEN = previous;
-        }
-        if (previousGh === undefined) {
-          delete process.env.GH_TOKEN;
-        } else {
-          process.env.GH_TOKEN = previousGh;
-        }
-        if (previousGithub === undefined) {
-          delete process.env.GITHUB_TOKEN;
-        } else {
-          process.env.GITHUB_TOKEN = previousGithub;
-        }
-      }
+        const [, opts] = fetchMock.mock.calls[0] as [string, { headers?: Record<string, string> }];
+        expect(opts?.headers?.Authorization).toBe("Bearer alpha-token");
+      });
     });
   });
+
   it("does not override explicit github-copilot provider config", async () => {
     await withTempHome(async () => {
       const previous = process.env.COPILOT_GITHUB_TOKEN;
@@ -158,9 +124,41 @@ describe("models-config", () => {
         };
 
         expect(parsed.providers["github-copilot"]?.baseUrl).toBe("https://copilot.local");
-      } finally {
-        process.env.COPILOT_GITHUB_TOKEN = previous;
-      }
+      });
+    });
+  });
+
+  it("uses tokenRef env var when github-copilot profile omits plaintext token", async () => {
+    await withTempHome(async (home) => {
+      await withUnsetCopilotTokenEnv(async () => {
+        const fetchMock = mockCopilotTokenExchangeSuccess();
+        const agentDir = path.join(home, "agent-profiles");
+        await fs.mkdir(agentDir, { recursive: true });
+        process.env.COPILOT_REF_TOKEN = "token-from-ref-env";
+        await fs.writeFile(
+          path.join(agentDir, "auth-profiles.json"),
+          JSON.stringify(
+            {
+              version: 1,
+              profiles: {
+                "github-copilot:default": {
+                  type: "token",
+                  provider: "github-copilot",
+                  tokenRef: { source: "env", provider: "default", id: "COPILOT_REF_TOKEN" },
+                },
+              },
+            },
+            null,
+            2,
+          ),
+        );
+
+        await ensureOpenClawModelsJson({ models: { providers: {} } }, agentDir);
+
+        const [, opts] = fetchMock.mock.calls[0] as [string, { headers?: Record<string, string> }];
+        expect(opts?.headers?.Authorization).toBe("Bearer token-from-ref-env");
+        delete process.env.COPILOT_REF_TOKEN;
+      });
     });
   });
 });

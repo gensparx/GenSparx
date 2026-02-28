@@ -51,7 +51,7 @@ describe("createGenSparxCodingTools", () => {
       expect(values.size).toBeGreaterThanOrEqual(min);
     }
   });
-  it("includes exec and process tools by default", () => {
+  it("enforces apply_patch availability and canonical names across model/provider constraints", () => {
     expect(defaultTools.some((tool) => tool.name === "exec")).toBe(true);
     expect(defaultTools.some((tool) => tool.name === "process")).toBe(true);
     expect(defaultTools.some((tool) => tool.name === "apply_patch")).toBe(false);
@@ -105,7 +105,7 @@ describe("createGenSparxCodingTools", () => {
       modelProvider: "anthropic",
       modelAuthMode: "oauth",
     });
-    const names = new Set(tools.map((tool) => tool.name));
+    const names = new Set(oauthTools.map((tool) => tool.name));
     expect(names.has("exec")).toBe(true);
     expect(names.has("read")).toBe(true);
     expect(names.has("write")).toBe(true);

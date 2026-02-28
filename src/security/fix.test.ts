@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { fixSecurityFootguns } from "./fix.js";
 
 const isWindows = process.platform === "win32";
@@ -42,13 +42,46 @@ describe("security fix", () => {
     );
     await fs.chmod(configPath, 0o644);
 
+  const createFixEnv = (stateDir: string, configPath: string) => ({
+    ...process.env,
+    OPENCLAW_STATE_DIR: stateDir,
+    OPENCLAW_CONFIG_PATH: configPath,
+  });
+
+  const writeJsonConfig = async (configPath: string, config: Record<string, unknown>) => {
+    await fs.writeFile(configPath, `${JSON.stringify(config, null, 2)}\n`, "utf-8");
+  };
+
+  const writeWhatsAppConfig = async (configPath: string, whatsapp: Record<string, unknown>) => {
+    await writeJsonConfig(configPath, {
+      channels: {
+        whatsapp,
+      },
+    });
+  };
+
+  const readParsedConfig = async (configPath: string) =>
+    JSON.parse(await fs.readFile(configPath, "utf-8")) as Record<string, unknown>;
+
+  const runFixAndReadChannels = async (stateDir: string, configPath: string) => {
+    const env = createFixEnv(stateDir, configPath);
+    const res = await fixSecurityFootguns({ env, stateDir, configPath });
+    const parsed = await readParsedConfig(configPath);
+    return {
+      res,
+      channels: parsed.channels as Record<string, Record<string, unknown>>,
+    };
+  };
+
+  const writeWhatsAppAllowFromStore = async (stateDir: string, allowFrom: string[]) => {
     const credsDir = path.join(stateDir, "credentials");
     await fs.mkdir(credsDir, { recursive: true });
     await fs.writeFile(
       path.join(credsDir, "whatsapp-allowFrom.json"),
-      `${JSON.stringify({ version: 1, allowFrom: [" +15551234567 "] }, null, 2)}\n`,
+      `${JSON.stringify({ version: 1, allowFrom }, null, 2)}\n`,
       "utf-8",
     );
+  };
 
     const env = {
       ...process.env,
@@ -56,7 +89,33 @@ describe("security fix", () => {
       GENSPARX_CONFIG_PATH: "",
     };
 
-    const res = await fixSecurityFootguns({ env });
+  afterAll(async () => {
+    if (fixtureRoot) {
+      await fs.rm(fixtureRoot, { recursive: true, force: true });
+    }
+  });
+
+  it("tightens groupPolicy + filesystem perms", async () => {
+    const stateDir = await createStateDir("tightens");
+    await fs.chmod(stateDir, 0o755);
+
+    const configPath = path.join(stateDir, "openclaw.json");
+    await writeJsonConfig(configPath, {
+      channels: {
+        telegram: { groupPolicy: "open" },
+        whatsapp: { groupPolicy: "open" },
+        discord: { groupPolicy: "open" },
+        signal: { groupPolicy: "open" },
+        imessage: { groupPolicy: "open" },
+      },
+      logging: { redactSensitive: "off" },
+    });
+    await fs.chmod(configPath, 0o644);
+
+    await writeWhatsAppAllowFromStore(stateDir, [" +15551234567 "]);
+    const env = createFixEnv(stateDir, configPath);
+
+    const res = await fixSecurityFootguns({ env, stateDir, configPath });
     expect(res.ok).toBe(true);
     expect(res.configWritten).toBe(true);
     expect(res.changes).toEqual(
@@ -76,7 +135,7 @@ describe("security fix", () => {
     const configMode = (await fs.stat(configPath)).mode & 0o777;
     expectPerms(configMode, 0o600);
 
-    const parsed = JSON.parse(await fs.readFile(configPath, "utf-8")) as Record<string, unknown>;
+    const parsed = await readParsedConfig(configPath);
     const channels = parsed.channels as Record<string, Record<string, unknown>>;
     expect(channels.telegram.groupPolicy).toBe("allowlist");
     expect(channels.whatsapp.groupPolicy).toBe("allowlist");
@@ -128,8 +187,6 @@ describe("security fix", () => {
     const res = await fixSecurityFootguns({ env });
     expect(res.ok).toBe(true);
 
-    const parsed = JSON.parse(await fs.readFile(configPath, "utf-8")) as Record<string, unknown>;
-    const channels = parsed.channels as Record<string, Record<string, unknown>>;
     const whatsapp = channels.whatsapp;
     const accounts = whatsapp.accounts as Record<string, Record<string, unknown>>;
 
@@ -174,8 +231,6 @@ describe("security fix", () => {
     const res = await fixSecurityFootguns({ env });
     expect(res.ok).toBe(true);
 
-    const parsed = JSON.parse(await fs.readFile(configPath, "utf-8")) as Record<string, unknown>;
-    const channels = parsed.channels as Record<string, Record<string, unknown>>;
     expect(channels.whatsapp.groupPolicy).toBe("allowlist");
     expect(channels.whatsapp.groupAllowFrom).toBeUndefined();
   });
@@ -196,7 +251,7 @@ describe("security fix", () => {
       GENSPARX_CONFIG_PATH: "",
     };
 
-    const res = await fixSecurityFootguns({ env });
+    const res = await fixSecurityFootguns({ env, stateDir, configPath });
     expect(res.ok).toBe(false);
 
     const stateMode = (await fs.stat(stateDir)).mode & 0o777;
@@ -246,6 +301,9 @@ describe("security fix", () => {
     const sessionsStorePath = path.join(sessionsDir, "sessions.json");
     await fs.writeFile(sessionsStorePath, "{}\n", "utf-8");
     await fs.chmod(sessionsStorePath, 0o644);
+    const transcriptPath = path.join(sessionsDir, "sess-main.jsonl");
+    await fs.writeFile(transcriptPath, '{"type":"session"}\n', "utf-8");
+    await fs.chmod(transcriptPath, 0o644);
 
     const env = {
       ...process.env,
@@ -253,13 +311,14 @@ describe("security fix", () => {
       GENSPARX_CONFIG_PATH: "",
     };
 
-    const res = await fixSecurityFootguns({ env });
+    const res = await fixSecurityFootguns({ env, stateDir, configPath });
     expect(res.ok).toBe(true);
 
     expectPerms((await fs.stat(credsDir)).mode & 0o777, 0o700);
     expectPerms((await fs.stat(allowFromPath)).mode & 0o777, 0o600);
     expectPerms((await fs.stat(authProfilesPath)).mode & 0o777, 0o600);
     expectPerms((await fs.stat(sessionsStorePath)).mode & 0o777, 0o600);
+    expectPerms((await fs.stat(transcriptPath)).mode & 0o777, 0o600);
     expectPerms((await fs.stat(includePath)).mode & 0o777, 0o600);
   });
 });

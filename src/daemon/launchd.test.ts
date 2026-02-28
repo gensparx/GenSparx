@@ -1,13 +1,11 @@
-import fs from "node:fs/promises";
-import os from "node:os";
-import path from "node:path";
 import { PassThrough } from "node:stream";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   installLaunchAgent,
   isLaunchAgentListed,
   parseLaunchctlPrint,
   repairLaunchAgentBootstrap,
+  restartLaunchAgent,
   resolveLaunchAgentPlistPath,
 } from "./launchd.js";
 
@@ -84,7 +82,65 @@ async function withLaunchctlStub(
     }
     await fs.rm(tmpDir, { recursive: true, force: true });
   }
+  const idx = args.indexOf("launchctl");
+  if (idx >= 0) {
+    return args.slice(idx + 1);
+  }
+  return args;
 }
+
+vi.mock("./exec-file.js", () => ({
+  execFileUtf8: vi.fn(async (file: string, args: string[]) => {
+    const call = normalizeLaunchctlArgs(file, args);
+    state.launchctlCalls.push(call);
+    if (call[0] === "list") {
+      return { stdout: state.listOutput, stderr: "", code: 0 };
+    }
+    if (call[0] === "print") {
+      return { stdout: state.printOutput, stderr: "", code: 0 };
+    }
+    if (call[0] === "bootstrap" && state.bootstrapError) {
+      return { stdout: "", stderr: state.bootstrapError, code: 1 };
+    }
+    return { stdout: "", stderr: "", code: 0 };
+  }),
+}));
+
+vi.mock("node:fs/promises", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("node:fs/promises")>();
+  const wrapped = {
+    ...actual,
+    access: vi.fn(async (p: string) => {
+      const key = String(p);
+      if (state.files.has(key) || state.dirs.has(key)) {
+        return;
+      }
+      throw new Error(`ENOENT: no such file or directory, access '${key}'`);
+    }),
+    mkdir: vi.fn(async (p: string) => {
+      state.dirs.add(String(p));
+    }),
+    unlink: vi.fn(async (p: string) => {
+      state.files.delete(String(p));
+    }),
+    writeFile: vi.fn(async (p: string, data: string) => {
+      const key = String(p);
+      state.files.set(key, data);
+      state.dirs.add(String(key.split("/").slice(0, -1).join("/")));
+    }),
+  };
+  return { ...wrapped, default: wrapped };
+});
+
+beforeEach(() => {
+  state.launchctlCalls.length = 0;
+  state.listOutput = "";
+  state.printOutput = "";
+  state.bootstrapError = "";
+  state.dirs.clear();
+  state.files.clear();
+  vi.clearAllMocks();
+});
 
 describe("launchd runtime parsing", () => {
   it("parses state, pid, and exit status", () => {
@@ -109,26 +165,30 @@ describe("launchctl list detection", () => {
       const listed = await isLaunchAgentListed({ env });
       expect(listed).toBe(true);
     });
+    expect(listed).toBe(true);
   });
 
   it("returns false when the label is missing", async () => {
-    await withLaunchctlStub({ listOutput: "123 0 com.other.service\n" }, async ({ env }) => {
-      const listed = await isLaunchAgentListed({ env });
-      expect(listed).toBe(false);
+    state.listOutput = "123 0 com.other.service\n";
+    const listed = await isLaunchAgentListed({
+      env: { HOME: "/Users/test", OPENCLAW_PROFILE: "default" },
     });
+    expect(listed).toBe(false);
   });
 });
 
 describe("launchd bootstrap repair", () => {
   it("bootstraps and kickstarts the resolved label", async () => {
-    await withLaunchctlStub({}, async ({ env, logPath }) => {
-      const repair = await repairLaunchAgentBootstrap({ env });
-      expect(repair.ok).toBe(true);
+    const env: Record<string, string | undefined> = {
+      HOME: "/Users/test",
+      OPENCLAW_PROFILE: "default",
+    };
+    const repair = await repairLaunchAgentBootstrap({ env });
+    expect(repair.ok).toBe(true);
 
-      const calls = (await fs.readFile(logPath, "utf8"))
-        .split("\n")
-        .filter(Boolean)
-        .map((line) => JSON.parse(line) as string[]);
+    const domain = typeof process.getuid === "function" ? `gui/${process.getuid()}` : "gui/501";
+    const label = "ai.openclaw.gateway";
+    const plistPath = resolveLaunchAgentPlistPath(env);
 
       const domain = typeof process.getuid === "function" ? `gui/${process.getuid()}` : "gui/501";
       const label = "ai.gensparx.gateway";
@@ -141,6 +201,13 @@ describe("launchd bootstrap repair", () => {
 });
 
 describe("launchd install", () => {
+  function createDefaultLaunchdEnv(): Record<string, string | undefined> {
+    return {
+      HOME: "/Users/test",
+      OPENCLAW_PROFILE: "default",
+    };
+  }
+
   it("enables service before bootstrap (clears persisted disabled state)", async () => {
     const originalPath = process.env.PATH;
     const originalLogPath = process.env.GENSPARX_TEST_LAUNCHCTL_LOG;
@@ -167,6 +234,15 @@ describe("launchd install", () => {
         ].join("\n"),
         "utf8",
       );
+      const bootstrapIndex = state.launchctlCalls.findIndex((c) => c[0] === "bootstrap");
+      expect(bootoutIndex).toBeGreaterThanOrEqual(0);
+      expect(bootstrapIndex).toBeGreaterThanOrEqual(0);
+      expect(bootoutIndex).toBeLessThan(bootstrapIndex);
+    } finally {
+      vi.useRealTimers();
+      killSpy.mockRestore();
+    }
+  });
 
       if (process.platform === "win32") {
         await fs.writeFile(
@@ -190,7 +266,7 @@ describe("launchd install", () => {
       await installLaunchAgent({
         env,
         stdout: new PassThrough(),
-        programArguments: ["node", "-e", "process.exit(0)"],
+        programArguments: defaultProgramArguments,
       });
 
       const calls = (await fs.readFile(logPath, "utf8"))
@@ -222,6 +298,22 @@ describe("launchd install", () => {
       }
       await fs.rm(tmpDir, { recursive: true, force: true });
     }
+    expect(message).toContain("logged-in macOS GUI session");
+    expect(message).toContain("wrong user (including sudo)");
+    expect(message).toContain("https://docs.openclaw.ai/gateway");
+  });
+
+  it("surfaces generic bootstrap failures without GUI-specific guidance", async () => {
+    state.bootstrapError = "Operation not permitted";
+    const env = createDefaultLaunchdEnv();
+
+    await expect(
+      installLaunchAgent({
+        env,
+        stdout: new PassThrough(),
+        programArguments: defaultProgramArguments,
+      }),
+    ).rejects.toThrow("launchctl bootstrap failed: Operation not permitted");
   });
 });
 
