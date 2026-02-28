@@ -737,7 +737,12 @@
             "groups": [
               {
                 "group": "Overview",
-                "pages": ["index", "concepts/features", "start/showcase", "start/lore"]
+                "pages": [
+                  "index",
+                  "concepts/features",
+                  "start/showcase",
+                  "start/lore"
+                ]
               },
               {
                 "group": "First run",
@@ -745,14 +750,20 @@
                   "start/getting-started",
                   {
                     "group": "Onboarding",
-                    "pages": ["start/wizard", "start/onboarding", "start/bootstrapping"]
+                    "pages": [
+                      "start/wizard",
+                      "start/onboarding",
+                      "start/bootstrapping"
+                    ]
                   },
                   "start/pairing"
                 ]
               },
               {
                 "group": "Use cases",
-                "pages": ["start/openclaw"]
+                "pages": [
+                  "start/openclaw"
+                ]
               }
             ]
           },
@@ -761,7 +772,10 @@
             "groups": [
               {
                 "group": "Install overview",
-                "pages": ["install/index", "install/installer"]
+                "pages": [
+                  "install/index",
+                  "install/installer"
+                ]
               },
               {
                 "group": "Install methods",
@@ -775,11 +789,17 @@
               },
               {
                 "group": "Maintenance",
-                "pages": ["install/updating", "install/migrating", "install/uninstall"]
+                "pages": [
+                  "install/updating",
+                  "install/migrating",
+                  "install/uninstall"
+                ]
               },
               {
                 "group": "Advanced",
-                "pages": ["install/development-channels"]
+                "pages": [
+                  "install/development-channels"
+                ]
               }
             ]
           },
@@ -788,7 +808,9 @@
             "groups": [
               {
                 "group": "Overview",
-                "pages": ["channels/index"]
+                "pages": [
+                  "channels/index"
+                ]
               },
               {
                 "group": "Messaging platforms",
@@ -851,7 +873,10 @@
               },
               {
                 "group": "Multi-agent",
-                "pages": ["concepts/multi-agent", "concepts/presence"]
+                "pages": [
+                  "concepts/multi-agent",
+                  "concepts/presence"
+                ]
               },
               {
                 "group": "Messages and delivery",
@@ -869,7 +894,9 @@
             "groups": [
               {
                 "group": "Overview",
-                "pages": ["tools/index"]
+                "pages": [
+                  "tools/index"
+                ]
               },
               {
                 "group": "Built-in tools",
@@ -895,7 +922,11 @@
               },
               {
                 "group": "Agent coordination",
-                "pages": ["tools/agent-send", "tools/subagents", "multi-agent-sandbox-tools"]
+                "pages": [
+                  "tools/agent-send",
+                  "tools/subagents",
+                  "multi-agent-sandbox-tools"
+                ]
               },
               {
                 "group": "Skills and extensions",
@@ -941,11 +972,18 @@
             "groups": [
               {
                 "group": "Overview",
-                "pages": ["providers/index", "providers/models", "concepts/models"]
+                "pages": [
+                  "providers/index",
+                  "providers/models",
+                  "concepts/models"
+                ]
               },
               {
                 "group": "Configuration",
-                "pages": ["concepts/model-providers", "concepts/model-failover"]
+                "pages": [
+                  "concepts/model-providers",
+                  "concepts/model-failover"
+                ]
               },
               {
                 "group": "Providers",
@@ -1036,11 +1074,19 @@
               },
               {
                 "group": "Security",
-                "pages": ["security/formal-verification"]
+                "pages": [
+                  "security/formal-verification"
+                ]
               },
               {
                 "group": "Web interfaces",
-                "pages": ["web/index", "web/control-ui", "web/dashboard", "web/webchat", "tui"]
+                "pages": [
+                  "web/index",
+                  "web/control-ui",
+                  "web/dashboard",
+                  "web/webchat",
+                  "tui"
+                ]
               }
             ]
           },
@@ -1129,7 +1175,10 @@
               },
               {
                 "group": "RPC and API",
-                "pages": ["reference/rpc", "reference/device-models"]
+                "pages": [
+                  "reference/rpc",
+                  "reference/device-models"
+                ]
               },
               {
                 "group": "Templates",
@@ -1158,11 +1207,16 @@
               },
               {
                 "group": "Project",
-                "pages": ["reference/credits"]
+                "pages": [
+                  "reference/credits"
+                ]
               },
               {
                 "group": "Release notes",
-                "pages": ["reference/RELEASING", "reference/test"]
+                "pages": [
+                  "reference/RELEASING",
+                  "reference/test"
+                ]
               }
             ]
           },
@@ -1171,7 +1225,11 @@
             "groups": [
               {
                 "group": "Help",
-                "pages": ["help/index", "help/troubleshooting", "help/faq"]
+                "pages": [
+                  "help/index",
+                  "help/troubleshooting",
+                  "help/faq"
+                ]
               },
               {
                 "group": "Environment and debugging",
@@ -1185,15 +1243,23 @@
               },
               {
                 "group": "Developer workflows",
-                "pages": ["start/setup"]
+                "pages": [
+                  "start/setup"
+                ]
               },
               {
                 "group": "Docs meta",
-                "pages": ["start/hubs", "start/docs-directory"]
+                "pages": [
+                  "start/hubs",
+                  "start/docs-directory"
+                ]
               }
             ]
           }
         ]
+      },
+      {
+        "language": "jp"
       }
     ]
   }
