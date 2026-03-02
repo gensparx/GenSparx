@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["DOM", "DOM.Iterable", "ES2023", "ScriptHost"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "noEmit": true,
+    "noEmitOnError": true,
+    "outDir": "dist",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "es2023",
+    "useDefineForClassFields": false,
+    "paths": {
+      "openclaw/plugin-sdk": ["./src/plugin-sdk/index.ts"],
+      "openclaw/plugin-sdk/*": ["./src/plugin-sdk/*.ts"],
+      "openclaw/plugin-sdk/account-id": ["./src/plugin-sdk/account-id.ts"],
+      "gensparx/plugin-sdk": ["./src/plugin-sdk/index.ts"],
+      "gensparx/plugin-sdk/*": ["./src/plugin-sdk/*.ts"],
+      "gensparx/plugin-sdk/account-id": ["./src/plugin-sdk/account-id.ts"],
+      "GenSparx/plugin-sdk": ["./src/plugin-sdk/index.ts"],
+      "GenSparx/plugin-sdk/*": ["./src/plugin-sdk/*.ts"],
+      "GenSparx/plugin-sdk/account-id": ["./src/plugin-sdk/account-id.ts"]
+    }
+  },
+  "include": ["src/**/*", "ui/**/*", "extensions/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
