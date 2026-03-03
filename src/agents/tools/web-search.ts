@@ -976,7 +976,7 @@ async function runPerplexitySearchApi(params: {
           Accept: "application/json",
           Authorization: `Bearer ${params.apiKey}`,
           "HTTP-Referer": "https://openclaw.ai",
-          "X-Title": "OpenClaw Web Search",
+          "X-Title": "GenSparx Web Search",
         },
         body: JSON.stringify(body),
       },
