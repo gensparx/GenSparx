@@ -543,7 +543,7 @@ fun OnboardingFlow(viewModel: MainViewModel, modifier: Modifier = Modifier) {
             color = onboardingAccent,
           )
           Text(
-            "OpenClaw\nMobile Setup",
+            "GenSparx\nMobile Setup",
             style = onboardingDisplayStyle.copy(lineHeight = 38.sp),
             color = onboardingText,
           )
@@ -573,7 +573,7 @@ fun OnboardingFlow(viewModel: MainViewModel, modifier: Modifier = Modifier) {
                 qrScanLauncher.launch(
                   ScanOptions().apply {
                     setDesiredBarcodeFormats(ScanOptions.QR_CODE)
-                    setPrompt("Scan OpenClaw onboarding QR")
+                    setPrompt("Scan GenSparx onboarding QR")
                     setBeepEnabled(false)
                     setOrientationLocked(false)
                   },
@@ -987,7 +987,7 @@ private fun GatewayStep(
   StepShell(title = "Gateway Connection") {
     GuideBlock(title = "Scan onboarding QR") {
       Text("Run these on the gateway host:", style = onboardingCalloutStyle, color = onboardingTextSecondary)
-      CommandBlock("openclaw qr")
+      CommandBlock("gensparx qr")
       Text("Then scan with this device.", style = onboardingCalloutStyle, color = onboardingTextSecondary)
     }
     Button(
@@ -1035,8 +1035,8 @@ private fun GatewayStep(
       Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         GuideBlock(title = "Manual setup commands") {
           Text("Run these on the gateway host:", style = onboardingCalloutStyle, color = onboardingTextSecondary)
-          CommandBlock("openclaw qr --setup-code-only")
-          CommandBlock("openclaw qr --json")
+          CommandBlock("gensparx qr --setup-code-only")
+          CommandBlock("gensparx qr --json")
           Text(
             "`--json` prints `setupCode` and `gatewayUrl`.",
             style = onboardingCalloutStyle,
@@ -1055,7 +1055,7 @@ private fun GatewayStep(
           OutlinedTextField(
             value = setupCode,
             onValueChange = onSetupCodeChange,
-            placeholder = { Text("Paste code from `openclaw qr --setup-code-only`", color = onboardingTextTertiary, style = onboardingBodyStyle) },
+            placeholder = { Text("Paste code from `gensparx qr --setup-code-only`", color = onboardingTextTertiary, style = onboardingBodyStyle) },
             modifier = Modifier.fillMaxWidth(),
             minLines = 3,
             maxLines = 5,
@@ -1564,8 +1564,8 @@ private fun FinalStep(
       } else {
         GuideBlock(title = "Pairing Required") {
           Text("Run these on the gateway host:", style = onboardingCalloutStyle, color = onboardingTextSecondary)
-          CommandBlock("openclaw devices list")
-          CommandBlock("openclaw devices approve <requestId>")
+          CommandBlock("gensparx devices list")
+          CommandBlock("gensparx devices approve <requestId>")
           Text("Then tap Connect again.", style = onboardingCalloutStyle, color = onboardingTextSecondary)
         }
       }
