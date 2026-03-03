@@ -90,7 +90,7 @@ Auto-updater is **off by default** and is a core Gateway feature (not a plugin).
 
 Behavior:
 
-- `stable`: when a new version is seen, OpenClaw waits `stableDelayHours` and then applies a deterministic per-install jitter in `stableJitterHours` (spread rollout).
+- `stable`: when a new version is seen, GenSparx waits `stableDelayHours` and then applies a deterministic per-install jitter in `stableJitterHours` (spread rollout).
 - `beta`: checks on `betaCheckIntervalHours` cadence (default: hourly) and applies when an update is available.
 - `dev`: no automatic apply; use manual `openclaw update`.
 

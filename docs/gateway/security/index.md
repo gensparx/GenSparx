@@ -39,14 +39,14 @@ Start with the smallest access that still works, then widen it as you gain confi
 
 ## Deployment assumption (important)
 
-OpenClaw assumes the host and config boundary are trusted:
+GenSparx assumes the host and config boundary are trusted:
 
 - If someone can modify Gateway host state/config (`~/.openclaw`, including `openclaw.json`), treat them as a trusted operator.
 - Running one Gateway for multiple mutually untrusted/adversarial operators is **not a recommended setup**.
 - For mixed-trust teams, split trust boundaries with separate gateways (or at minimum separate OS users/hosts).
-- OpenClaw can run multiple gateway instances on one machine, but recommended operations favor clean trust-boundary separation.
+- GenSparx can run multiple gateway instances on one machine, but recommended operations favor clean trust-boundary separation.
 - Recommended default: one user per machine/host (or VPS), one gateway for that user, and one or more agents in that gateway.
-- If multiple users want OpenClaw, use one VPS/host per user.
+- If multiple users want GenSparx, use one VPS/host per user.
 
 ### Practical consequence (operator trust boundary)
 
@@ -60,7 +60,7 @@ Inside one Gateway instance, authenticated operator access is a trusted control-
 
 ## Personal assistant model (not a multi-tenant bus)
 
-OpenClaw is designed as a personal assistant security model: one trusted operator boundary, potentially many agents.
+GenSparx is designed as a personal assistant security model: one trusted operator boundary, potentially many agents.
 
 - If several people can message one tool-enabled agent, each of them can steer that same permission set.
 - Per-user session/memory isolation helps privacy, but does not convert a shared agent into per-user host authorization.
@@ -129,7 +129,7 @@ Before opening a GHSA, verify all of these:
 1. Repro still works on latest `main` or latest release.
 2. Report includes exact code path (`file`, function, line range) and tested version/commit.
 3. Impact crosses a documented trust boundary (not just prompt injection).
-4. Claim is not listed in [Out of Scope](https://github.com/openclaw/openclaw/blob/main/SECURITY.md#out-of-scope).
+4. Claim is not listed in [Out of Scope](https://github.com/gensparx/GenSparx/blob/main/SECURITY.md#out-of-scope).
 5. Existing advisories were checked for duplicates (reuse canonical GHSA when applicable).
 6. Deployment assumptions are explicit (loopback/local vs exposed, trusted vs untrusted operators).
 
@@ -217,7 +217,7 @@ High-signal `checkId` values you will most likely see in real deployments (not e
 
 | `checkId`                                          | Severity      | Why it matters                                                                     | Primary fix key/path                                                                              | Auto-fix |
 | -------------------------------------------------- | ------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | -------- |
-| `fs.state_dir.perms_world_writable`                | critical      | Other users/processes can modify full OpenClaw state                               | filesystem perms on `~/.openclaw`                                                                 | yes      |
+| `fs.state_dir.perms_world_writable`                | critical      | Other users/processes can modify full GenSparx state                               | filesystem perms on `~/.openclaw`                                                                 | yes      |
 | `fs.config.perms_writable`                         | critical      | Others can change auth/tool policy/config                                          | filesystem perms on `~/.openclaw/openclaw.json`                                                   | yes      |
 | `fs.config.perms_world_readable`                   | critical      | Config can expose tokens/settings                                                  | filesystem perms on config file                                                                   | yes      |
 | `gateway.bind_no_auth`                             | critical      | Remote bind without shared secret                                                  | `gateway.bind`, `gateway.auth.*`                                                                  | no       |
@@ -275,7 +275,7 @@ aggregates:
 - `hooks.mappings[<index>].allowUnsafeExternalContent=true`
 - `tools.exec.applyPatch.workspaceOnly=false`
 
-Complete `dangerous*` / `dangerously*` config keys defined in OpenClaw config
+Complete `dangerous*` / `dangerously*` config keys defined in GenSparx config
 schema:
 
 - `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback`
@@ -334,8 +334,8 @@ proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 
 ## HSTS and origin notes
 
-- OpenClaw gateway is local/loopback first. If you terminate TLS at a reverse proxy, set HSTS on the proxy-facing HTTPS domain there.
-- If the gateway itself terminates HTTPS, you can set `gateway.http.securityHeaders.strictTransportSecurity` to emit the HSTS header from OpenClaw responses.
+- GenSparx gateway is local/loopback first. If you terminate TLS at a reverse proxy, set HSTS on the proxy-facing HTTPS domain there.
+- If the gateway itself terminates HTTPS, you can set `gateway.http.securityHeaders.strictTransportSecurity` to emit the HSTS header from GenSparx responses.
 - Detailed deployment guidance is in [Trusted Proxy Auth](/gateway/trusted-proxy-auth#tls-termination-and-hsts).
 - For non-loopback Control UI deployments, `gateway.controlUi.allowedOrigins` is required by default.
 - `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true` enables Host-header origin fallback mode; treat it as a dangerous operator-selected policy.
@@ -517,7 +517,7 @@ Red flags to treat as untrusted:
 
 ## Unsafe external content bypass flags
 
-OpenClaw includes explicit bypass flags that disable external-content safety wrapping:
+GenSparx includes explicit bypass flags that disable external-content safety wrapping:
 
 - `hooks.mappings[].allowUnsafeExternalContent`
 - `hooks.gmail.allowUnsafeExternalContent`
@@ -935,7 +935,7 @@ access those accounts and data. Treat browser profiles as **sensitive state**:
 
 ### Browser SSRF policy (trusted-network default)
 
-OpenClaw’s browser network policy defaults to the trusted-operator model: private/internal destinations are allowed unless you explicitly disable them.
+GenSparx’s browser network policy defaults to the trusted-operator model: private/internal destinations are allowed unless you explicitly disable them.
 
 - Default: `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork: true` (implicit when unset).
 - Legacy alias: `browser.ssrfPolicy.allowPrivateNetwork` is still accepted for compatibility.
@@ -1024,7 +1024,7 @@ Common use cases:
           scope: "agent",
           workspaceAccess: "none",
         },
-        // Session tools can reveal sensitive data from transcripts. By default OpenClaw limits these tools
+        // Session tools can reveal sensitive data from transcripts. By default GenSparx limits these tools
         // to the current session + spawned subagent sessions, but you can clamp further if needed.
         // See `tools.sessions.visibility` in the configuration reference.
         tools: {

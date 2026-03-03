@@ -9,7 +9,7 @@ title: "Secrets Management"
 
 # Secrets management
 
-OpenClaw supports additive secret references so credentials do not need to be stored as plaintext in config files.
+GenSparx supports additive secret references so credentials do not need to be stored as plaintext in config files.
 
 Plaintext still works. Secret refs are optional.
 
@@ -26,7 +26,7 @@ This keeps secret-provider outages off the hot request path.
 
 ## Onboarding reference preflight
 
-When onboarding runs in interactive mode and you choose secret reference storage, OpenClaw performs a fast preflight check before saving:
+When onboarding runs in interactive mode and you choose secret reference storage, GenSparx performs a fast preflight check before saving:
 
 - Env refs: validates env var name and confirms a non-empty value is visible during onboarding.
 - Provider refs (`file` or `exec`): validates the selected provider, resolves the provided `id`, and checks value type.
@@ -127,7 +127,7 @@ Define providers under `secrets.providers`:
 
 - Runs configured absolute binary path, no shell.
 - By default, `command` must point to a regular file (not a symlink).
-- Set `allowSymlinkCommand: true` to allow symlink command paths (for example Homebrew shims). OpenClaw validates the resolved target path.
+- Set `allowSymlinkCommand: true` to allow symlink command paths (for example Homebrew shims). GenSparx validates the resolved target path.
 - Enable `allowSymlinkCommand` only when required for trusted package-manager paths, and pair it with `trustedDirs` (for example `["/opt/homebrew"]`).
 - When `trustedDirs` is set, checks apply to the resolved target path.
 - Supports timeout, no-output timeout, output byte limits, env allowlist, and trusted dirs.
@@ -166,7 +166,7 @@ Optional per-id errors:
         command: "/opt/homebrew/bin/op",
         allowSymlinkCommand: true, // required for Homebrew symlinked binaries
         trustedDirs: ["/opt/homebrew"],
-        args: ["read", "op://Personal/OpenClaw QA API Key/password"],
+        args: ["read", "op://Personal/GenSparx QA API Key/password"],
         passEnv: ["HOME"],
         jsonOnly: false,
       },
@@ -287,7 +287,7 @@ Activation contract:
 
 ## Degraded and recovered operator signals
 
-When reload-time activation fails after a healthy state, OpenClaw enters degraded secrets state.
+When reload-time activation fails after a healthy state, GenSparx enters degraded secrets state.
 
 One-shot system event and log codes:
 
@@ -361,7 +361,7 @@ For strict target/path contract details and exact rejection rules, see:
 
 ## One-way safety policy
 
-OpenClaw intentionally does **not** write rollback backups that contain pre-migration plaintext secret values.
+GenSparx intentionally does **not** write rollback backups that contain pre-migration plaintext secret values.
 
 Safety model:
 
@@ -371,7 +371,7 @@ Safety model:
 
 ## `auth.json` compatibility notes
 
-For static credentials, OpenClaw runtime no longer depends on plaintext `auth.json`.
+For static credentials, GenSparx runtime no longer depends on plaintext `auth.json`.
 
 - Runtime credential source is the resolved in-memory snapshot.
 - Legacy `auth.json` static `api_key` entries are scrubbed when discovered.

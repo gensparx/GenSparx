@@ -73,7 +73,7 @@ All session state is **owned by the gateway** (the “master” GenSparx). UI cl
 
 ## Maintenance
 
-OpenClaw applies session-store maintenance to keep `sessions.json` and transcript artifacts bounded over time.
+GenSparx applies session-store maintenance to keep `sessions.json` and transcript artifacts bounded over time.
 
 ### Defaults
 

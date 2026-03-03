@@ -125,11 +125,11 @@ Note: Binary detection is best-effort across macOS/Linux/Windows; ensure the CLI
 
 ## Mention Detection in Groups
 
-When `requireMention: true` is set for a group chat, OpenClaw now transcribes audio **before** checking for mentions. This allows voice notes to be processed even when they contain mentions.
+When `requireMention: true` is set for a group chat, GenSparx now transcribes audio **before** checking for mentions. This allows voice notes to be processed even when they contain mentions.
 
 **How it works:**
 
-1. If a voice message has no text body and the group requires mentions, OpenClaw performs a "preflight" transcription.
+1. If a voice message has no text body and the group requires mentions, GenSparx performs a "preflight" transcription.
 2. The transcript is checked for mention patterns (e.g., `@BotName`, emoji triggers).
 3. If a mention is found, the message proceeds through the full reply pipeline.
 4. The transcript is used for mention detection so voice notes can pass the mention gate.

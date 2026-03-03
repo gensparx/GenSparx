@@ -103,7 +103,7 @@ If the Control UI loads, your Gateway is ready for use.
 
 ## Useful environment variables
 
-If you run OpenClaw as a service account or want custom config/state locations:
+If you run GenSparx as a service account or want custom config/state locations:
 
 - `OPENCLAW_HOME` sets the home directory used for internal path resolution.
 - `OPENCLAW_STATE_DIR` overrides the state directory.

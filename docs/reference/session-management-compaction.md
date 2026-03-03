@@ -83,7 +83,7 @@ Enforcement order for disk budget cleanup (`mode: "enforce"`):
 2. If still above the target, evict oldest session entries and their transcript files.
 3. Keep going until usage is at or below `highWaterBytes`.
 
-In `mode: "warn"`, OpenClaw reports potential evictions but does not mutate the store/files.
+In `mode: "warn"`, GenSparx reports potential evictions but does not mutate the store/files.
 
 Run maintenance on demand:
 

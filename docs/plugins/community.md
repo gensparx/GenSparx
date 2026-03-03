@@ -1,14 +1,14 @@
 ---
 summary: "Community plugins: quality bar, hosting requirements, and PR submission path"
 read_when:
-  - You want to publish a third-party OpenClaw plugin
+  - You want to publish a third-party GenSparx plugin
   - You want to propose a plugin for docs listing
 title: "Community plugins"
 ---
 
 # Community plugins
 
-This page tracks high-quality **community-maintained plugins** for OpenClaw.
+This page tracks high-quality **community-maintained plugins** for GenSparx.
 
 We accept PRs that add community plugins here when they meet the quality bar.
 
@@ -45,7 +45,7 @@ Use this format when adding entries:
 
 ## Listed plugins
 
-- **WeChat** — Connect OpenClaw to WeChat personal accounts via WeChatPadPro (iPad protocol). Supports text, image, and file exchange with keyword-triggered conversations.
+- **WeChat** — Connect GenSparx to WeChat personal accounts via WeChatPadPro (iPad protocol). Supports text, image, and file exchange with keyword-triggered conversations.
   npm: `@icesword760/openclaw-wechat`
   repo: `https://github.com/icesword0760/openclaw-wechat`
   install: `openclaw plugins install @icesword760/openclaw-wechat`

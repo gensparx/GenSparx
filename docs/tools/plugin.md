@@ -118,8 +118,8 @@ but can be disabled the same way.
 
 Hardening notes:
 
-- If `plugins.allow` is empty and non-bundled plugins are discoverable, OpenClaw logs a startup warning with plugin ids and sources.
-- Candidate paths are safety-checked before discovery admission. OpenClaw blocks candidates when:
+- If `plugins.allow` is empty and non-bundled plugins are discoverable, GenSparx logs a startup warning with plugin ids and sources.
+- Candidate paths are safety-checked before discovery admission. GenSparx blocks candidates when:
   - extension entry resolves outside plugin root (including symlink/path traversal escapes),
   - plugin root/source path is world-writable,
   - path ownership is suspicious for non-bundled plugins (POSIX owner is neither current uid nor root).
@@ -316,7 +316,7 @@ gensparx plugins doctor
 ```
 
 `plugins update` only works for npm installs tracked under `plugins.installs`.
-If stored integrity metadata changes between updates, OpenClaw warns and asks for confirmation (use global `--yes` to bypass prompts).
+If stored integrity metadata changes between updates, GenSparx warns and asks for confirmation (use global `--yes` to bypass prompts).
 
 Plugins may also register their own top‑level commands (example: `gensparx voicecall`).
 

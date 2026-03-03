@@ -1,6 +1,6 @@
 ---
 title: "Node.js"
-summary: "Install and configure Node.js for OpenClaw — version requirements, install options, and PATH troubleshooting"
+summary: "Install and configure Node.js for GenSparx — version requirements, install options, and PATH troubleshooting"
 read_when:
   - "You installed GenSparx but `gensparx` is “command not found”"
   - "You’re setting up Node.js/npm on a new machine"

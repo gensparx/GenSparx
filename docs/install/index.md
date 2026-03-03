@@ -35,7 +35,7 @@ gensparx onboard --install-daemon
 - `pnpm` only if you build from source
 
 <Note>
-On Windows, we strongly recommend running OpenClaw under [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install).
+On Windows, we strongly recommend running GenSparx under [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install).
 </Note>
 
 ## Install methods
@@ -110,7 +110,7 @@ gensparx onboard --install-daemon
 ```
 
         ```bash
-        git clone https://github.com/openclaw/openclaw.git
+        git clone https://github.com/gensparx/GenSparx.git
         cd openclaw
         pnpm install
         pnpm ui:build

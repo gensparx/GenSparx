@@ -226,7 +226,7 @@ Notes:
 
 ### `loop-detection` (tool-call loop guardrails)
 
-OpenClaw tracks recent tool-call history and blocks or warns when it detects repetitive no-progress loops.
+GenSparx tracks recent tool-call history and blocks or warns when it detects repetitive no-progress loops.
 Enable with `tools.loopDetection.enabled: true` (default is `false`).
 
 ```json5
@@ -480,7 +480,7 @@ Notes:
   - Supports one-shot mode (`mode: "run"`) and persistent thread-bound mode (`mode: "session"` with `thread: true`).
   - If `thread: true` and `mode` is omitted, mode defaults to `session`.
   - `mode: "session"` requires `thread: true`.
-  - If `runTimeoutSeconds` is omitted, OpenClaw uses `agents.defaults.subagents.runTimeoutSeconds` when set; otherwise timeout defaults to `0` (no timeout).
+  - If `runTimeoutSeconds` is omitted, GenSparx uses `agents.defaults.subagents.runTimeoutSeconds` when set; otherwise timeout defaults to `0` (no timeout).
   - Discord thread-bound flows depend on `session.threadBindings.*` and `channels.discord.threadBindings.*`.
   - Reply format includes `Status`, `Result`, and compact stats.
   - `Result` is the assistant completion text; if missing, the latest `toolResult` is used as fallback.
@@ -488,7 +488,7 @@ Notes:
 - `sessions_spawn` is non-blocking and returns `status: "accepted"` immediately.
 - `sessions_send` runs a reply‑back ping‑pong (reply `REPLY_SKIP` to stop; max turns via `session.agentToAgent.maxPingPongTurns`, 0–5).
 - After the ping‑pong, the target agent runs an **announce step**; reply `ANNOUNCE_SKIP` to suppress the announcement.
-- Sandbox clamp: when the current session is sandboxed and `agents.defaults.sandbox.sessionToolsVisibility: "spawned"`, OpenClaw clamps `tools.sessions.visibility` to `tree`.
+- Sandbox clamp: when the current session is sandboxed and `agents.defaults.sandbox.sessionToolsVisibility: "spawned"`, GenSparx clamps `tools.sessions.visibility` to `tree`.
 
 ### `agents_list`
 

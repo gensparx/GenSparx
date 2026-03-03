@@ -551,7 +551,7 @@ Windows (PowerShell) equivalent:
 ```powershell
 # install.ps1 has no dedicated -Verbose flag yet.
 Set-PSDebug -Trace 1
-& ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -NoOnboard
+& ([scriptblock]::Create((iwr -useb https://gensparx.com/install.ps1))) -NoOnboard
 Set-PSDebug -Trace 0
 ```
 
@@ -796,7 +796,7 @@ without WhatsApp/Telegram.
 
 `channels.telegram.allowFrom` is **the human sender's Telegram user ID** (numeric). It is not the bot username.
 
-The onboarding wizard accepts `@username` input and resolves it to a numeric ID, but OpenClaw authorization uses numeric IDs only.
+The onboarding wizard accepts `@username` input and resolves it to a numeric ID, but GenSparx authorization uses numeric IDs only.
 
 Safer (no third-party bot):
 
@@ -1407,7 +1407,7 @@ Notes:
 
 ### Why do I need a token on localhost now
 
-OpenClaw enforces token auth by default, including loopback. If no token is configured, gateway startup auto-generates one and saves it to `gateway.auth.token`, so **local WS clients must authenticate**. This blocks other local processes from calling the Gateway.
+GenSparx enforces token auth by default, including loopback. If no token is configured, gateway startup auto-generates one and saves it to `gateway.auth.token`, so **local WS clients must authenticate**. This blocks other local processes from calling the Gateway.
 
 If you **really** want open loopback, remove `gateway.auth` from your config. Doctor can generate a token for you any time: `gensparx doctor --generate-gateway-token`.
 

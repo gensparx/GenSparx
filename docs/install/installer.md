@@ -22,7 +22,7 @@ curl -fsSL https://gensparx.com/install.sh | bash -s -- --help
 ```
 
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --help
+    curl -fsSL --proto '=https' --tlsv1.2 https://gensparx.com/install.sh | bash -s -- --help
     ```
 
 ```powershell
@@ -34,11 +34,11 @@ If the installer completes but `gensparx` is not found in a new terminal, it’s
   </Tab>
   <Tab title="install.ps1">
     ```powershell
-    iwr -useb https://openclaw.ai/install.ps1 | iex
+    iwr -useb https://gensparx.com/install.ps1 | iex
     ```
 
     ```powershell
-    & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -Tag beta -NoOnboard -DryRun
+    & ([scriptblock]::Create((iwr -useb https://gensparx.com/install.ps1))) -Tag beta -NoOnboard -DryRun
     ```
 
 - Detect OS (macOS / Linux / WSL).
@@ -75,7 +75,7 @@ If you run the installer while **already inside a GenSparx source checkout** (de
   <Step title="Ensure Git">
     Installs Git if missing.
   </Step>
-  <Step title="Install OpenClaw">
+  <Step title="Install GenSparx">
     - `npm` method (default): global npm install
     - `git` method: clone/update repo, install deps with pnpm, build, then install wrapper at `~/.local/bin/openclaw`
   </Step>
@@ -88,7 +88,7 @@ If you run the installer while **already inside a GenSparx source checkout** (de
 
 ### Source checkout detection
 
-If run inside an OpenClaw checkout (`package.json` + `pnpm-workspace.yaml`), the script offers:
+If run inside a GenSparx checkout (`package.json` + `pnpm-workspace.yaml`), the script offers:
 
 - use checkout (`git`), or
 - use global install (`npm`)
@@ -102,22 +102,22 @@ The script exits with code `2` for invalid method selection or invalid `--instal
 <Tabs>
   <Tab title="Default">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash
+    curl -fsSL --proto '=https' --tlsv1.2 https://gensparx.com/install.sh | bash
     ```
   </Tab>
   <Tab title="Skip onboarding">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --no-onboard
+    curl -fsSL --proto '=https' --tlsv1.2 https://gensparx.com/install.sh | bash -s -- --no-onboard
     ```
   </Tab>
   <Tab title="Git install">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git
+    curl -fsSL --proto '=https' --tlsv1.2 https://gensparx.com/install.sh | bash -s -- --install-method git
     ```
   </Tab>
   <Tab title="Dry run">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --dry-run
+    curl -fsSL --proto '=https' --tlsv1.2 https://gensparx.com/install.sh | bash -s -- --dry-run
     ```
   </Tab>
 </Tabs>
@@ -175,22 +175,22 @@ iwr -useb https://gensparx.com/install.ps1 | iex -InstallMethod git -GitDir "C:\
 <Tabs>
   <Tab title="Default">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash
+    curl -fsSL --proto '=https' --tlsv1.2 https://gensparx.com/install-cli.sh | bash
     ```
   </Tab>
   <Tab title="Custom prefix + version">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --prefix /opt/openclaw --version latest
+    curl -fsSL --proto '=https' --tlsv1.2 https://gensparx.com/install-cli.sh | bash -s -- --prefix /opt/openclaw --version latest
     ```
   </Tab>
   <Tab title="Automation JSON output">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --json --prefix /opt/openclaw
+    curl -fsSL --proto '=https' --tlsv1.2 https://gensparx.com/install-cli.sh | bash -s -- --json --prefix /opt/openclaw
     ```
   </Tab>
   <Tab title="Run onboarding">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --onboard
+    curl -fsSL --proto '=https' --tlsv1.2 https://gensparx.com/install-cli.sh | bash -s -- --onboard
     ```
   </Tab>
 </Tabs>
@@ -201,7 +201,7 @@ iwr -useb https://gensparx.com/install.ps1 | iex -InstallMethod git -GitDir "C:\
 | Flag                   | Description                                                                     |
 | ---------------------- | ------------------------------------------------------------------------------- |
 | `--prefix <path>`      | Install prefix (default: `~/.openclaw`)                                         |
-| `--version <ver>`      | OpenClaw version or dist-tag (default: `latest`)                                |
+| `--version <ver>`      | GenSparx version or dist-tag (default: `latest`)                                |
 | `--node-version <ver>` | Node version (default: `22.22.0`)                                               |
 | `--json`               | Emit NDJSON events                                                              |
 | `--onboard`            | Run `openclaw onboard` after install                                            |
@@ -214,7 +214,6 @@ iwr -useb https://gensparx.com/install.ps1 | iex -InstallMethod git -GitDir "C:\
 - **npm error spawn git / ENOENT**: install Git for Windows and reopen PowerShell, then rerun the installer.
 - **"gensparx" is not recognized**: your npm global bin folder is not on PATH. Most systems use
   `%AppData%\\npm`. You can also run `npm config get prefix` and add `\\bin` to PATH, then reopen PowerShell.
-
 
 
 

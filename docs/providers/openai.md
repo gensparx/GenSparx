@@ -58,7 +58,7 @@ gensparx models auth login --provider openai-codex
 
 ### Codex transport default
 
-OpenClaw uses `pi-ai` for model streaming. For `openai-codex/*` models you can set
+GenSparx uses `pi-ai` for model streaming. For `openai-codex/*` models you can set
 `agents.defaults.models.<provider/model>.params.transport` to select transport:
 
 - Default is `"auto"` (WebSocket-first, then SSE fallback).
@@ -86,7 +86,7 @@ OpenClaw uses `pi-ai` for model streaming. For `openai-codex/*` models you can s
 ### OpenAI Responses server-side compaction
 
 For direct OpenAI Responses models (`openai/*` using `api: "openai-responses"` with
-`baseUrl` on `api.openai.com`), OpenClaw now auto-enables OpenAI server-side
+`baseUrl` on `api.openai.com`), GenSparx now auto-enables OpenAI server-side
 compaction payload hints:
 
 - Forces `store: true` (unless model compat sets `supportsStore: false`)

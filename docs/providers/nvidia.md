@@ -1,7 +1,7 @@
 ---
-summary: "Use NVIDIA's OpenAI-compatible API in OpenClaw"
+summary: "Use NVIDIA's OpenAI-compatible API in GenSparx"
 read_when:
-  - You want to use NVIDIA models in OpenClaw
+  - You want to use NVIDIA models in GenSparx
   - You need NVIDIA_API_KEY setup
 title: "NVIDIA"
 ---

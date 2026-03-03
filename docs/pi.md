@@ -1,8 +1,8 @@
 ---
 title: "Pi Integration Architecture"
-summary: "Architecture of OpenClaw's embedded Pi agent integration and session lifecycle"
+summary: "Architecture of GenSparx's embedded Pi agent integration and session lifecycle"
 read_when:
-  - Understanding Pi SDK integration design in OpenClaw
+  - Understanding Pi SDK integration design in GenSparx
   - Modifying agent session lifecycle, tooling, or provider wiring for Pi
 ---
 
@@ -232,7 +232,7 @@ await session.prompt(effectivePrompt, { images: imageResult.images });
 
 The SDK handles the full agent loop: sending to LLM, executing tool calls, streaming responses.
 
-Image injection is prompt-local: OpenClaw loads image refs from the current prompt and
+Image injection is prompt-local: GenSparx loads image refs from the current prompt and
 passes them via `images` for that turn only. It does not re-scan older history turns
 to re-inject image payloads.
 

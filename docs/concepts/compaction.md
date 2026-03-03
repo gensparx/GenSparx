@@ -57,11 +57,11 @@ See [/concepts/session-pruning](/concepts/session-pruning) for pruning details.
 
 ## OpenAI server-side compaction
 
-OpenClaw also supports OpenAI Responses server-side compaction hints for
-compatible direct OpenAI models. This is separate from local OpenClaw
+GenSparx also supports OpenAI Responses server-side compaction hints for
+compatible direct OpenAI models. This is separate from local GenSparx
 compaction and can run alongside it.
 
-- Local compaction: OpenClaw summarizes and persists into session JSONL.
+- Local compaction: GenSparx summarizes and persists into session JSONL.
 - Server-side compaction: OpenAI compacts context on the provider side when
   `store` + `context_management` are enabled.
 

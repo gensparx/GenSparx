@@ -117,7 +117,7 @@ requests; keep it if you override provider headers (see [/gateway/configuration]
 
 ## 1M context window (Anthropic beta)
 
-Anthropic's 1M context window is beta-gated. In OpenClaw, enable it per model
+Anthropic's 1M context window is beta-gated. In GenSparx, enable it per model
 with `params.context1m: true` for supported Opus/Sonnet models.
 
 ```json5
@@ -134,11 +134,11 @@ with `params.context1m: true` for supported Opus/Sonnet models.
 }
 ```
 
-OpenClaw maps this to `anthropic-beta: context-1m-2025-08-07` on Anthropic
+GenSparx maps this to `anthropic-beta: context-1m-2025-08-07` on Anthropic
 requests.
 
 Note: Anthropic currently rejects `context-1m-*` beta requests when using
-OAuth/subscription tokens (`sk-ant-oat-*`). OpenClaw automatically skips the
+OAuth/subscription tokens (`sk-ant-oat-*`). GenSparx automatically skips the
 context1m beta header for OAuth auth and keeps the required OAuth betas.
 
 ## Option B: Claude setup-token

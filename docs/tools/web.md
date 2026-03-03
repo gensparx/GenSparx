@@ -41,7 +41,7 @@ See [Brave Search setup](/brave-search) and [Perplexity Sonar](/perplexity) for 
 
 ### Auto-detection
 
-If no `provider` is explicitly set, OpenClaw auto-detects which provider to use based on available API keys, checking in this order:
+If no `provider` is explicitly set, GenSparx auto-detects which provider to use based on available API keys, checking in this order:
 
 1. **Brave** — `BRAVE_API_KEY` env var or `search.apiKey` config
 2. **Gemini** — `GEMINI_API_KEY` env var or `search.gemini.apiKey` config

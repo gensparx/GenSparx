@@ -12,7 +12,7 @@ Status: external CLI integration. Gateway talks to `signal-cli` over HTTP JSON-R
 
 ## Prerequisites
 
-- OpenClaw installed on your server (Linux flow below tested on Ubuntu 24).
+- GenSparx installed on your server (Linux flow below tested on Ubuntu 24).
 - `signal-cli` available on the host where the gateway runs.
 - A phone number that can receive one verification SMS (for SMS registration path).
 - Browser access for Signal captcha (`signalcaptchas.org`) during registration.
@@ -136,7 +136,7 @@ signal-cli -a +<BOT_PHONE_NUMBER> register --captcha '<SIGNALCAPTCHA_URL>'
 signal-cli -a +<BOT_PHONE_NUMBER> verify <VERIFICATION_CODE>
 ```
 
-4. Configure OpenClaw, restart gateway, verify channel:
+4. Configure GenSparx, restart gateway, verify channel:
 
 ```bash
 # If you run the gateway as a user systemd service:

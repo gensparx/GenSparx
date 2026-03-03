@@ -25,7 +25,7 @@ description: Deploy GenSparx on Fly.io
 
 ```bash
 # Clone the repo
-git clone https://github.com/openclaw/openclaw.git
+git clone https://github.com/gensparx/GenSparx.git
 cd gensparx
 
 # Create a new Fly app (pick your own name)

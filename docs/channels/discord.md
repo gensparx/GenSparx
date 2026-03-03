@@ -31,13 +31,13 @@ Status: ready for DMs and guild channels via the official Discord gateway.
 5. Start the gateway.
 6. DM access is pairing by default; approve the pairing code on first contact.
 
-You will need to create a new application with a bot, add the bot to your server, and pair it to OpenClaw. We recommend adding your bot to your own private server. If you don't have one yet, [create one first](https://support.discord.com/hc/en-us/articles/204849977-How-do-I-create-a-server) (choose **Create My Own > For me and my friends**).
+You will need to create a new application with a bot, add the bot to your server, and pair it to GenSparx. We recommend adding your bot to your own private server. If you don't have one yet, [create one first](https://support.discord.com/hc/en-us/articles/204849977-How-do-I-create-a-server) (choose **Create My Own > For me and my friends**).
 
 <Steps>
   <Step title="Create a Discord application and bot">
-    Go to the [Discord Developer Portal](https://discord.com/developers/applications) and click **New Application**. Name it something like "OpenClaw".
+    Go to the [Discord Developer Portal](https://discord.com/developers/applications) and click **New Application**. Name it something like "GenSparx".
 
-    Click **Bot** on the sidebar. Set the **Username** to whatever you call your OpenClaw agent.
+    Click **Bot** on the sidebar. Set the **Username** to whatever you call your GenSparx agent.
 
   </Step>
 
@@ -89,19 +89,19 @@ You will need to create a new application with a bot, add the bot to your server
     2. Right-click your **server icon** in the sidebar → **Copy Server ID**
     3. Right-click your **own avatar** → **Copy User ID**
 
-    Save your **Server ID** and **User ID** alongside your Bot Token — you'll send all three to OpenClaw in the next step.
+    Save your **Server ID** and **User ID** alongside your Bot Token — you'll send all three to GenSparx in the next step.
 
   </Step>
 
   <Step title="Allow DMs from server members">
     For pairing to work, Discord needs to allow your bot to DM you. Right-click your **server icon** → **Privacy Settings** → toggle on **Direct Messages**.
 
-    This lets server members (including bots) send you DMs. Keep this enabled if you want to use Discord DMs with OpenClaw. If you only plan to use guild channels, you can disable DMs after pairing.
+    This lets server members (including bots) send you DMs. Keep this enabled if you want to use Discord DMs with GenSparx. If you only plan to use guild channels, you can disable DMs after pairing.
 
   </Step>
 
   <Step title="Step 0: Set your bot token securely (do not send it in chat)">
-    Your Discord bot token is a secret (like a password). Set it on the machine running OpenClaw before messaging your agent.
+    Your Discord bot token is a secret (like a password). Set it on the machine running GenSparx before messaging your agent.
 
 ```bash
 openclaw config set channels.discord.token '"YOUR_BOT_TOKEN"' --json
@@ -109,15 +109,15 @@ openclaw config set channels.discord.enabled true --json
 openclaw gateway
 ```
 
-    If OpenClaw is already running as a background service, use `openclaw gateway restart` instead.
+    If GenSparx is already running as a background service, use `openclaw gateway restart` instead.
 
   </Step>
 
-  <Step title="Configure OpenClaw and pair">
+  <Step title="Configure GenSparx and pair">
 
     <Tabs>
       <Tab title="Ask your agent">
-        Chat with your OpenClaw agent on any existing channel (e.g. Telegram) and tell it. If Discord is your first channel, use the CLI / config tab instead.
+        Chat with your GenSparx agent on any existing channel (e.g. Telegram) and tell it. If Discord is your first channel, use the CLI / config tab instead.
 
         > "I already set my Discord bot token in config. Please finish Discord setup with User ID `<user_id>` and Server ID `<server_id>`."
       </Tab>
@@ -332,7 +332,7 @@ Now create some channels on your Discord server and start chatting. Your agent c
 
 ## Forum channels
 
-Discord forum and media channels only accept thread posts. OpenClaw supports two ways to create them:
+Discord forum and media channels only accept thread posts. GenSparx supports two ways to create them:
 
 - Send a message to the forum parent (`channel:<forumId>`) to auto-create a thread. The thread title uses the first non-empty line of your message.
 - Use `openclaw message thread create` to create a thread directly. Do not pass `--message-id` for forum channels.
@@ -355,7 +355,7 @@ Forum parents do not accept Discord components. If you need components, send to 
 
 ## Interactive components
 
-OpenClaw supports Discord components v2 containers for agent messages. Use the message tool with a `components` payload. Interaction results are routed back to the agent as normal inbound messages and follow the existing Discord `replyToMode` settings.
+GenSparx supports Discord components v2 containers for agent messages. Use the message tool with a `components` payload. Interaction results are routed back to the agent as normal inbound messages and follow the existing Discord `replyToMode` settings.
 
 Supported blocks:
 
@@ -379,7 +379,7 @@ Modal forms:
 
 - Add `components.modal` with up to 5 fields
 - Field types: `text`, `checkbox`, `radio`, `select`, `role-select`, `user-select`
-- OpenClaw adds a trigger button automatically
+- GenSparx adds a trigger button automatically
 
 Example:
 
@@ -599,7 +599,7 @@ Use `bindings[].match.roles` to route Discord guild members to different agents 
     - channel ID
     - user ID
 
-    Prefer numeric IDs in OpenClaw config for reliable audits and probes.
+    Prefer numeric IDs in GenSparx config for reliable audits and probes.
 
   </Accordion>
 </AccordionGroup>
@@ -610,7 +610,7 @@ Use `bindings[].match.roles` to route Discord guild members to different agents 
 - Per-channel override: `channels.discord.commands.native`.
 - `commands.native=false` explicitly clears previously registered Discord native commands.
 - Native command auth uses the same Discord allowlists/policies as normal message handling.
-- Commands may still be visible in Discord UI for users who are not authorized; execution still enforces OpenClaw auth and returns "not authorized".
+- Commands may still be visible in Discord UI for users who are not authorized; execution still enforces GenSparx auth and returns "not authorized".
 
 See [Slash commands](/tools/slash-commands) for command catalog and behavior.
 
@@ -640,7 +640,7 @@ Default slash command settings:
   </Accordion>
 
   <Accordion title="Live stream preview">
-    OpenClaw can stream draft replies by sending a temporary message and editing it as text arrives.
+    GenSparx can stream draft replies by sending a temporary message and editing it as text arrives.
 
     - `channels.discord.streaming` controls preview streaming (`off` | `partial` | `block` | `progress`, default: `off`).
     - `progress` is accepted for cross-channel consistency and maps to `partial` on Discord.
@@ -680,7 +680,7 @@ Default slash command settings:
     Preview streaming is text-only; media replies fall back to normal delivery.
 
     Note: preview streaming is separate from block streaming. When block streaming is explicitly
-    enabled for Discord, OpenClaw skips the preview stream to avoid double streaming.
+    enabled for Discord, GenSparx skips the preview stream to avoid double streaming.
 
   </Accordion>
 
@@ -766,7 +766,7 @@ Default slash command settings:
   </Accordion>
 
   <Accordion title="Ack reactions">
-    `ackReaction` sends an acknowledgement emoji while OpenClaw is processing an inbound message.
+    `ackReaction` sends an acknowledgement emoji while GenSparx is processing an inbound message.
 
     Resolution order:
 
@@ -920,7 +920,7 @@ Default slash command settings:
     - `channels.discord.execApprovals.target` (`dm` | `channel` | `both`, default: `dm`)
     - `agentFilter`, `sessionFilter`, `cleanupAfterResolve`
 
-    When `target` is `channel` or `both`, the approval prompt is visible in the channel. Only configured approvers can use the buttons; other users receive an ephemeral denial. Approval prompts include the command text, so only enable channel delivery in trusted channels. If the channel ID cannot be derived from the session key, OpenClaw falls back to DM delivery.
+    When `target` is `channel` or `both`, the approval prompt is visible in the channel. Only configured approvers can use the buttons; other users receive an ephemeral denial. Approval prompts include the command text, so only enable channel delivery in trusted channels. If the channel ID cannot be derived from the session key, GenSparx falls back to DM delivery.
 
     If approvals fail with unknown approval IDs, verify approver list and feature enablement.
 
@@ -953,7 +953,7 @@ Default gate behavior:
 
 ## Components v2 UI
 
-OpenClaw uses Discord components v2 for exec approvals and cross-context markers. Discord message actions can also accept `components` for custom UI (advanced; requires Carbon component instances), while legacy `embeds` remain available but are not recommended.
+GenSparx uses Discord components v2 for exec approvals and cross-context markers. Discord message actions can also accept `components` for custom UI (advanced; requires Carbon component instances), while legacy `embeds` remain available but are not recommended.
 
 - `channels.discord.ui.components.accentColor` sets the accent color used by Discord component containers (hex).
 - Set per account with `channels.discord.accounts.<id>.ui.components.accentColor`.
@@ -977,7 +977,7 @@ Example:
 
 ## Voice channels
 
-OpenClaw can join Discord voice channels for realtime, continuous conversations. This is separate from voice message attachments.
+GenSparx can join Discord voice channels for realtime, continuous conversations. This is separate from voice message attachments.
 
 Requirements:
 
@@ -1027,7 +1027,7 @@ Notes:
 
 ## Voice messages
 
-Discord voice messages show a waveform preview and require OGG/Opus audio plus metadata. OpenClaw generates the waveform automatically, but it needs `ffmpeg` and `ffprobe` available on the gateway host to inspect and convert audio files.
+Discord voice messages show a waveform preview and require OGG/Opus audio plus metadata. GenSparx generates the waveform automatically, but it needs `ffmpeg` and `ffprobe` available on the gateway host to inspect and convert audio files.
 
 Requirements and constraints:
 
@@ -1128,7 +1128,7 @@ openclaw logs --follow
 - Native commands honor the same allowlists as DMs/guild messages (`channels.discord.dm.allowFrom`, `channels.discord.guilds`, per-channel rules).
 - Slash commands may still be visible in Discord UI to users who aren’t allowlisted; GenSparx enforces allowlists on execution and replies “not authorized”.
 
-    - keep OpenClaw current (`openclaw update`) so the Discord voice receive recovery logic is present
+    - keep GenSparx current (`openclaw update`) so the Discord voice receive recovery logic is present
     - confirm `channels.discord.voice.daveEncryption=true` (default)
     - start from `channels.discord.voice.decryptionFailureTolerance=24` (upstream default) and tune only if needed
     - watch logs for:

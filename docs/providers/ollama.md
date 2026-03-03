@@ -178,7 +178,7 @@ Ollama is free and runs locally, so all model costs are set to $0.
 
 ### Streaming Configuration
 
-OpenClaw's Ollama integration uses the **native Ollama API** (`/api/chat`) by default, which fully supports streaming and tool calling simultaneously. No special configuration is needed.
+GenSparx's Ollama integration uses the **native Ollama API** (`/api/chat`) by default, which fully supports streaming and tool calling simultaneously. No special configuration is needed.
 
 #### Legacy OpenAI-Compatible Mode
 
@@ -206,7 +206,7 @@ If you need to use the OpenAI-compatible endpoint instead (e.g., behind a proxy 
 
 This mode may not support streaming + tool calling simultaneously. You may need to disable streaming with `params: { streaming: false }` in model config.
 
-When `api: "openai-completions"` is used with Ollama, OpenClaw injects `options.num_ctx` by default so Ollama does not silently fall back to a 4096 context window. If your proxy/upstream rejects unknown `options` fields, disable this behavior:
+When `api: "openai-completions"` is used with Ollama, GenSparx injects `options.num_ctx` by default so Ollama does not silently fall back to a 4096 context window. If your proxy/upstream rejects unknown `options` fields, disable this behavior:
 
 ```json5
 {

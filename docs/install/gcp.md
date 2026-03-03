@@ -191,7 +191,7 @@ docker compose version
 ## 6) Clone the GenSparx repository
 
 ```bash
-git clone https://github.com/openclaw/openclaw.git
+git clone https://github.com/gensparx/GenSparx.git
 cd gensparx
 ```
 

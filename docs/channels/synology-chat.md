@@ -1,7 +1,7 @@
 ---
-summary: "Synology Chat webhook setup and OpenClaw config"
+summary: "Synology Chat webhook setup and GenSparx config"
 read_when:
-  - Setting up Synology Chat with OpenClaw
+  - Setting up Synology Chat with GenSparx
   - Debugging Synology Chat webhook routing
 title: "Synology Chat"
 ---
@@ -30,10 +30,10 @@ Details: [Plugins](/tools/plugin)
 2. In Synology Chat integrations:
    - Create an incoming webhook and copy its URL.
    - Create an outgoing webhook with your secret token.
-3. Point the outgoing webhook URL to your OpenClaw gateway:
+3. Point the outgoing webhook URL to your GenSparx gateway:
    - `https://gateway-host/webhook/synology` by default.
    - Or your custom `channels.synology-chat.webhookPath`.
-4. Configure `channels.synology-chat` in OpenClaw.
+4. Configure `channels.synology-chat` in GenSparx.
 5. Restart gateway and send a DM to the Synology Chat bot.
 
 Minimal config:
@@ -86,7 +86,7 @@ Use numeric Synology Chat user IDs as targets.
 Examples:
 
 ```bash
-openclaw message send --channel synology-chat --target 123456 --text "Hello from OpenClaw"
+openclaw message send --channel synology-chat --target 123456 --text "Hello from GenSparx"
 openclaw message send --channel synology-chat --target synology-chat:123456 --text "Hello again"
 ```
 

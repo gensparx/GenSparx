@@ -80,7 +80,7 @@ Implementation:
 ## Global rule: inter-session input provenance
 
 When an agent sends a prompt into another session via `sessions_send` (including
-agent-to-agent reply/announce steps), OpenClaw persists the created user turn with:
+agent-to-agent reply/announce steps), GenSparx persists the created user turn with:
 
 - `message.provenance.kind = "inter_session"`
 
@@ -88,7 +88,7 @@ This metadata is written at transcript append time and does not change role
 (`role: "user"` remains for provider compatibility). Transcript readers can use
 this to avoid treating routed internal prompts as end-user-authored instructions.
 
-During context rebuild, OpenClaw also prepends a short `[Inter-session message]`
+During context rebuild, GenSparx also prepends a short `[Inter-session message]`
 marker to those user turns in-memory so the model can distinguish them from
 external end-user instructions.
 

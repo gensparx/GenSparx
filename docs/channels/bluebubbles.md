@@ -46,7 +46,7 @@ Status: bundled plugin that talks to the BlueBubbles macOS server over HTTP. **R
 Security note:
 
 - Always set a webhook password.
-- Webhook authentication is always required. OpenClaw rejects BlueBubbles webhook requests unless they include a password/guid that matches `channels.bluebubbles.password` (for example `?password=<password>` or `x-password`), regardless of loopback/proxy topology.
+- Webhook authentication is always required. GenSparx rejects BlueBubbles webhook requests unless they include a password/guid that matches `channels.bluebubbles.password` (for example `?password=<password>` or `x-password`), regardless of loopback/proxy topology.
 
 ## Keeping Messages.app alive (VM / headless setups)
 

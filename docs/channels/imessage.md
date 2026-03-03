@@ -36,7 +36,7 @@ imsg rpc --help
 
       </Step>
 
-      <Step title="Configure OpenClaw">
+      <Step title="Configure GenSparx">
 
 ```json5
 {
@@ -154,7 +154,7 @@ If `remoteHost` is not set, GenSparx attempts to auto-detect it by parsing the S
 ## Requirements and permissions (macOS)
 
 - Messages must be signed in on the Mac running `imsg`.
-- Full Disk Access is required for the process context running OpenClaw/`imsg` (Messages DB access).
+- Full Disk Access is required for the process context running GenSparx/`imsg` (Messages DB access).
 - Automation permission is required to send messages through Messages.app.
 
 ```
@@ -219,7 +219,7 @@ If `remoteHost` is not set, GenSparx attempts to auto-detect it by parsing the S
     Group-ish thread behavior:
 
     Some multi-participant iMessage threads can arrive with `is_group=false`.
-    If that `chat_id` is explicitly configured under `channels.imessage.groups`, OpenClaw treats it as group traffic (group gating + group session isolation).
+    If that `chat_id` is explicitly configured under `channels.imessage.groups`, GenSparx treats it as group traffic (group gating + group session isolation).
 
   </Tab>
 </Tabs>
@@ -235,7 +235,7 @@ If `remoteHost` is not set, GenSparx attempts to auto-detect it by parsing the S
     1. Create/sign in a dedicated macOS user.
     2. Sign into Messages with the bot Apple ID in that user.
     3. Install `imsg` in that user.
-    4. Create SSH wrapper so OpenClaw can run `imsg` in that user context.
+    4. Create SSH wrapper so GenSparx can run `imsg` in that user context.
     5. Point `channels.imessage.accounts.<id>.cliPath` and `.dbPath` to that user profile.
 
     First run may require GUI approvals (Automation + Full Disk Access) in that bot user session.

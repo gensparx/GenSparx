@@ -120,7 +120,7 @@ Cron supports three schedule kinds:
 Cron expressions use `croner`. If a timezone is omitted, the Gateway host’s
 local timezone is used.
 
-To reduce top-of-hour load spikes across many gateways, OpenClaw applies a
+To reduce top-of-hour load spikes across many gateways, GenSparx applies a
 deterministic per-job stagger window of up to 5 minutes for recurring
 top-of-hour expressions (for example `0 * * * *`, `0 */2 * * *`). Fixed-hour
 expressions such as `0 7 * * *` remain exact.
@@ -406,7 +406,7 @@ Cron has two built-in maintenance paths: isolated run-session retention and run-
 
 - Isolated runs create session entries (`...:cron:<jobId>:run:<uuid>`) and transcript files.
 - The reaper removes expired run-session entries older than `cron.sessionRetention`.
-- For removed run sessions no longer referenced by the session store, OpenClaw archives transcript files and purges old deleted archives on the same retention window.
+- For removed run sessions no longer referenced by the session store, GenSparx archives transcript files and purges old deleted archives on the same retention window.
 - After each run append, `cron/runs/<jobId>.jsonl` is size-checked:
   - if file size exceeds `runLog.maxBytes`, it is trimmed to the newest `runLog.keepLines` lines.
 
@@ -613,7 +613,7 @@ gensparx system event --mode now --text "Next heartbeat: check battery."
 
 ### A recurring job keeps delaying after failures
 
-- OpenClaw applies exponential retry backoff for recurring jobs after consecutive errors:
+- GenSparx applies exponential retry backoff for recurring jobs after consecutive errors:
   30s, 1m, 5m, 15m, then 60m between retries.
 - Backoff resets automatically after the next successful run.
 - One-shot (`at`) jobs disable after a terminal run (`ok`, `error`, or `skipped`) and do not retry.

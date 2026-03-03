@@ -1,7 +1,7 @@
 ---
 summary: "Together AI setup (auth + model selection)"
 read_when:
-  - You want to use Together AI with OpenClaw
+  - You want to use Together AI with GenSparx
   - You need the API key env var or CLI auth choice
 ---
 

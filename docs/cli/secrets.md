@@ -55,7 +55,7 @@ Notes:
 
 ## Audit
 
-Scan OpenClaw state for:
+Scan GenSparx state for:
 
 - plaintext secret storage
 - unresolved refs

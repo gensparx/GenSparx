@@ -29,7 +29,7 @@ These files live under the workspace (`agents.defaults.workspace`, default
 
 ## Memory tools
 
-OpenClaw exposes two agent-facing tools for these Markdown files:
+GenSparx exposes two agent-facing tools for these Markdown files:
 
 - `memory_search` — semantic recall over indexed snippets.
 - `memory_get` — targeted read of a specific Markdown file/line range.
@@ -198,7 +198,7 @@ out to QMD for retrieval. Key points:
     `agent:<id>:`. Example: `agent:main:discord:`.
   - Legacy: `match.keyPrefix: "agent:..."` is still treated as a raw-key prefix,
     but prefer `rawKeyPrefix` for clarity.
-- When `scope` denies a search, OpenClaw logs a warning with the derived
+- When `scope` denies a search, GenSparx logs a warning with the derived
   `channel`/`chatType` so empty results are easier to debug.
 - Snippets sourced outside the workspace show up as
   `qmd/<collection>/<relative-path>` in `memory_search` results; `memory_get`

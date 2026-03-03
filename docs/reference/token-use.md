@@ -36,7 +36,7 @@ Everything the model receives counts toward the context limit:
 - Compaction summaries and pruning artifacts
 - Provider wrappers or safety headers (not visible, but still counted)
 
-For images, OpenClaw downscales transcript/tool image payloads before provider calls.
+For images, GenSparx downscales transcript/tool image payloads before provider calls.
 Use `agents.defaults.imageMaxDimensionPx` (default: `1200`) to tune this:
 
 - Lower values usually reduce vision-token usage and payload size.
@@ -139,7 +139,7 @@ override only `cacheRetention` and inherit other model defaults unchanged.
 
 ### Example: enable Anthropic 1M context beta header
 
-Anthropic's 1M context window is currently beta-gated. OpenClaw can inject the
+Anthropic's 1M context window is currently beta-gated. GenSparx can inject the
 required `anthropic-beta` value when you enable `context1m` on supported Opus
 or Sonnet models.
 
@@ -155,7 +155,7 @@ agents:
 This maps to Anthropic's `context-1m-2025-08-07` beta header.
 
 If you authenticate Anthropic with OAuth/subscription tokens (`sk-ant-oat-*`),
-OpenClaw skips the `context-1m-*` beta header because Anthropic currently
+GenSparx skips the `context-1m-*` beta header because Anthropic currently
 rejects that combination with HTTP 401.
 
 ## Tips for reducing token pressure

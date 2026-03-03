@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the design for integrating "Kilo Gateway" as a first-class provider in OpenClaw, modeled after the existing OpenRouter implementation. Kilo Gateway uses an OpenAI-compatible completions API with a different base URL.
+This document outlines the design for integrating "Kilo Gateway" as a first-class provider in GenSparx, modeled after the existing OpenRouter implementation. Kilo Gateway uses an OpenAI-compatible completions API with a different base URL.
 
 ## Design Decisions
 

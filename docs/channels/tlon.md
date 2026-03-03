@@ -57,7 +57,7 @@ Minimal config (single account):
 
 Private/LAN ship URLs (advanced):
 
-By default, OpenClaw blocks private/internal hostnames and IP ranges for this plugin (SSRF hardening).
+By default, GenSparx blocks private/internal hostnames and IP ranges for this plugin (SSRF hardening).
 If your ship URL is on a private network (for example `http://192.168.1.50:8080` or `http://localhost:8080`),
 you must explicitly opt in:
 
