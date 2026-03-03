@@ -50,8 +50,8 @@ export function renderOverview(props: OverviewProps) {
       <div class="muted" style="margin-top: 8px">
         ${t("overview.pairing.hint")}
         <div style="margin-top: 6px">
-          <span class="mono">openclaw devices list</span><br />
-          <span class="mono">openclaw devices approve &lt;requestId&gt;</span>
+          <span class="mono">gensparx devices list</span><br />
+          <span class="mono">gensparx devices approve &lt;requestId&gt;</span>
         </div>
         <div style="margin-top: 6px; font-size: 12px;">
           ${t("overview.pairing.mobileHint")}
@@ -59,7 +59,7 @@ export function renderOverview(props: OverviewProps) {
         <div style="margin-top: 6px">
           <a
             class="session-link"
-            href="https://docs.openclaw.ai/web/control-ui#device-pairing-first-connection"
+            href="https://docs.gensparx.com/web/control-ui#device-pairing-first-connection"
             target=${EXTERNAL_LINK_TARGET}
             rel=${buildExternalLinkRel()}
             title="Device pairing docs (opens in new tab)"

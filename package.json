@@ -1,17 +1,17 @@
 {
   "name": "gensparx",
-  "version": "1.0.0-gensparx",
-  "description": "WhatsApp gateway CLI (Baileys web) with Pi RPC agent",
+  "version": "1.0.2-gensparx",
+  "description": "GenSparx personal multi-channel AI assistant CLI and gateway",
   "keywords": [],
-  "homepage": "https://github.com/openclaw/openclaw#readme",
+  "homepage": "https://github.com/gensparx/GenSparx#readme",
   "bugs": {
-    "url": "https://github.com/openclaw/openclaw/issues"
+    "url": "https://github.com/gensparx/GenSparx/issues"
   },
   "license": "MIT",
   "author": "",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/openclaw/openclaw.git"
+    "url": "git+https://github.com/gensparx/GenSparx.git"
   },
   "bin": {
     "gensparx": "gensparx.mjs"

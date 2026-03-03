@@ -1,7 +1,7 @@
 ﻿# GenSparx - Personal AI Assistant
 
 <p align="center">
-  <img src="docs/assets/gensparx-logo-text.png" alt="GenSparx" width="500">
+  <img src="https://raw.githubusercontent.com/gensparx/GenSparx/main/docs/assets/gensparx-logo-text.png" alt="GenSparx" width="500">
 </p>
 
 <p align="center">

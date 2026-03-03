@@ -44,7 +44,7 @@ struct WatchNotifyMessage: Sendable {
     private static let persistedStateKey = "watch.inbox.state.v1"
     private let defaults: UserDefaults
 
-    var title = "OpenClaw"
+    var title = "GenSparx"
     var body = "Waiting for messages from your iPhone."
     var transport = "none"
     var updatedAt: Date?
@@ -78,7 +78,7 @@ struct WatchNotifyMessage: Sendable {
             sentAtMs: message.sentAtMs)
         guard deliveryKey != self.lastDeliveryKey else { return }
 
-        let normalizedTitle = message.title.isEmpty ? "OpenClaw" : message.title
+        let normalizedTitle = message.title.isEmpty ? "GenSparx" : message.title
         self.title = normalizedTitle
         self.body = message.body
         self.transport = transport
@@ -228,3 +228,4 @@ struct WatchNotifyMessage: Sendable {
         WKInterfaceDevice.current().play(self.mapHapticRisk(risk))
     }
 }
+

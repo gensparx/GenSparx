@@ -268,7 +268,7 @@ final class WebChatSwiftUIWindowController {
                 styleMask: [.titled, .closable, .resizable, .miniaturizable],
                 backing: .buffered,
                 defer: false)
-            window.title = "OpenClaw Chat"
+            window.title = "GenSparx Chat"
             window.contentViewController = contentViewController
             window.isReleasedWhenClosed = false
             window.titleVisibility = .visible
@@ -381,3 +381,4 @@ final class WebChatSwiftUIWindowController {
         return Color(red: r, green: g, blue: b)
     }
 }
+
