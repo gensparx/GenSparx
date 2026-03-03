@@ -136,7 +136,7 @@ async function resolveApiKeyRefForOnboarding(params: {
         env: process.env,
       });
       await params.prompter.note(
-        `Validated environment variable ${envVar}. OpenClaw will store a reference, not the key value.`,
+        `Validated environment variable ${envVar}. GenSparx will store a reference, not the key value.`,
         "Reference validated",
       );
       return { ref, resolvedValue };
@@ -222,7 +222,7 @@ async function resolveApiKeyRefForOnboarding(params: {
         env: process.env,
       });
       await params.prompter.note(
-        `Validated ${providerEntry.source} reference ${selectedProvider}:${id}. OpenClaw will store a reference, not the key value.`,
+        `Validated ${providerEntry.source} reference ${selectedProvider}:${id}. GenSparx will store a reference, not the key value.`,
         "Reference validated",
       );
       return { ref, resolvedValue };
@@ -344,7 +344,7 @@ export async function resolveSecretInputModeForEnvSelection(params: {
       {
         value: "plaintext",
         label: "Paste API key now",
-        hint: "Stores the key directly in OpenClaw config",
+        hint: "Stores the key directly in GenSparx config",
       },
       {
         value: "ref",
