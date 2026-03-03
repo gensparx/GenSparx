@@ -611,10 +611,6 @@
       "destination": "/start/setup"
     },
     {
-      "source": "/showcase",
-      "destination": "/start/showcase"
-    },
-    {
       "source": "/signal",
       "destination": "/channels/signal"
     },
@@ -826,10 +822,6 @@
               {
                 "group": "Overview",
                 "pages": ["index", "concepts/features", "start/lore"]
-              },
-              {
-                "group": "Overview",
-                "pages": ["start/showcase"]
               },
               {
                 "group": "Core concepts",

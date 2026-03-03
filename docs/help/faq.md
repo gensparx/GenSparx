@@ -1003,8 +1003,6 @@ Advantages:
 - **Always-on Gateway** (run on a VPS, interact from anywhere)
 - **Nodes** for local browser/screen/camera/exec
 
-Showcase: https://gensparx.com/showcase
-
 ## Skills and automation
 
 ### How do I customize skills without keeping the repo dirty
@@ -2893,7 +2891,6 @@ You can add options like `debounce:2s cap:25 drop:summarize` for followup modes.
 ---
 
 Still stuck? Ask in [Discord](https://discord.com/invite/clawd) or open a [GitHub discussion](https://github.com/GenSparx/GenSparx/discussions).
-
 
 
 

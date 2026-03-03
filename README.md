@@ -25,7 +25,7 @@ If you want a personal, single-user assistant that feels local, fast, and always
 
 ## 🔗 Quick Links
 
-[Repo](https://github.com/gensparx/GenSparx) · [Website](https://gensparx.com) · [Docs](https://docs.gensparx.com) · [Getting Started](https://docs.gensparx.com/start/getting-started) · [Updating](https://docs.gensparx.com/install/updating) · [Showcase](https://docs.gensparx.com/start/showcase) · [FAQ](https://docs.gensparx.com/start/faq) · [Wizard](https://docs.gensparx.com/start/wizard) · [Docker](https://docs.gensparx.com/install/docker)
+[Repo](https://github.com/gensparx/GenSparx) · [Website](https://gensparx.com) · [Docs](https://docs.gensparx.com) · [Getting Started](https://docs.gensparx.com/start/getting-started) · [Updating](https://docs.gensparx.com/install/updating) · [FAQ](https://docs.gensparx.com/start/faq) · [Wizard](https://docs.gensparx.com/start/wizard) · [Docker](https://docs.gensparx.com/install/docker)
 
 ---
 
