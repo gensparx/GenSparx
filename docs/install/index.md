@@ -73,8 +73,8 @@ npm install -g gensparx@latest
     <Tabs>
       <Tab title="npm">
         ```bash
-        npm install -g openclaw@latest
-        openclaw onboard --install-daemon
+        npm install -g gensparx@latest
+        gensparx onboard --install-daemon
         ```
 
 ```bash
@@ -82,7 +82,7 @@ SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g gensparx@latest
 ```
 
           ```bash
-          SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g openclaw@latest
+          SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g gensparx@latest
           ```
 
           If you see `sharp: Please add node-gyp to your dependencies`, either install build tooling (macOS: Xcode CLT + `npm install -g node-gyp`) or use the env var above.
@@ -90,9 +90,9 @@ SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g gensparx@latest
       </Tab>
       <Tab title="pnpm">
         ```bash
-        pnpm add -g openclaw@latest
-        pnpm approve-builds -g        # approve openclaw, node-llama-cpp, sharp, etc.
-        openclaw onboard --install-daemon
+        pnpm add -g gensparx@latest
+        pnpm approve-builds -g        # approve gensparx, node-llama-cpp, sharp, etc.
+        gensparx onboard --install-daemon
         ```
 
 ```bash
@@ -111,14 +111,14 @@ gensparx onboard --install-daemon
 
         ```bash
         git clone https://github.com/gensparx/GenSparx.git
-        cd openclaw
+        cd gensparx
         pnpm install
         pnpm ui:build
         pnpm build
         ```
       </Step>
       <Step title="Link the CLI">
-        Make the `openclaw` command available globally:
+        Make the `gensparx` command available globally:
 
 ```bash
 git clone https://github.com/GenSparx/GenSparx.git
@@ -191,7 +191,7 @@ If you need custom runtime paths, use:
 
 See [Environment vars](/help/environment) for precedence and full details.
 
-## Troubleshooting: `openclaw` not found
+## Troubleshooting: `gensparx` not found
 
 - `OPENCLAW_INSTALL_METHOD=git|npm`
 - `OPENCLAW_GIT_DIR=...`
@@ -230,7 +230,6 @@ Then open a new terminal (or `rehash` in zsh / `hash -r` in bash).
 - Updates: [Updating](/install/updating)
 - Migrate to a new machine: [Migrating](/install/migrating)
 - Uninstall: [Uninstall](/install/uninstall)
-
 
 
 

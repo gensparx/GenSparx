@@ -52,7 +52,7 @@ If the installer completes but `gensparx` is not found in a new terminal, it’s
 - Mitigates `sharp` native install gotchas by defaulting `SHARP_IGNORE_GLOBAL_LIBVIPS=1` (avoids building against system libvips).
 
 <Note>
-If install succeeds but `openclaw` is not found in a new terminal, see [Node.js troubleshooting](/install/node#troubleshooting).
+If install succeeds but `gensparx` is not found in a new terminal, see [Node.js troubleshooting](/install/node#troubleshooting).
 </Note>
 
 ```bash
@@ -77,10 +77,10 @@ If you run the installer while **already inside a GenSparx source checkout** (de
   </Step>
   <Step title="Install GenSparx">
     - `npm` method (default): global npm install
-    - `git` method: clone/update repo, install deps with pnpm, build, then install wrapper at `~/.local/bin/openclaw`
+    - `git` method: clone/update repo, install deps with pnpm, build, then install wrapper at `~/.local/bin/gensparx`
   </Step>
   <Step title="Post-install tasks">
-    - Runs `openclaw doctor --non-interactive` on upgrades and git installs (best effort)
+    - Runs `gensparx doctor --non-interactive` on upgrades and git installs (best effort)
     - Attempts onboarding when appropriate (TTY available, onboarding not disabled, and bootstrap/config checks pass)
     - Defaults `SHARP_IGNORE_GLOBAL_LIBVIPS=1`
   </Step>
@@ -204,7 +204,7 @@ iwr -useb https://gensparx.com/install.ps1 | iex -InstallMethod git -GitDir "C:\
 | `--version <ver>`      | GenSparx version or dist-tag (default: `latest`)                                |
 | `--node-version <ver>` | Node version (default: `22.22.0`)                                               |
 | `--json`               | Emit NDJSON events                                                              |
-| `--onboard`            | Run `openclaw onboard` after install                                            |
+| `--onboard`            | Run `gensparx onboard` after install                                            |
 | `--no-onboard`         | Skip onboarding (default)                                                       |
 | `--set-npm-prefix`     | On Linux, force npm prefix to `~/.npm-global` if current prefix is not writable |
 | `--help`               | Show usage (`-h`)                                                               |
@@ -214,6 +214,5 @@ iwr -useb https://gensparx.com/install.ps1 | iex -InstallMethod git -GitDir "C:\
 - **npm error spawn git / ENOENT**: install Git for Windows and reopen PowerShell, then rerun the installer.
 - **"gensparx" is not recognized**: your npm global bin folder is not on PATH. Most systems use
   `%AppData%\\npm`. You can also run `npm config get prefix` and add `\\bin` to PATH, then reopen PowerShell.
-
 
 

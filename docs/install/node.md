@@ -86,13 +86,13 @@ fnm use 22
 ```
 
   <Warning>
-  Make sure your version manager is initialized in your shell startup file (`~/.zshrc` or `~/.bashrc`). If it isn't, `openclaw` may not be found in new terminal sessions because the PATH won't include Node's bin directory.
+  Make sure your version manager is initialized in your shell startup file (`~/.zshrc` or `~/.bashrc`). If it isn't, `gensparx` may not be found in new terminal sessions because the PATH won't include Node's bin directory.
   </Warning>
 </Accordion>
 
 ## Troubleshooting
 
-### `openclaw: command not found`
+### `gensparx: command not found`
 
 This almost always means npm's global bin directory isn't on your PATH.
 
@@ -155,7 +155,6 @@ Common choices:
 - Windows: official Node installer, `winget`, or a Windows Node version manager
 
 If you use a version manager (nvm/fnm/asdf/etc), ensure it’s initialized in the shell you use day-to-day (zsh vs bash) so the PATH it sets is present when you run installers.
-
 
 
 
