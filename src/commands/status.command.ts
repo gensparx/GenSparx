@@ -436,12 +436,12 @@ export async function statusCommand(
     if (pairingRecovery.requestId) {
       runtime.log(
         theme.muted(
-          `Recovery: ${formatCliCommand(`openclaw devices approve ${pairingRecovery.requestId}`)}`,
+          `Recovery: ${formatCliCommand(`gensparx devices approve ${pairingRecovery.requestId}`)}`,
         ),
       );
     }
-    runtime.log(theme.muted(`Fallback: ${formatCliCommand("openclaw devices approve --latest")}`));
-    runtime.log(theme.muted(`Inspect: ${formatCliCommand("openclaw devices list")}`));
+    runtime.log(theme.muted(`Fallback: ${formatCliCommand("gensparx devices approve --latest")}`));
+    runtime.log(theme.muted(`Inspect: ${formatCliCommand("gensparx devices list")}`));
   }
 
   runtime.log("");

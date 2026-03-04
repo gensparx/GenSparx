@@ -77,8 +77,8 @@ async function runGatewayHealthCheck(params: {
     note(
       [
         "Docs:",
-        "https://docs.openclaw.ai/gateway/health",
-        "https://docs.openclaw.ai/gateway/troubleshooting",
+        "https://docs.gensparx.com/gateway/health",
+        "https://docs.gensparx.com/gateway/troubleshooting",
       ].join("\n"),
       "Health check help",
     );
