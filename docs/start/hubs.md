@@ -192,8 +192,5 @@ Use these hubs to discover every page, including deep dives and reference docs t
 
 - [Testing](/reference/test)
 - [Release checklist](/reference/RELEASING)
-- [Rebrand compatibility policy](/reference/rebrand-compatibility)
-- [Rebrand name map](/reference/rebrand-name-map)
 - [Device models](/reference/device-models)
-
 
