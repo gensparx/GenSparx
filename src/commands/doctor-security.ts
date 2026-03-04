@@ -56,7 +56,7 @@ export async function noteSecurityWarnings(cfg: OpenClawConfig) {
     warnings.push(
       "- Note: approvals.exec.enabled=false disables approval forwarding only.",
       "  Host exec gating still comes from ~/.openclaw/exec-approvals.json.",
-      `  Check local policy with: ${formatCliCommand("openclaw approvals get --gateway")}`,
+      `  Check local policy with: ${formatCliCommand("gensparx approvals get --gateway")}`,
     );
   }
 
@@ -99,7 +99,7 @@ export async function noteSecurityWarnings(cfg: OpenClawConfig) {
   const saferRemoteAccessLines = [
     "  Safer remote access: keep bind loopback and use Tailscale Serve/Funnel or an SSH tunnel.",
     "  Example tunnel: ssh -N -L 18789:127.0.0.1:18789 user@gateway-host",
-    "  Docs: https://docs.openclaw.ai/gateway/remote",
+    "  Docs: https://docs.gensparx.com/gateway/remote",
   ];
 
   if (isExposed) {
@@ -179,7 +179,7 @@ export async function noteSecurityWarnings(cfg: OpenClawConfig) {
     if (dmScope === "main" && isMultiUserDm) {
       warnings.push(
         `- ${params.label} DMs: multiple senders share the main session; run: ` +
-          formatCliCommand('openclaw config set session.dmScope "per-channel-peer"') +
+          formatCliCommand('gensparx config set session.dmScope "per-channel-peer"') +
           ' (or "per-account-channel-peer" for multi-account channels) to isolate sessions.',
       );
     }
