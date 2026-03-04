@@ -162,7 +162,7 @@ Create or update `docker-compose.yml`.
 
 ```yaml
 services:
-  openclaw-gateway:
+  gensparx-gateway:
     image: ${OPENCLAW_IMAGE}
     build: .
     restart: unless-stopped
@@ -269,15 +269,15 @@ CMD ["node","dist/index.js"]
 
 ```bash
 docker compose build
-docker compose up -d openclaw-gateway
+docker compose up -d gensparx-gateway
 ```
 
 Verify binaries:
 
 ```bash
-docker compose exec openclaw-gateway which gog
-docker compose exec openclaw-gateway which goplaces
-docker compose exec openclaw-gateway which wacli
+docker compose exec gensparx-gateway which gog
+docker compose exec gensparx-gateway which goplaces
+docker compose exec gensparx-gateway which wacli
 ```
 
 Expected output:
@@ -293,7 +293,7 @@ Expected output:
 ## 9) Verify Gateway
 
 ```bash
-docker compose logs -f openclaw-gateway
+docker compose logs -f gensparx-gateway
 ```
 
 Success:

@@ -89,8 +89,8 @@ All steps can be done via the web UI at [https://console.cloud.google.com](https
 **CLI:**
 
 ```bash
-gcloud projects create my-openclaw-project --name="GenSparx Gateway"
-gcloud config set project my-openclaw-project
+gcloud projects create my-gensparx-project --name="GenSparx Gateway"
+gcloud config set project my-gensparx-project
 ```
 
 Enable billing at [https://console.cloud.google.com/billing](https://console.cloud.google.com/billing) (required for Compute Engine).
@@ -123,7 +123,7 @@ gcloud services enable compute.googleapis.com
 **CLI:**
 
 ```bash
-gcloud compute instances create openclaw-gateway \
+gcloud compute instances create gensparx-gateway \
   --zone=us-central1-a \
   --machine-type=e2-small \
   --boot-disk-size=20GB \
@@ -134,7 +134,7 @@ gcloud compute instances create openclaw-gateway \
 **Console:**
 
 1. Go to Compute Engine > VM instances > Create instance
-2. Name: `openclaw-gateway`
+2. Name: `gensparx-gateway`
 3. Region: `us-central1`, Zone: `us-central1-a`
 4. Machine type: `e2-small`
 5. Boot disk: Debian 12, 20GB
@@ -147,7 +147,7 @@ gcloud compute instances create openclaw-gateway \
 **CLI:**
 
 ```bash
-gcloud compute ssh openclaw-gateway --zone=us-central1-a
+gcloud compute ssh gensparx-gateway --zone=us-central1-a
 ```
 
 **Console:**
@@ -176,7 +176,7 @@ exit
 Then SSH back in:
 
 ```bash
-gcloud compute ssh openclaw-gateway --zone=us-central1-a
+gcloud compute ssh gensparx-gateway --zone=us-central1-a
 ```
 
 Verify:
@@ -244,7 +244,7 @@ Create or update `docker-compose.yml`.
 
 ```yaml
 services:
-  openclaw-gateway:
+  gensparx-gateway:
     image: ${OPENCLAW_IMAGE}
     build: .
     restart: unless-stopped
@@ -348,7 +348,7 @@ CMD ["node","dist/index.js"]
 
 ```bash
 docker compose build
-docker compose up -d openclaw-gateway
+docker compose up -d gensparx-gateway
 ```
 
 If build fails with `Killed` / `exit code 137` during `pnpm install --frozen-lockfile`, the VM is out of memory. Use `e2-small` minimum, or `e2-medium` for more reliable first builds.
@@ -356,7 +356,7 @@ If build fails with `Killed` / `exit code 137` during `pnpm install --frozen-loc
 When binding to LAN (`OPENCLAW_GATEWAY_BIND=lan`), configure a trusted browser origin before continuing:
 
 ```bash
-docker compose run --rm openclaw-cli config set gateway.controlUi.allowedOrigins '["http://127.0.0.1:18789"]' --strict-json
+docker compose exec gensparx-gateway node dist/index.js config set gateway.controlUi.allowedOrigins '["http://127.0.0.1:18789"]' --strict-json
 ```
 
 If you changed the gateway port, replace `18789` with your configured port.
@@ -364,9 +364,9 @@ If you changed the gateway port, replace `18789` with your configured port.
 Verify binaries:
 
 ```bash
-docker compose exec openclaw-gateway which gog
-docker compose exec openclaw-gateway which goplaces
-docker compose exec openclaw-gateway which wacli
+docker compose exec gensparx-gateway which gog
+docker compose exec gensparx-gateway which goplaces
+docker compose exec gensparx-gateway which wacli
 ```
 
 Expected output:
@@ -382,7 +382,7 @@ Expected output:
 ## 12) Verify Gateway
 
 ```bash
-docker compose logs -f openclaw-gateway
+docker compose logs -f gensparx-gateway
 ```
 
 Success:
@@ -398,7 +398,7 @@ Success:
 Create an SSH tunnel to forward the Gateway port:
 
 ```bash
-gcloud compute ssh openclaw-gateway --zone=us-central1-a -- -L 18789:127.0.0.1:18789
+gcloud compute ssh gensparx-gateway --zone=us-central1-a -- -L 18789:127.0.0.1:18789
 ```
 
 Open in your browser:
@@ -408,7 +408,7 @@ Open in your browser:
 Fetch a fresh tokenized dashboard link:
 
 ```bash
-docker compose run --rm openclaw-cli dashboard --no-open
+docker compose exec gensparx-gateway node dist/index.js dashboard --no-open
 ```
 
 Paste the token from that URL.
@@ -416,8 +416,8 @@ Paste the token from that URL.
 If Control UI shows `unauthorized` or `disconnected (1008): pairing required`, approve the browser device:
 
 ```bash
-docker compose run --rm openclaw-cli devices list
-docker compose run --rm openclaw-cli devices approve <requestId>
+docker compose exec gensparx-gateway node dist/index.js devices list
+docker compose exec gensparx-gateway node dist/index.js devices approve <requestId>
 ```
 
 ---
@@ -447,7 +447,7 @@ All long-lived state must survive restarts, rebuilds, and reboots.
 To update GenSparx on the VM:
 
 ```bash
-cd ~/openclaw
+cd ~/gensparx
 git pull
 docker compose build
 docker compose up -d
@@ -477,15 +477,15 @@ If Docker build fails with `Killed` and `exit code 137`, the VM was OOM-killed. 
 
 ```bash
 # Stop the VM first
-gcloud compute instances stop openclaw-gateway --zone=us-central1-a
+gcloud compute instances stop gensparx-gateway --zone=us-central1-a
 
 # Change machine type
-gcloud compute instances set-machine-type openclaw-gateway \
+gcloud compute instances set-machine-type gensparx-gateway \
   --zone=us-central1-a \
   --machine-type=e2-small
 
 # Start the VM
-gcloud compute instances start openclaw-gateway --zone=us-central1-a
+gcloud compute instances start gensparx-gateway --zone=us-central1-a
 ```
 
 ---
@@ -499,15 +499,15 @@ For automation or CI/CD pipelines, create a dedicated service account with minim
 1. Create a service account:
 
    ```bash
-   gcloud iam service-accounts create openclaw-deploy \
+   gcloud iam service-accounts create gensparx-deploy \
      --display-name="GenSparx Deployment"
    ```
 
 2. Grant Compute Instance Admin role (or narrower custom role):
 
    ```bash
-   gcloud projects add-iam-policy-binding my-openclaw-project \
-     --member="serviceAccount:openclaw-deploy@my-openclaw-project.iam.gserviceaccount.com" \
+   gcloud projects add-iam-policy-binding my-gensparx-project \
+     --member="serviceAccount:gensparx-deploy@my-gensparx-project.iam.gserviceaccount.com" \
      --role="roles/compute.instanceAdmin.v1"
    ```
 
@@ -522,5 +522,4 @@ See [https://cloud.google.com/iam/docs/understanding-roles](https://cloud.google
 - Set up messaging channels: [Channels](/channels)
 - Pair local devices as nodes: [Nodes](/nodes)
 - Configure the Gateway: [Gateway configuration](/gateway/configuration)
-
 
