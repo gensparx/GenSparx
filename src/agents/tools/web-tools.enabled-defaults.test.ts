@@ -10,7 +10,7 @@ function installMockFetch(payload: unknown) {
       json: () => Promise.resolve(payload),
     } as Response),
   );
-  global.fetch = mockFetch as unknown as typeof fetch;
+  vi.stubGlobal("fetch", withFetchPreconnect(mockFetch as unknown as typeof fetch));
   return mockFetch;
 }
 
