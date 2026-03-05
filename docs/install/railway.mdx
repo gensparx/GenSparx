@@ -3,7 +3,7 @@ title: Deploy on Railway
 ---
 
 Deploy GenSparx on Railway with a one-click template and finish setup in your browser.
-This is the easiest “no terminal on the server” path: Railway runs the Gateway for you,
+This is the easiest "no terminal on the server" path: Railway runs the Gateway for you,
 and you configure everything via the `/setup` web wizard.
 
 ## Quick checklist (new users)
@@ -20,7 +20,7 @@ and you configure everything via the `/setup` web wizard.
   Deploy on Railway
 </a>
 
-After deploy, find your public URL in **Railway → your service → Settings → Domains**.
+After deploy, find your public URL in **Railway -> your service -> Settings -> Domains**.
 
 Railway will either:
 
@@ -29,8 +29,8 @@ Railway will either:
 
 Then open:
 
-- `https://<your-railway-domain>/setup` — setup wizard (password protected)
-- `https://<your-railway-domain>/openclaw` — Control UI
+- `https://<your-railway-domain>/setup` - setup wizard (password protected)
+- `https://<your-railway-domain>/openclaw` - Control UI
 
 ## What you get
 
@@ -58,7 +58,7 @@ Attach a volume mounted at:
 Set these variables on the service:
 
 - `SETUP_PASSWORD` (required)
-- `PORT=8080` (required — must match the port in Public Networking)
+- `PORT=8080` (required - must match the port in Public Networking)
 - `OPENCLAW_STATE_DIR=/data/.openclaw` (recommended)
 - `OPENCLAW_WORKSPACE_DIR=/data/workspace` (recommended)
 - `OPENCLAW_GATEWAY_TOKEN` (recommended; treat as an admin secret)
@@ -84,9 +84,9 @@ If Telegram DMs are set to pairing, the setup wizard can approve the pairing cod
 ### Discord bot token
 
 1. Go to [https://discord.com/developers/applications](https://discord.com/developers/applications)
-2. **New Application** → choose a name
-3. **Bot** → **Add Bot**
-4. **Enable MESSAGE CONTENT INTENT** under Bot → Privileged Gateway Intents (required or the bot will crash on startup)
+2. **New Application** -> choose a name
+3. **Bot** -> **Add Bot**
+4. **Enable MESSAGE CONTENT INTENT** under Bot -> Privileged Gateway Intents (required or the bot will crash on startup)
 5. Copy the **Bot Token** and paste into `/setup`
 6. Invite the bot to your server (OAuth2 URL Generator; scopes: `bot`, `applications.commands`)
 
@@ -97,5 +97,3 @@ Download a backup at:
 - `https://<your-railway-domain>/setup/export`
 
 This exports your GenSparx state + workspace so you can migrate to another host without losing config or memory.
-
-

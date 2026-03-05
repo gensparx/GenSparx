@@ -14,7 +14,7 @@ This page assumes exe.dev's default **exeuntu** image. If you picked a different
 
 ## Beginner quick path
 
-1. [https://exe.new/openclaw](https://exe.new/openclaw)
+1. [https://exe.new/gensparx](https://exe.new/gensparx)
 2. Fill in your auth key/token as needed
 3. Click on "Agent" next to your VM, and wait...
 4. ???
@@ -105,7 +105,7 @@ server {
 
 Access `https://<vm-name>.exe.xyz/?token=YOUR-TOKEN-FROM-TERMINAL` (see the Control UI output from onboarding). Approve
 devices with `gensparx devices list` and `gensparx devices approve <requestId>`. When in doubt,
-use Shelley from your browser!
+use Shelley from your browser.
 
 ## Remote Access
 
@@ -123,5 +123,3 @@ gensparx health
 ```
 
 Guide: [Updating](/install/updating)
-
-
