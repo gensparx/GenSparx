@@ -94,9 +94,10 @@ function runScript(
     return cached;
   }
   const binDir = path.join(homeDir, "bin");
+  const shellPathDelimiter = process.platform === "win32" ? ":" : path.delimiter;
   const env = {
     HOME: homeDir,
-    PATH: `${binDir}${path.delimiter}${sharedBinDir}${path.delimiter}${BASE_PATH}`,
+    PATH: `${binDir}${shellPathDelimiter}${sharedBinDir}${shellPathDelimiter}${BASE_PATH}`,
     LANG: BASE_LANG,
     ...extraEnv,
   };
@@ -145,6 +146,13 @@ echo '{}'`,
       `#!/usr/bin/env bash
 if [[ "$3" == "DVTDeveloperAccountManagerAppleIDLists" ]]; then
   echo '(identifier = "dev@example.com";)'
+  exit 0
+fi
+if [[ "$3" == "IDEProvisioningTeamIdentifiers" ]]; then
+  if [[ "\${OPENCLAW_TEST_NO_TEAMS:-0}" == "1" ]]; then
+    exit 0
+  fi
+  echo '("AAAAA11111", "BBBBB22222")'
   exit 0
 fi
 exit 0`,
@@ -210,22 +218,28 @@ printf 'BBBBB22222\\t0\\tBeta Team\\r\\n'`,
     expect(fallback).toBe("BBBBB22222");
   });
 
-  it("resolves a fallback team ID from Xcode team listings (smoke)", async () => {
-    const fallbackResult = runScript(sharedHomeDir, { IOS_PYTHON_BIN: sharedFakePythonPath });
-    expect(fallbackResult.ok).toBe(true);
-    expect(fallbackResult.stdout).toBe("AAAAA11111");
-  });
+  it.runIf(process.platform !== "win32")(
+    "resolves a fallback team ID from Xcode team listings (smoke)",
+    async () => {
+      const fallbackResult = runScript(sharedHomeDir, { IOS_PYTHON_BIN: sharedFakePythonPath });
+      expect(fallbackResult.ok).toBe(true);
+      expect(fallbackResult.stdout).toBe("AAAAA11111");
+    },
+  );
 
-  it("prints actionable guidance when Xcode account exists but no Team ID is resolvable", async () => {
-    const result = runScript(sharedHomeDir);
-    expect(result.ok).toBe(false);
-    expect(
-      result.stderr.includes("An Apple account is signed in to Xcode") ||
-        result.stderr.includes("No Apple Team ID found in Xcode accounts"),
-    ).toBe(true);
-    expect(
-      result.stderr.includes("IOS_DEVELOPMENT_TEAM") ||
-        result.stderr.includes("IOS_ALLOW_KEYCHAIN_TEAM_FALLBACK"),
-    ).toBe(true);
-  });
+  it.runIf(process.platform !== "win32")(
+    "prints actionable guidance when Xcode account exists but no Team ID is resolvable",
+    async () => {
+      const result = runScript(sharedHomeDir, { OPENCLAW_TEST_NO_TEAMS: "1" });
+      expect(result.ok).toBe(false);
+      expect(
+        result.stderr.includes("An Apple account is signed in to Xcode") ||
+          result.stderr.includes("No Apple Team ID found in Xcode accounts"),
+      ).toBe(true);
+      expect(
+        result.stderr.includes("IOS_DEVELOPMENT_TEAM") ||
+          result.stderr.includes("IOS_ALLOW_KEYCHAIN_TEAM_FALLBACK"),
+      ).toBe(true);
+    },
+  );
 });

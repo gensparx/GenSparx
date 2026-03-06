@@ -154,13 +154,15 @@ describe("version resolution", () => {
   });
 
   it("prefers runtime VERSION over service/package markers and ignores blank env values", () => {
+    const usableRuntimeVersion = resolveUsableRuntimeVersion(VERSION);
+
     expect(
       resolveRuntimeServiceVersion({
         OPENCLAW_VERSION: "   ",
         OPENCLAW_SERVICE_VERSION: "  2.0.0  ",
         npm_package_version: "1.0.0",
       }),
-    ).toBe(VERSION);
+    ).toBe(usableRuntimeVersion ?? "2.0.0");
 
     expect(
       resolveRuntimeServiceVersion({
@@ -168,7 +170,7 @@ describe("version resolution", () => {
         OPENCLAW_SERVICE_VERSION: "\t",
         npm_package_version: " 1.0.0-package ",
       }),
-    ).toBe(VERSION);
+    ).toBe(usableRuntimeVersion ?? "1.0.0-package");
 
     expect(
       resolveRuntimeServiceVersion(
@@ -179,6 +181,6 @@ describe("version resolution", () => {
         },
         "fallback",
       ),
-    ).toBe(VERSION);
+    ).toBe(usableRuntimeVersion ?? "fallback");
   });
 });

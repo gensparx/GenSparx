@@ -93,11 +93,23 @@ describe("media server", () => {
       setup: async () => {
         const target = path.join(process.cwd(), "package.json"); // outside MEDIA_DIR
         const link = path.join(MEDIA_DIR, "link-out");
-        await fs.symlink(target, link);
+        try {
+          await fs.symlink(target, link);
+          return true;
+        } catch (error) {
+          const code = (error as NodeJS.ErrnoException).code;
+          if (code === "EPERM" || code === "EACCES") {
+            return false;
+          }
+          throw error;
+        }
       },
     },
   ] as const)("$testName", async (testCase) => {
-    await testCase.setup?.();
+    const setupResult = await testCase.setup?.();
+    if (setupResult === false) {
+      return;
+    }
     const res = await fetch(mediaUrl(testCase.mediaPath));
     expect(res.status).toBe(400);
     expect(await res.text()).toBe("invalid path");
