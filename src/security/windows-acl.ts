@@ -160,12 +160,33 @@ function parseAceEntry(entry: string): WindowsAclEntry | null {
     return null;
   }
 
-  const idx = entry.indexOf(":");
+  // ACL rights always begin with `:(...)`; using that anchor avoids
+  // mis-parsing drive-letter paths like `C:\...` as the principal.
+  const idx = entry.indexOf(":(");
   if (idx === -1) {
     return null;
   }
 
-  const principal = entry.slice(0, idx).trim();
+  const head = entry.slice(0, idx).trim();
+  const principal = (() => {
+    // icacls lines are `<path> <principal>:(rights)`. When caller targetPath
+    // differs (for example legacy vs rebranded state dir), strip a leading path
+    // token so we still classify the principal correctly.
+    if (head.startsWith('"')) {
+      const closingQuote = head.indexOf('"', 1);
+      if (closingQuote > 0) {
+        return head.slice(closingQuote + 1).trim();
+      }
+      return head;
+    }
+    if (/^[a-z]:\\/i.test(head)) {
+      const firstWhitespace = head.search(/\s/);
+      if (firstWhitespace > 0) {
+        return head.slice(firstWhitespace + 1).trim();
+      }
+    }
+    return head;
+  })();
   const rawRights = entry.slice(idx + 1).trim();
   const tokens =
     rawRights

@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+﻿import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 const loadConfigMock = vi.fn();
 
@@ -28,7 +28,7 @@ describe("formatCliBannerLine", () => {
       richTty: false,
     });
 
-    expect(line).toBe("🦞 OpenClaw 2026.3.3 (abc1234)");
+    expect(line).toBe("\u26A1 Gensparx 2026.3.3 (abc1234)");
   });
 
   it("uses default tagline when cli.banner.taglineMode is default", () => {
@@ -41,7 +41,7 @@ describe("formatCliBannerLine", () => {
       richTty: false,
     });
 
-    expect(line).toBe("🦞 OpenClaw 2026.3.3 (abc1234) — All your chats, one OpenClaw.");
+    expect(line).toBe("\u26A1 Gensparx 2026.3.3 (abc1234) \u2014 All your chats, one Gensparx.");
   });
 
   it("prefers explicit tagline mode over config", () => {
@@ -55,6 +55,6 @@ describe("formatCliBannerLine", () => {
       mode: "default",
     });
 
-    expect(line).toBe("🦞 OpenClaw 2026.3.3 (abc1234) — All your chats, one OpenClaw.");
+    expect(line).toBe("\u26A1 Gensparx 2026.3.3 (abc1234) \u2014 All your chats, one Gensparx.");
   });
 });
