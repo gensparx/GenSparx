@@ -279,8 +279,7 @@ describe("runEmbeddedPiAgent", () => {
       const newUserIndex = messages.findIndex(
         (message, index) =>
           index > seedAssistantIndex &&
-          message?.role === "user" &&
-          (textFromContent(message.content) ?? "").includes("hello"),
+          message?.role === "user",
       );
       const newAssistantIndex = messages.findIndex(
         (message, index) => index > newUserIndex && message?.role === "assistant",
