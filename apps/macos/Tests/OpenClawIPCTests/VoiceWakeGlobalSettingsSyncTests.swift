@@ -1,10 +1,10 @@
 import Foundation
-import OpenClawProtocol
+import GensparxProtocol
 import Testing
-@testable import OpenClaw
+@testable import Gensparx
 
 @Suite(.serialized) struct VoiceWakeGlobalSettingsSyncTests {
-    private func voiceWakeChangedEvent(payload: OpenClawProtocol.AnyCodable) -> EventFrame {
+    private func voiceWakeChangedEvent(payload: GensparxProtocol.AnyCodable) -> EventFrame {
         EventFrame(
             type: "event",
             event: "voicewake.changed",
@@ -23,12 +23,12 @@ import Testing
 
     @Test func appliesVoiceWakeChangedEventToAppState() async {
         let previous = await applyTriggersAndCapturePrevious(["before"])
-        let evt = voiceWakeChangedEvent(payload: OpenClawProtocol.AnyCodable(["triggers": ["openclaw", "computer"]]))
+        let evt = voiceWakeChangedEvent(payload: GensparxProtocol.AnyCodable(["triggers": ["gensparx", "computer"]]))
 
         await VoiceWakeGlobalSettingsSync.shared.handle(push: .event(evt))
 
         let updated = await MainActor.run { AppStateStore.shared.swabbleTriggerWords }
-        #expect(updated == ["openclaw", "computer"])
+        #expect(updated == ["gensparx", "computer"])
 
         await MainActor.run {
             AppStateStore.shared.applyGlobalVoiceWakeTriggers(previous)
@@ -37,7 +37,7 @@ import Testing
 
     @Test func ignoresVoiceWakeChangedEventWithInvalidPayload() async {
         let previous = await applyTriggersAndCapturePrevious(["before"])
-        let evt = voiceWakeChangedEvent(payload: OpenClawProtocol.AnyCodable(["unexpected": 123]))
+        let evt = voiceWakeChangedEvent(payload: GensparxProtocol.AnyCodable(["unexpected": 123]))
 
         await VoiceWakeGlobalSettingsSync.shared.handle(push: .event(evt))
 

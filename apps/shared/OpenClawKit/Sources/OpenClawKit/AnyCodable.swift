@@ -1,4 +1,3 @@
-import OpenClawProtocol
+import GensparxProtocol
 
-public typealias AnyCodable = OpenClawProtocol.AnyCodable
-
+public typealias AnyCodable = GensparxProtocol.AnyCodable

@@ -1,4 +1,4 @@
-package ai.openclaw.android.ui.chat
+package ai.gensparx.android.ui.chat
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -34,12 +34,12 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ai.openclaw.android.ui.mobileAccent
-import ai.openclaw.android.ui.mobileCallout
-import ai.openclaw.android.ui.mobileCaption1
-import ai.openclaw.android.ui.mobileCodeBg
-import ai.openclaw.android.ui.mobileCodeText
-import ai.openclaw.android.ui.mobileTextSecondary
+import ai.gensparx.android.ui.mobileAccent
+import ai.gensparx.android.ui.mobileCallout
+import ai.gensparx.android.ui.mobileCaption1
+import ai.gensparx.android.ui.mobileCodeBg
+import ai.gensparx.android.ui.mobileCodeText
+import ai.gensparx.android.ui.mobileTextSecondary
 import org.commonmark.Extension
 import org.commonmark.ext.autolink.AutolinkExtension
 import org.commonmark.ext.gfm.strikethrough.Strikethrough

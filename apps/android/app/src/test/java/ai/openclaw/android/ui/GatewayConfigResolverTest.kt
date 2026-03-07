@@ -1,4 +1,4 @@
-package ai.openclaw.android.ui
+package ai.gensparx.android.ui
 
 import java.util.Base64
 import org.junit.Assert.assertEquals

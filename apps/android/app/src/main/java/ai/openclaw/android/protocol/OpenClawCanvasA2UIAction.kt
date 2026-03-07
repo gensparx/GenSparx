@@ -1,9 +1,9 @@
-package ai.openclaw.android.protocol
+package ai.gensparx.android.protocol
 
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
-object OpenClawCanvasA2UIAction {
+object GensparxCanvasA2UIAction {
   fun extractActionName(userAction: JsonObject): String? {
     val name =
       (userAction["name"] as? JsonPrimitive)
@@ -61,6 +61,6 @@ object OpenClawCanvasA2UIAction {
     val err = (error ?: "").replace("\\", "\\\\").replace("\"", "\\\"")
     val okLiteral = if (ok) "true" else "false"
     val idEscaped = actionId.replace("\\", "\\\\").replace("\"", "\\\"")
-    return "window.dispatchEvent(new CustomEvent('openclaw:a2ui-action-status', { detail: { id: \"${idEscaped}\", ok: ${okLiteral}, error: \"${err}\" } }));"
+    return "window.dispatchEvent(new CustomEvent('gensparx:a2ui-action-status', { detail: { id: \"${idEscaped}\", ok: ${okLiteral}, error: \"${err}\" } }));"
   }
 }

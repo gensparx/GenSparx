@@ -1,9 +1,9 @@
 import Foundation
-import OpenClawKit
+import GensparxKit
 
-// Prefer the OpenClawKit wrapper to keep gateway request payloads consistent.
-typealias AnyCodable = OpenClawKit.AnyCodable
-typealias InstanceIdentity = OpenClawKit.InstanceIdentity
+// Prefer the GensparxKit wrapper to keep gateway request payloads consistent.
+typealias AnyCodable = GensparxKit.AnyCodable
+typealias InstanceIdentity = GensparxKit.InstanceIdentity
 
 extension AnyCodable {
     var stringValue: String? {

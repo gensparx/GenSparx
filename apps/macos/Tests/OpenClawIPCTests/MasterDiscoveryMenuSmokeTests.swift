@@ -1,7 +1,7 @@
-import OpenClawDiscovery
+import GensparxDiscovery
 import SwiftUI
 import Testing
-@testable import OpenClaw
+@testable import Gensparx
 
 @Suite(.serialized)
 @MainActor

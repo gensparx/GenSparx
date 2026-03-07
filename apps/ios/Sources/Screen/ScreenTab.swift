@@ -1,4 +1,4 @@
-import OpenClawKit
+import GensparxKit
 import SwiftUI
 
 struct ScreenTab: View {

@@ -1,7 +1,7 @@
-import OpenClawKit
+import GensparxKit
 import Foundation
 import Testing
-@testable import OpenClawChatUI
+@testable import GensparxChatUI
 
 private func chatTextMessage(role: String, text: String, timestamp: Double) -> AnyCodable {
     AnyCodable([
@@ -14,17 +14,17 @@ private func chatTextMessage(role: String, text: String, timestamp: Double) -> A
 private func historyPayload(
     sessionKey: String = "main",
     sessionId: String? = "sess-main",
-    messages: [AnyCodable] = []) -> OpenClawChatHistoryPayload
+    messages: [AnyCodable] = []) -> GensparxChatHistoryPayload
 {
-    OpenClawChatHistoryPayload(
+    GensparxChatHistoryPayload(
         sessionKey: sessionKey,
         sessionId: sessionId,
         messages: messages,
         thinkingLevel: "off")
 }
 
-private func sessionEntry(key: String, updatedAt: Double) -> OpenClawChatSessionEntry {
-    OpenClawChatSessionEntry(
+private func sessionEntry(key: String, updatedAt: Double) -> GensparxChatSessionEntry {
+    GensparxChatSessionEntry(
         key: key,
         kind: nil,
         displayName: nil,
@@ -47,16 +47,16 @@ private func sessionEntry(key: String, updatedAt: Double) -> OpenClawChatSession
 
 private func makeViewModel(
     sessionKey: String = "main",
-    historyResponses: [OpenClawChatHistoryPayload],
-    sessionsResponses: [OpenClawChatSessionsListResponse] = []) async -> (TestChatTransport, OpenClawChatViewModel)
+    historyResponses: [GensparxChatHistoryPayload],
+    sessionsResponses: [GensparxChatSessionsListResponse] = []) async -> (TestChatTransport, GensparxChatViewModel)
 {
     let transport = TestChatTransport(historyResponses: historyResponses, sessionsResponses: sessionsResponses)
-    let vm = await MainActor.run { OpenClawChatViewModel(sessionKey: sessionKey, transport: transport) }
+    let vm = await MainActor.run { GensparxChatViewModel(sessionKey: sessionKey, transport: transport) }
     return (transport, vm)
 }
 
 private func loadAndWaitBootstrap(
-    vm: OpenClawChatViewModel,
+    vm: GensparxChatViewModel,
     sessionId: String? = nil) async throws
 {
     await MainActor.run { vm.load() }
@@ -67,7 +67,7 @@ private func loadAndWaitBootstrap(
     }
 }
 
-private func sendUserMessage(_ vm: OpenClawChatViewModel, text: String = "hi") async {
+private func sendUserMessage(_ vm: GensparxChatViewModel, text: String = "hi") async {
     await MainActor.run {
         vm.input = text
         vm.send()
@@ -82,7 +82,7 @@ private func emitAssistantText(
 {
     transport.emit(
         .agent(
-            OpenClawAgentEventPayload(
+            GensparxAgentEventPayload(
                 runId: runId,
                 seq: seq,
                 stream: "assistant",
@@ -97,7 +97,7 @@ private func emitToolStart(
 {
     transport.emit(
         .agent(
-            OpenClawAgentEventPayload(
+            GensparxAgentEventPayload(
                 runId: runId,
                 seq: seq,
                 stream: "tool",
@@ -117,7 +117,7 @@ private func emitExternalFinal(
 {
     transport.emit(
         .chat(
-            OpenClawChatEventPayload(
+            GensparxChatEventPayload(
                 runId: runId,
                 sessionKey: sessionKey,
                 state: "final",
@@ -132,40 +132,40 @@ private actor TestChatTransportState {
     var abortedRunIds: [String] = []
 }
 
-private final class TestChatTransport: @unchecked Sendable, OpenClawChatTransport {
+private final class TestChatTransport: @unchecked Sendable, GensparxChatTransport {
     private let state = TestChatTransportState()
-    private let historyResponses: [OpenClawChatHistoryPayload]
-    private let sessionsResponses: [OpenClawChatSessionsListResponse]
+    private let historyResponses: [GensparxChatHistoryPayload]
+    private let sessionsResponses: [GensparxChatSessionsListResponse]
 
-    private let stream: AsyncStream<OpenClawChatTransportEvent>
-    private let continuation: AsyncStream<OpenClawChatTransportEvent>.Continuation
+    private let stream: AsyncStream<GensparxChatTransportEvent>
+    private let continuation: AsyncStream<GensparxChatTransportEvent>.Continuation
 
     init(
-        historyResponses: [OpenClawChatHistoryPayload],
-        sessionsResponses: [OpenClawChatSessionsListResponse] = [])
+        historyResponses: [GensparxChatHistoryPayload],
+        sessionsResponses: [GensparxChatSessionsListResponse] = [])
     {
         self.historyResponses = historyResponses
         self.sessionsResponses = sessionsResponses
-        var cont: AsyncStream<OpenClawChatTransportEvent>.Continuation!
+        var cont: AsyncStream<GensparxChatTransportEvent>.Continuation!
         self.stream = AsyncStream { c in
             cont = c
         }
         self.continuation = cont
     }
 
-    func events() -> AsyncStream<OpenClawChatTransportEvent> {
+    func events() -> AsyncStream<GensparxChatTransportEvent> {
         self.stream
     }
 
     func setActiveSessionKey(_: String) async throws {}
 
-    func requestHistory(sessionKey: String) async throws -> OpenClawChatHistoryPayload {
+    func requestHistory(sessionKey: String) async throws -> GensparxChatHistoryPayload {
         let idx = await self.state.historyCallCount
         await self.state.setHistoryCallCount(idx + 1)
         if idx < self.historyResponses.count {
             return self.historyResponses[idx]
         }
-        return self.historyResponses.last ?? OpenClawChatHistoryPayload(
+        return self.historyResponses.last ?? GensparxChatHistoryPayload(
             sessionKey: sessionKey,
             sessionId: nil,
             messages: [],
@@ -177,23 +177,23 @@ private final class TestChatTransport: @unchecked Sendable, OpenClawChatTranspor
         message _: String,
         thinking _: String,
         idempotencyKey: String,
-        attachments _: [OpenClawChatAttachmentPayload]) async throws -> OpenClawChatSendResponse
+        attachments _: [GensparxChatAttachmentPayload]) async throws -> GensparxChatSendResponse
     {
         await self.state.sentRunIdsAppend(idempotencyKey)
-        return OpenClawChatSendResponse(runId: idempotencyKey, status: "ok")
+        return GensparxChatSendResponse(runId: idempotencyKey, status: "ok")
     }
 
     func abortRun(sessionKey _: String, runId: String) async throws {
         await self.state.abortedRunIdsAppend(runId)
     }
 
-    func listSessions(limit _: Int?) async throws -> OpenClawChatSessionsListResponse {
+    func listSessions(limit _: Int?) async throws -> GensparxChatSessionsListResponse {
         let idx = await self.state.sessionsCallCount
         await self.state.setSessionsCallCount(idx + 1)
         if idx < self.sessionsResponses.count {
             return self.sessionsResponses[idx]
         }
-        return self.sessionsResponses.last ?? OpenClawChatSessionsListResponse(
+        return self.sessionsResponses.last ?? GensparxChatSessionsListResponse(
             ts: nil,
             path: nil,
             count: 0,
@@ -205,7 +205,7 @@ private final class TestChatTransport: @unchecked Sendable, OpenClawChatTranspor
         true
     }
 
-    func emit(_ evt: OpenClawChatTransportEvent) {
+    func emit(_ evt: GensparxChatTransportEvent) {
         self.continuation.yield(evt)
     }
 
@@ -268,7 +268,7 @@ extension TestChatTransportState {
         let runId = try #require(await transport.lastSentRunId())
         transport.emit(
             .chat(
-                OpenClawChatEventPayload(
+                GensparxChatEventPayload(
                     runId: runId,
                     sessionKey: "main",
                     state: "final",
@@ -301,7 +301,7 @@ extension TestChatTransportState {
         let runId = try #require(await transport.lastSentRunId())
         transport.emit(
             .chat(
-                OpenClawChatEventPayload(
+                GensparxChatEventPayload(
                     runId: runId,
                     sessionKey: "agent:main:main",
                     state: "final",
@@ -330,7 +330,7 @@ extension TestChatTransportState {
 
         transport.emit(
             .chat(
-                OpenClawChatEventPayload(
+                GensparxChatEventPayload(
                     runId: "external-run",
                     sessionKey: "agent:main:main",
                     state: "final",
@@ -413,7 +413,7 @@ extension TestChatTransportState {
         let recentOlder = now - (5 * 60 * 60 * 1000)
         let stale = now - (26 * 60 * 60 * 1000)
         let history = historyPayload()
-        let sessions = OpenClawChatSessionsListResponse(
+        let sessions = GensparxChatSessionsListResponse(
             ts: now,
             path: nil,
             count: 4,
@@ -437,7 +437,7 @@ extension TestChatTransportState {
         let now = Date().timeIntervalSince1970 * 1000
         let recent = now - (30 * 60 * 1000)
         let history = historyPayload(sessionKey: "custom", sessionId: "sess-custom")
-        let sessions = OpenClawChatSessionsListResponse(
+        let sessions = GensparxChatSessionsListResponse(
             ts: now,
             path: nil,
             count: 1,
@@ -471,7 +471,7 @@ extension TestChatTransportState {
 
         transport.emit(
             .chat(
-                OpenClawChatEventPayload(
+                GensparxChatEventPayload(
                     runId: "other-run",
                     sessionKey: "main",
                     state: "error",
@@ -482,7 +482,7 @@ extension TestChatTransportState {
     }
 
     @Test func stripsInboundMetadataFromHistoryMessages() async throws {
-        let history = OpenClawChatHistoryPayload(
+        let history = GensparxChatHistoryPayload(
             sessionKey: "main",
             sessionId: "sess-main",
             messages: [
@@ -491,7 +491,7 @@ extension TestChatTransportState {
                     "content": [["type": "text", "text": """
 Conversation info (untrusted metadata):
 ```json
-{ \"sender\": \"openclaw-ios\" }
+{ \"sender\": \"gensparx-ios\" }
 ```
 
 Hello?
@@ -501,7 +501,7 @@ Hello?
             ],
             thinkingLevel: "off")
         let transport = TestChatTransport(historyResponses: [history])
-        let vm = await MainActor.run { OpenClawChatViewModel(sessionKey: "main", transport: transport) }
+        let vm = await MainActor.run { GensparxChatViewModel(sessionKey: "main", transport: transport) }
 
         await MainActor.run { vm.load() }
         try await waitUntil("history loaded") { await MainActor.run { !vm.messages.isEmpty } }
@@ -532,7 +532,7 @@ Hello?
 
         transport.emit(
             .chat(
-                OpenClawChatEventPayload(
+                GensparxChatEventPayload(
                     runId: runId,
                     sessionKey: "main",
                     state: "aborted",

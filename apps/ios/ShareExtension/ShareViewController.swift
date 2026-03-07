@@ -1,5 +1,5 @@
 import Foundation
-import OpenClawKit
+import GensparxKit
 import os
 import UIKit
 import UniformTypeIdentifiers
@@ -17,7 +17,7 @@ final class ShareViewController: UIViewController {
         var attachments: [ShareAttachment]
     }
 
-    private let logger = Logger(subsystem: "ai.openclaw.ios", category: "ShareExtension")
+    private let logger = Logger(subsystem: "ai.gensparx.ios", category: "ShareExtension")
     private var statusLabel: UILabel?
     private let draftTextView = UITextView()
     private let sendButton = UIButton(type: .system)
@@ -157,13 +157,13 @@ final class ShareViewController: UIViewController {
     private func sendMessageToGateway(_ message: String, attachments: [ShareAttachment]) async throws {
         guard let config = ShareGatewayRelaySettings.loadConfig() else {
             throw NSError(
-                domain: "OpenClawShare",
+                domain: "GensparxShare",
                 code: 10,
                 userInfo: [NSLocalizedDescriptionKey: "GenSparx is not connected to a gateway yet."])
         }
         guard let url = URL(string: config.gatewayURLString) else {
             throw NSError(
-                domain: "OpenClawShare",
+                domain: "GensparxShare",
                 code: 11,
                 userInfo: [NSLocalizedDescriptionKey: "Invalid saved gateway URL."])
         }
@@ -190,7 +190,7 @@ final class ShareViewController: UIViewController {
                 url: url,
                 token: config.token,
                 password: config.password,
-                connectOptions: makeOptions("openclaw-ios"),
+                connectOptions: makeOptions("gensparx-ios"),
                 sessionBox: nil,
                 onConnected: {},
                 onDisconnected: { _ in },
@@ -198,7 +198,7 @@ final class ShareViewController: UIViewController {
                     BridgeInvokeResponse(
                         id: req.id,
                         ok: false,
-                        error: OpenClawNodeError(
+                        error: GensparxNodeError(
                             code: .invalidRequest,
                             message: "share extension does not support node invoke"))
                 })
@@ -217,7 +217,7 @@ final class ShareViewController: UIViewController {
                     BridgeInvokeResponse(
                         id: req.id,
                         ok: false,
-                        error: OpenClawNodeError(
+                        error: GensparxNodeError(
                             code: .invalidRequest,
                             message: "share extension does not support node invoke"))
                 })
@@ -256,7 +256,7 @@ final class ShareViewController: UIViewController {
         let data = try JSONEncoder().encode(params)
         guard let json = String(data: data, encoding: .utf8) else {
             throw NSError(
-                domain: "OpenClawShare",
+                domain: "GensparxShare",
                 code: 12,
                 userInfo: [NSLocalizedDescriptionKey: "Failed to encode chat payload."])
         }
@@ -267,7 +267,7 @@ final class ShareViewController: UIViewController {
         let eventData = try JSONEncoder().encode(NodeEventParams(event: "agent.request", payloadJSON: json))
         guard let nodeEventParams = String(data: eventData, encoding: .utf8) else {
             throw NSError(
-                domain: "OpenClawShare",
+                domain: "GensparxShare",
                 code: 13,
                 userInfo: [NSLocalizedDescriptionKey: "Failed to encode node event payload."])
         }
@@ -546,4 +546,3 @@ final class ShareViewController: UIViewController {
         }
     }
 }
-

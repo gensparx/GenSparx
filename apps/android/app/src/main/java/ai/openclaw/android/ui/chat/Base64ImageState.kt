@@ -1,4 +1,4 @@
-package ai.openclaw.android.ui.chat
+package ai.gensparx.android.ui.chat
 
 import android.graphics.BitmapFactory
 import android.util.Base64

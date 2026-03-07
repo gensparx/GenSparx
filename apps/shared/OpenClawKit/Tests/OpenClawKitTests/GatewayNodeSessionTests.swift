@@ -1,7 +1,7 @@
 import Foundation
 import Testing
-@testable import OpenClawKit
-import OpenClawProtocol
+@testable import GensparxKit
+import GensparxProtocol
 
 private extension NSLock {
     func withLock<T>(_ body: () -> T) -> T {
@@ -229,7 +229,7 @@ struct GatewayNodeSessionTests {
             caps: [],
             commands: [],
             permissions: [:],
-            clientId: "openclaw-ios-test",
+            clientId: "gensparx-ios-test",
             clientMode: "ui",
             clientDisplayName: "iOS Test",
             includeDeviceIdentity: false)

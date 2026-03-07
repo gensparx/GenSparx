@@ -1,6 +1,6 @@
-package ai.openclaw.android.ui.chat
+package ai.gensparx.android.ui.chat
 
-import ai.openclaw.android.chat.ChatSessionEntry
+import ai.gensparx.android.chat.ChatSessionEntry
 
 private const val RECENT_WINDOW_MS = 24 * 60 * 60 * 1000L
 

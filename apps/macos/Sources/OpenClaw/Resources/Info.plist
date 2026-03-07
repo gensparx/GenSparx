@@ -7,7 +7,7 @@
     <key>CFBundleExecutable</key>
     <string>GenSparx</string>
     <key>CFBundleIdentifier</key>
-    <string>ai.openclaw.mac</string>
+    <string>ai.gensparx.mac</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
@@ -19,15 +19,15 @@
     <key>CFBundleVersion</key>
     <string>202603010</string>
     <key>CFBundleIconFile</key>
-    <string>OpenClaw</string>
+    <string>Gensparx</string>
     <key>CFBundleURLTypes</key>
     <array>
         <dict>
             <key>CFBundleURLName</key>
-            <string>ai.openclaw.mac.deeplink</string>
+            <string>ai.gensparx.mac.deeplink</string>
             <key>CFBundleURLSchemes</key>
             <array>
-                <string>openclaw</string>
+                <string>gensparx</string>
             </array>
         </dict>
     </array>
@@ -36,9 +36,9 @@
     <key>LSUIElement</key>
     <true/>
 
-    <key>OpenClawBuildTimestamp</key>
+    <key>GensparxBuildTimestamp</key>
     <string></string>
-    <key>OpenClawGitCommit</key>
+    <key>GensparxGitCommit</key>
     <string></string>
 
     <key>NSUserNotificationUsageDescription</key>

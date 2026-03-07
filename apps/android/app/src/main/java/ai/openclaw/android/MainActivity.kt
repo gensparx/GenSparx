@@ -1,4 +1,4 @@
-package ai.openclaw.android
+package ai.gensparx.android
 
 import android.os.Bundle
 import android.view.WindowManager
@@ -11,8 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import ai.openclaw.android.ui.RootScreen
-import ai.openclaw.android.ui.OpenClawTheme
+import ai.gensparx.android.ui.RootScreen
+import ai.gensparx.android.ui.GensparxTheme
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -44,7 +44,7 @@ class MainActivity : ComponentActivity() {
     }
 
     setContent {
-      OpenClawTheme {
+      GensparxTheme {
         Surface(modifier = Modifier) {
           RootScreen(viewModel = viewModel)
         }

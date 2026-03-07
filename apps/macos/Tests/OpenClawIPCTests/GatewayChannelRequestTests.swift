@@ -1,7 +1,7 @@
 import Foundation
-import OpenClawKit
+import GensparxKit
 import Testing
-@testable import OpenClaw
+@testable import Gensparx
 
 @Suite struct GatewayChannelRequestTests {
     private func makeSession(requestSendDelayMs: Int) -> GatewayTestWebSocketSession {

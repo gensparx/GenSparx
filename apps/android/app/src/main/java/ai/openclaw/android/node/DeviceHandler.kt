@@ -1,4 +1,4 @@
-package ai.openclaw.android.node
+package ai.gensparx.android.node
 
 import android.Manifest
 import android.app.ActivityManager
@@ -15,8 +15,8 @@ import android.os.PowerManager
 import android.os.StatFs
 import android.os.SystemClock
 import androidx.core.content.ContextCompat
-import ai.openclaw.android.BuildConfig
-import ai.openclaw.android.gateway.GatewaySession
+import ai.gensparx.android.BuildConfig
+import ai.gensparx.android.gateway.GatewaySession
 import java.util.Locale
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonArray

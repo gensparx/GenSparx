@@ -5,7 +5,7 @@ import CoreGraphics
 import CoreLocation
 import Foundation
 import Observation
-import OpenClawIPC
+import GensparxIPC
 import Speech
 import UserNotifications
 
@@ -349,14 +349,14 @@ final class LocationPermissionRequester: NSObject, CLLocationManagerDelegate {
 }
 
 enum AppleScriptPermission {
-    private static let logger = Logger(subsystem: "ai.openclaw", category: "AppleScriptPermission")
+    private static let logger = Logger(subsystem: "ai.gensparx", category: "AppleScriptPermission")
 
     /// Sends a benign AppleScript to Terminal to verify Automation permission.
     @MainActor
     static func isAuthorized() -> Bool {
         let script = """
         tell application "Terminal"
-            return "openclaw-ok"
+            return "gensparx-ok"
         end tell
         """
 

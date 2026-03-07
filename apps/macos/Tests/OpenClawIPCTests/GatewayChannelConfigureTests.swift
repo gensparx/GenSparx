@@ -1,8 +1,8 @@
 import Foundation
-import OpenClawKit
+import GensparxKit
 import os
 import Testing
-@testable import OpenClaw
+@testable import Gensparx
 
 @Suite struct GatewayConnectionTests {
     private func makeConnection(

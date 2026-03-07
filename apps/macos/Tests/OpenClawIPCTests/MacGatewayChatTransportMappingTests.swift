@@ -1,13 +1,13 @@
-import OpenClawChatUI
-import OpenClawProtocol
+import GensparxChatUI
+import GensparxProtocol
 import Testing
-@testable import OpenClaw
+@testable import Gensparx
 
 @Suite struct MacGatewayChatTransportMappingTests {
     @Test func snapshotMapsToHealth() {
         let snapshot = Snapshot(
             presence: [],
-            health: OpenClawProtocol.AnyCodable(["ok": OpenClawProtocol.AnyCodable(false)]),
+            health: GensparxProtocol.AnyCodable(["ok": GensparxProtocol.AnyCodable(false)]),
             stateversion: StateVersion(presence: 1, health: 1),
             uptimems: 123,
             configpath: nil,
@@ -39,7 +39,7 @@ import Testing
         let frame = EventFrame(
             type: "event",
             event: "health",
-            payload: OpenClawProtocol.AnyCodable(["ok": OpenClawProtocol.AnyCodable(true)]),
+            payload: GensparxProtocol.AnyCodable(["ok": GensparxProtocol.AnyCodable(true)]),
             seq: 1,
             stateversion: nil)
 
@@ -62,10 +62,10 @@ import Testing
     }
 
     @Test func chatEventMapsToChat() {
-        let payload = OpenClawProtocol.AnyCodable([
-            "runId": OpenClawProtocol.AnyCodable("run-1"),
-            "sessionKey": OpenClawProtocol.AnyCodable("main"),
-            "state": OpenClawProtocol.AnyCodable("final"),
+        let payload = GensparxProtocol.AnyCodable([
+            "runId": GensparxProtocol.AnyCodable("run-1"),
+            "sessionKey": GensparxProtocol.AnyCodable("main"),
+            "state": GensparxProtocol.AnyCodable("final"),
         ])
         let frame = EventFrame(type: "event", event: "chat", payload: payload, seq: 1, stateversion: nil)
         let mapped = MacGatewayChatTransport.mapPushToTransportEvent(.event(frame))
@@ -84,7 +84,7 @@ import Testing
         let frame = EventFrame(
             type: "event",
             event: "unknown",
-            payload: OpenClawProtocol.AnyCodable(["a": OpenClawProtocol.AnyCodable(1)]),
+            payload: GensparxProtocol.AnyCodable(["a": GensparxProtocol.AnyCodable(1)]),
             seq: 1,
             stateversion: nil)
         let mapped = MacGatewayChatTransport.mapPushToTransportEvent(.event(frame))

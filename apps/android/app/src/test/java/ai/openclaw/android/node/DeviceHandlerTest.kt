@@ -1,4 +1,4 @@
-package ai.openclaw.android.node
+package ai.gensparx.android.node
 
 import android.content.Context
 import kotlinx.serialization.json.Json

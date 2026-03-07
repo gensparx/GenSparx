@@ -1,6 +1,6 @@
-import OpenClawKit
+import GensparxKit
 import Testing
-@testable import OpenClaw
+@testable import Gensparx
 
 @Suite struct IOSGatewayChatTransportTests {
     @Test func requestsFailFastWhenGatewayNotConnected() async {

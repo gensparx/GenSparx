@@ -1,4 +1,4 @@
-package ai.openclaw.android
+package ai.gensparx.android
 
 import android.Manifest
 import android.content.Context
@@ -6,22 +6,22 @@ import android.content.pm.PackageManager
 import android.os.SystemClock
 import android.util.Log
 import androidx.core.content.ContextCompat
-import ai.openclaw.android.chat.ChatController
-import ai.openclaw.android.chat.ChatMessage
-import ai.openclaw.android.chat.ChatPendingToolCall
-import ai.openclaw.android.chat.ChatSessionEntry
-import ai.openclaw.android.chat.OutgoingAttachment
-import ai.openclaw.android.gateway.DeviceAuthStore
-import ai.openclaw.android.gateway.DeviceIdentityStore
-import ai.openclaw.android.gateway.GatewayDiscovery
-import ai.openclaw.android.gateway.GatewayEndpoint
-import ai.openclaw.android.gateway.GatewaySession
-import ai.openclaw.android.gateway.probeGatewayTlsFingerprint
-import ai.openclaw.android.node.*
-import ai.openclaw.android.protocol.OpenClawCanvasA2UIAction
-import ai.openclaw.android.voice.MicCaptureManager
-import ai.openclaw.android.voice.TalkModeManager
-import ai.openclaw.android.voice.VoiceConversationEntry
+import ai.gensparx.android.chat.ChatController
+import ai.gensparx.android.chat.ChatMessage
+import ai.gensparx.android.chat.ChatPendingToolCall
+import ai.gensparx.android.chat.ChatSessionEntry
+import ai.gensparx.android.chat.OutgoingAttachment
+import ai.gensparx.android.gateway.DeviceAuthStore
+import ai.gensparx.android.gateway.DeviceIdentityStore
+import ai.gensparx.android.gateway.GatewayDiscovery
+import ai.gensparx.android.gateway.GatewayEndpoint
+import ai.gensparx.android.gateway.GatewaySession
+import ai.gensparx.android.gateway.probeGatewayTlsFingerprint
+import ai.gensparx.android.node.*
+import ai.gensparx.android.protocol.GensparxCanvasA2UIAction
+import ai.gensparx.android.voice.MicCaptureManager
+import ai.gensparx.android.voice.TalkModeManager
+import ai.gensparx.android.voice.VoiceConversationEntry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -494,7 +494,7 @@ class NodeRuntime(context: Context) {
           _canvasRehydratePending.value = false
           _canvasRehydrateErrorText.value = "Failed to request restore. Tap to retry."
         }
-        Log.w("OpenClawCanvas", "canvas rehydrate request failed ($source): transport unavailable")
+        Log.w("GensparxCanvas", "canvas rehydrate request failed ($source): transport unavailable")
         return@launch
       }
       scope.launch {
@@ -794,7 +794,7 @@ class NodeRuntime(context: Context) {
       val actionId = (userActionObj["id"] as? JsonPrimitive)?.content?.trim().orEmpty().ifEmpty {
         java.util.UUID.randomUUID().toString()
       }
-      val name = OpenClawCanvasA2UIAction.extractActionName(userActionObj) ?: return@launch
+      val name = GensparxCanvasA2UIAction.extractActionName(userActionObj) ?: return@launch
 
       val surfaceId =
         (userActionObj["surfaceId"] as? JsonPrimitive)?.content?.trim().orEmpty().ifEmpty { "main" }
@@ -804,7 +804,7 @@ class NodeRuntime(context: Context) {
 
       val sessionKey = resolveMainSessionKey()
       val message =
-        OpenClawCanvasA2UIAction.formatAgentMessage(
+        GensparxCanvasA2UIAction.formatAgentMessage(
           actionName = name,
           sessionKey = sessionKey,
           surfaceId = surfaceId,
@@ -838,7 +838,7 @@ class NodeRuntime(context: Context) {
 
       try {
         canvas.eval(
-          OpenClawCanvasA2UIAction.jsDispatchA2UIActionStatus(
+          GensparxCanvasA2UIAction.jsDispatchA2UIActionStatus(
             actionId = actionId,
             ok = connected && error == null,
             error = error,

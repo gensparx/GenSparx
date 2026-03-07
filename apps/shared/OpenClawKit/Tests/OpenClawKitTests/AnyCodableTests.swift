@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-import OpenClawProtocol
+import GensparxProtocol
 
 struct AnyCodableTests {
     @Test

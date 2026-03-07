@@ -1,4 +1,4 @@
-package ai.openclaw.android.ui
+package ai.gensparx.android.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.BorderStroke
@@ -44,7 +44,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import ai.openclaw.android.MainViewModel
+import ai.gensparx.android.MainViewModel
 
 private enum class HomeTab(
   val label: String,
@@ -139,7 +139,7 @@ private fun ScreenTabScreen(viewModel: MainViewModel) {
   val canvasA2uiHydrated by viewModel.canvasA2uiHydrated.collectAsState()
   val canvasRehydratePending by viewModel.canvasRehydratePending.collectAsState()
   val canvasRehydrateErrorText by viewModel.canvasRehydrateErrorText.collectAsState()
-  val isA2uiUrl = canvasUrl?.contains("/__openclaw__/a2ui/") == true
+  val isA2uiUrl = canvasUrl?.contains("/__gensparx__/a2ui/") == true
   val showRestoreCta = isConnected && isNodeConnected && (canvasUrl.isNullOrBlank() || (isA2uiUrl && !canvasA2uiHydrated))
   val restoreCtaText =
     when {

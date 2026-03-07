@@ -1,11 +1,11 @@
 import Foundation
 import SwabbleKit
 import Testing
-@testable import OpenClaw
+@testable import Gensparx
 
 @Suite struct VoiceWakeRuntimeTests {
     @Test func trimsAfterTriggerKeepsPostSpeech() {
-        let triggers = ["claude", "openclaw"]
+        let triggers = ["claude", "gensparx"]
         let text = "hey Claude how are you"
         #expect(VoiceWakeRuntime._testTrimmedAfterTrigger(text, triggers: triggers) == "how are you")
     }
@@ -24,8 +24,8 @@ import Testing
     }
 
     @Test func hasContentAfterTriggerFalseWhenOnlyTrigger() {
-        let triggers = ["openclaw"]
-        let text = "hey openclaw"
+        let triggers = ["gensparx"]
+        let text = "hey gensparx"
         #expect(!VoiceWakeRuntime._testHasContentAfterTrigger(text, triggers: triggers))
     }
 
@@ -36,42 +36,42 @@ import Testing
     }
 
     @Test func trimsAfterChineseTriggerKeepsPostSpeech() {
-        let triggers = ["小爪", "openclaw"]
+        let triggers = ["小爪", "gensparx"]
         let text = "嘿 小爪 帮我打开设置"
         #expect(VoiceWakeRuntime._testTrimmedAfterTrigger(text, triggers: triggers) == "帮我打开设置")
     }
 
     @Test func trimsAfterTriggerHandlesWidthInsensitiveForms() {
-        let triggers = ["openclaw"]
+        let triggers = ["gensparx"]
         let text = "ＯｐｅｎＣｌａｗ 请帮我"
         #expect(VoiceWakeRuntime._testTrimmedAfterTrigger(text, triggers: triggers) == "请帮我")
     }
 
     @Test func gateRequiresGapBetweenTriggerAndCommand() {
-        let transcript = "hey openclaw do thing"
+        let transcript = "hey gensparx do thing"
         let segments = makeWakeWordSegments(
             transcript: transcript,
             words: [
                 ("hey", 0.0, 0.1),
-                ("openclaw", 0.2, 0.1),
+                ("gensparx", 0.2, 0.1),
                 ("do", 0.35, 0.1),
                 ("thing", 0.5, 0.1),
             ])
-        let config = WakeWordGateConfig(triggers: ["openclaw"], minPostTriggerGap: 0.3)
+        let config = WakeWordGateConfig(triggers: ["gensparx"], minPostTriggerGap: 0.3)
         #expect(WakeWordGate.match(transcript: transcript, segments: segments, config: config) == nil)
     }
 
     @Test func gateAcceptsGapAndExtractsCommand() {
-        let transcript = "hey openclaw do thing"
+        let transcript = "hey gensparx do thing"
         let segments = makeWakeWordSegments(
             transcript: transcript,
             words: [
                 ("hey", 0.0, 0.1),
-                ("openclaw", 0.2, 0.1),
+                ("gensparx", 0.2, 0.1),
                 ("do", 0.9, 0.1),
                 ("thing", 1.1, 0.1),
             ])
-        let config = WakeWordGateConfig(triggers: ["openclaw"], minPostTriggerGap: 0.3)
+        let config = WakeWordGateConfig(triggers: ["gensparx"], minPostTriggerGap: 0.3)
         #expect(WakeWordGate.match(transcript: transcript, segments: segments, config: config)?.command == "do thing")
     }
 }

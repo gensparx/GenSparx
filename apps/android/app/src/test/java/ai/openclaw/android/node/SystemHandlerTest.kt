@@ -1,4 +1,4 @@
-package ai.openclaw.android.node
+package ai.gensparx.android.node
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -10,7 +10,7 @@ class SystemHandlerTest {
   fun handleSystemNotify_rejectsUnauthorized() {
     val handler = SystemHandler.forTesting(poster = FakePoster(authorized = false))
 
-    val result = handler.handleSystemNotify("""{"title":"OpenClaw","body":"hi"}""")
+    val result = handler.handleSystemNotify("""{"title":"Gensparx","body":"hi"}""")
 
     assertFalse(result.ok)
     assertEquals("NOT_AUTHORIZED", result.error?.code)
@@ -31,7 +31,7 @@ class SystemHandlerTest {
     val poster = FakePoster(authorized = true)
     val handler = SystemHandler.forTesting(poster = poster)
 
-    val result = handler.handleSystemNotify("""{"title":"OpenClaw","body":"done","priority":"active"}""")
+    val result = handler.handleSystemNotify("""{"title":"Gensparx","body":"done","priority":"active"}""")
 
     assertTrue(result.ok)
     assertEquals(1, poster.posts)
@@ -41,7 +41,7 @@ class SystemHandlerTest {
   fun handleSystemNotify_returnsUnauthorizedWhenPostFailsPermission() {
     val handler = SystemHandler.forTesting(poster = ThrowingPoster(authorized = true, error = SecurityException("denied")))
 
-    val result = handler.handleSystemNotify("""{"title":"OpenClaw","body":"done"}""")
+    val result = handler.handleSystemNotify("""{"title":"Gensparx","body":"done"}""")
 
     assertFalse(result.ok)
     assertEquals("NOT_AUTHORIZED", result.error?.code)
@@ -51,7 +51,7 @@ class SystemHandlerTest {
   fun handleSystemNotify_returnsUnavailableWhenPostFailsUnexpectedly() {
     val handler = SystemHandler.forTesting(poster = ThrowingPoster(authorized = true, error = IllegalStateException("boom")))
 
-    val result = handler.handleSystemNotify("""{"title":"OpenClaw","body":"done"}""")
+    val result = handler.handleSystemNotify("""{"title":"Gensparx","body":"done"}""")
 
     assertFalse(result.ok)
     assertEquals("UNAVAILABLE", result.error?.code)

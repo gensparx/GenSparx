@@ -1,4 +1,4 @@
-package ai.openclaw.android.ui
+package ai.gensparx.android.ui
 
 import android.Manifest
 import android.app.Activity
@@ -66,9 +66,9 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import ai.openclaw.android.MainViewModel
-import ai.openclaw.android.voice.VoiceConversationEntry
-import ai.openclaw.android.voice.VoiceConversationRole
+import ai.gensparx.android.MainViewModel
+import ai.gensparx.android.voice.VoiceConversationEntry
+import ai.gensparx.android.voice.VoiceConversationRole
 import kotlin.math.max
 
 @Composable

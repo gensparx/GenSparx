@@ -1,4 +1,4 @@
-import OpenClawProtocol
+import GensparxProtocol
 import Foundation
 
 public enum GatewayPayloadDecoding {

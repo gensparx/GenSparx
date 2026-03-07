@@ -1,18 +1,18 @@
-package ai.openclaw.android.node
+package ai.gensparx.android.node
 
-import ai.openclaw.android.gateway.GatewaySession
-import ai.openclaw.android.protocol.OpenClawCalendarCommand
-import ai.openclaw.android.protocol.OpenClawCanvasA2UICommand
-import ai.openclaw.android.protocol.OpenClawCanvasCommand
-import ai.openclaw.android.protocol.OpenClawCameraCommand
-import ai.openclaw.android.protocol.OpenClawContactsCommand
-import ai.openclaw.android.protocol.OpenClawDeviceCommand
-import ai.openclaw.android.protocol.OpenClawLocationCommand
-import ai.openclaw.android.protocol.OpenClawMotionCommand
-import ai.openclaw.android.protocol.OpenClawNotificationsCommand
-import ai.openclaw.android.protocol.OpenClawScreenCommand
-import ai.openclaw.android.protocol.OpenClawSmsCommand
-import ai.openclaw.android.protocol.OpenClawSystemCommand
+import ai.gensparx.android.gateway.GatewaySession
+import ai.gensparx.android.protocol.GensparxCalendarCommand
+import ai.gensparx.android.protocol.GensparxCanvasA2UICommand
+import ai.gensparx.android.protocol.GensparxCanvasCommand
+import ai.gensparx.android.protocol.GensparxCameraCommand
+import ai.gensparx.android.protocol.GensparxContactsCommand
+import ai.gensparx.android.protocol.GensparxDeviceCommand
+import ai.gensparx.android.protocol.GensparxLocationCommand
+import ai.gensparx.android.protocol.GensparxMotionCommand
+import ai.gensparx.android.protocol.GensparxNotificationsCommand
+import ai.gensparx.android.protocol.GensparxScreenCommand
+import ai.gensparx.android.protocol.GensparxSmsCommand
+import ai.gensparx.android.protocol.GensparxSystemCommand
 
 class InvokeDispatcher(
   private val canvas: CanvasController,
@@ -58,18 +58,18 @@ class InvokeDispatcher(
 
     return when (command) {
       // Canvas commands
-      OpenClawCanvasCommand.Present.rawValue -> {
+      GensparxCanvasCommand.Present.rawValue -> {
         val url = CanvasController.parseNavigateUrl(paramsJson)
         canvas.navigate(url)
         GatewaySession.InvokeResult.ok(null)
       }
-      OpenClawCanvasCommand.Hide.rawValue -> GatewaySession.InvokeResult.ok(null)
-      OpenClawCanvasCommand.Navigate.rawValue -> {
+      GensparxCanvasCommand.Hide.rawValue -> GatewaySession.InvokeResult.ok(null)
+      GensparxCanvasCommand.Navigate.rawValue -> {
         val url = CanvasController.parseNavigateUrl(paramsJson)
         canvas.navigate(url)
         GatewaySession.InvokeResult.ok(null)
       }
-      OpenClawCanvasCommand.Eval.rawValue -> {
+      GensparxCanvasCommand.Eval.rawValue -> {
         val js =
           CanvasController.parseEvalJs(paramsJson)
             ?: return GatewaySession.InvokeResult.error(
@@ -81,7 +81,7 @@ class InvokeDispatcher(
           GatewaySession.InvokeResult.ok("""{"result":${result.toJsonString()}}""")
         }
       }
-      OpenClawCanvasCommand.Snapshot.rawValue -> {
+      GensparxCanvasCommand.Snapshot.rawValue -> {
         val snapshotParams = CanvasController.parseSnapshotParams(paramsJson)
         withCanvasAvailable {
           val base64 =
@@ -95,7 +95,7 @@ class InvokeDispatcher(
       }
 
       // A2UI commands
-      OpenClawCanvasA2UICommand.Reset.rawValue ->
+      GensparxCanvasA2UICommand.Reset.rawValue ->
         withReadyA2ui {
           withCanvasAvailable {
             val res = canvas.eval(A2UIHandler.a2uiResetJS)
@@ -103,7 +103,7 @@ class InvokeDispatcher(
             GatewaySession.InvokeResult.ok(res)
           }
         }
-      OpenClawCanvasA2UICommand.Push.rawValue, OpenClawCanvasA2UICommand.PushJSONL.rawValue -> {
+      GensparxCanvasA2UICommand.Push.rawValue, GensparxCanvasA2UICommand.PushJSONL.rawValue -> {
         val messages =
           try {
             a2uiHandler.decodeA2uiMessages(command, paramsJson)
@@ -124,48 +124,48 @@ class InvokeDispatcher(
       }
 
       // Camera commands
-      OpenClawCameraCommand.List.rawValue -> cameraHandler.handleList(paramsJson)
-      OpenClawCameraCommand.Snap.rawValue -> cameraHandler.handleSnap(paramsJson)
-      OpenClawCameraCommand.Clip.rawValue -> cameraHandler.handleClip(paramsJson)
+      GensparxCameraCommand.List.rawValue -> cameraHandler.handleList(paramsJson)
+      GensparxCameraCommand.Snap.rawValue -> cameraHandler.handleSnap(paramsJson)
+      GensparxCameraCommand.Clip.rawValue -> cameraHandler.handleClip(paramsJson)
 
       // Location command
-      OpenClawLocationCommand.Get.rawValue -> locationHandler.handleLocationGet(paramsJson)
+      GensparxLocationCommand.Get.rawValue -> locationHandler.handleLocationGet(paramsJson)
 
       // Device commands
-      OpenClawDeviceCommand.Status.rawValue -> deviceHandler.handleDeviceStatus(paramsJson)
-      OpenClawDeviceCommand.Info.rawValue -> deviceHandler.handleDeviceInfo(paramsJson)
-      OpenClawDeviceCommand.Permissions.rawValue -> deviceHandler.handleDevicePermissions(paramsJson)
-      OpenClawDeviceCommand.Health.rawValue -> deviceHandler.handleDeviceHealth(paramsJson)
+      GensparxDeviceCommand.Status.rawValue -> deviceHandler.handleDeviceStatus(paramsJson)
+      GensparxDeviceCommand.Info.rawValue -> deviceHandler.handleDeviceInfo(paramsJson)
+      GensparxDeviceCommand.Permissions.rawValue -> deviceHandler.handleDevicePermissions(paramsJson)
+      GensparxDeviceCommand.Health.rawValue -> deviceHandler.handleDeviceHealth(paramsJson)
 
       // Notifications command
-      OpenClawNotificationsCommand.List.rawValue -> notificationsHandler.handleNotificationsList(paramsJson)
-      OpenClawNotificationsCommand.Actions.rawValue -> notificationsHandler.handleNotificationsActions(paramsJson)
+      GensparxNotificationsCommand.List.rawValue -> notificationsHandler.handleNotificationsList(paramsJson)
+      GensparxNotificationsCommand.Actions.rawValue -> notificationsHandler.handleNotificationsActions(paramsJson)
 
       // System command
-      OpenClawSystemCommand.Notify.rawValue -> systemHandler.handleSystemNotify(paramsJson)
+      GensparxSystemCommand.Notify.rawValue -> systemHandler.handleSystemNotify(paramsJson)
 
       // Photos command
-      ai.openclaw.android.protocol.OpenClawPhotosCommand.Latest.rawValue -> photosHandler.handlePhotosLatest(
+      ai.gensparx.android.protocol.GensparxPhotosCommand.Latest.rawValue -> photosHandler.handlePhotosLatest(
         paramsJson,
       )
 
       // Contacts command
-      OpenClawContactsCommand.Search.rawValue -> contactsHandler.handleContactsSearch(paramsJson)
-      OpenClawContactsCommand.Add.rawValue -> contactsHandler.handleContactsAdd(paramsJson)
+      GensparxContactsCommand.Search.rawValue -> contactsHandler.handleContactsSearch(paramsJson)
+      GensparxContactsCommand.Add.rawValue -> contactsHandler.handleContactsAdd(paramsJson)
 
       // Calendar command
-      OpenClawCalendarCommand.Events.rawValue -> calendarHandler.handleCalendarEvents(paramsJson)
-      OpenClawCalendarCommand.Add.rawValue -> calendarHandler.handleCalendarAdd(paramsJson)
+      GensparxCalendarCommand.Events.rawValue -> calendarHandler.handleCalendarEvents(paramsJson)
+      GensparxCalendarCommand.Add.rawValue -> calendarHandler.handleCalendarAdd(paramsJson)
 
       // Motion command
-      OpenClawMotionCommand.Activity.rawValue -> motionHandler.handleMotionActivity(paramsJson)
-      OpenClawMotionCommand.Pedometer.rawValue -> motionHandler.handleMotionPedometer(paramsJson)
+      GensparxMotionCommand.Activity.rawValue -> motionHandler.handleMotionActivity(paramsJson)
+      GensparxMotionCommand.Pedometer.rawValue -> motionHandler.handleMotionPedometer(paramsJson)
 
       // Screen command
-      OpenClawScreenCommand.Record.rawValue -> screenHandler.handleScreenRecord(paramsJson)
+      GensparxScreenCommand.Record.rawValue -> screenHandler.handleScreenRecord(paramsJson)
 
       // SMS command
-      OpenClawSmsCommand.Send.rawValue -> smsHandler.handleSmsSend(paramsJson)
+      GensparxSmsCommand.Send.rawValue -> smsHandler.handleSmsSend(paramsJson)
 
       // Debug commands
       "debug.ed25519" -> debugHandler.handleEd25519()

@@ -1,16 +1,16 @@
 import Foundation
 import Testing
-@testable import OpenClaw
+@testable import Gensparx
 
 @Suite struct GatewayLaunchAgentManagerTests {
     @Test func launchAgentPlistSnapshotParsesArgsAndEnv() throws {
         let url = FileManager().temporaryDirectory
-            .appendingPathComponent("openclaw-launchd-\(UUID().uuidString).plist")
+            .appendingPathComponent("gensparx-launchd-\(UUID().uuidString).plist")
         let plist: [String: Any] = [
-            "ProgramArguments": ["openclaw", "gateway-daemon", "--port", "18789", "--bind", "loopback"],
+            "ProgramArguments": ["gensparx", "gateway-daemon", "--port", "18789", "--bind", "loopback"],
             "EnvironmentVariables": [
-                "OPENCLAW_GATEWAY_TOKEN": " secret ",
-                "OPENCLAW_GATEWAY_PASSWORD": "pw",
+                "GENSPARX_GATEWAY_TOKEN": " secret ",
+                "GENSPARX_GATEWAY_PASSWORD": "pw",
             ],
         ]
         let data = try PropertyListSerialization.data(fromPropertyList: plist, format: .xml, options: 0)
@@ -26,9 +26,9 @@ import Testing
 
     @Test func launchAgentPlistSnapshotAllowsMissingBind() throws {
         let url = FileManager().temporaryDirectory
-            .appendingPathComponent("openclaw-launchd-\(UUID().uuidString).plist")
+            .appendingPathComponent("gensparx-launchd-\(UUID().uuidString).plist")
         let plist: [String: Any] = [
-            "ProgramArguments": ["openclaw", "gateway-daemon", "--port", "18789"],
+            "ProgramArguments": ["gensparx", "gateway-daemon", "--port", "18789"],
         ]
         let data = try PropertyListSerialization.data(fromPropertyList: plist, format: .xml, options: 0)
         try data.write(to: url, options: [.atomic])

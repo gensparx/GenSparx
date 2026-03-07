@@ -54,14 +54,14 @@ enum AppLogLevel: String, CaseIterable, Identifiable {
     }
 }
 
-enum OpenClawLogging {
+enum GensparxLogging {
     private static let labelSeparator = "::"
 
     private static let didBootstrap: Void = {
         LoggingSystem.bootstrap { label in
             let (subsystem, category) = Self.parseLabel(label)
-            let osHandler = OpenClawOSLogHandler(subsystem: subsystem, category: category)
-            let fileHandler = OpenClawFileLogHandler(label: label)
+            let osHandler = GensparxOSLogHandler(subsystem: subsystem, category: category)
+            let fileHandler = GensparxFileLogHandler(label: label)
             return MultiplexLogHandler([osHandler, fileHandler])
         }
     }()
@@ -76,7 +76,7 @@ enum OpenClawLogging {
 
     static func parseLabel(_ label: String) -> (String, String) {
         guard let range = label.range(of: labelSeparator) else {
-            return ("ai.openclaw", label)
+            return ("ai.gensparx", label)
         }
         let subsystem = String(label[..<range.lowerBound])
         let category = String(label[range.upperBound...])
@@ -86,8 +86,8 @@ enum OpenClawLogging {
 
 extension Logging.Logger {
     init(subsystem: String, category: String) {
-        OpenClawLogging.bootstrapIfNeeded()
-        let label = OpenClawLogging.makeLabel(subsystem: subsystem, category: category)
+        GensparxLogging.bootstrapIfNeeded()
+        let label = GensparxLogging.makeLabel(subsystem: subsystem, category: category)
         self.init(label: label)
     }
 }
@@ -127,7 +127,7 @@ extension AppLogLevelBackedHandler {
     }
 }
 
-struct OpenClawOSLogHandler: AppLogLevelBackedHandler {
+struct GensparxOSLogHandler: AppLogLevelBackedHandler {
     private let osLogger: os.Logger
     var metadata: Logger.Metadata = [:]
 
@@ -182,7 +182,7 @@ struct OpenClawOSLogHandler: AppLogLevelBackedHandler {
     }
 }
 
-struct OpenClawFileLogHandler: AppLogLevelBackedHandler {
+struct GensparxFileLogHandler: AppLogLevelBackedHandler {
     let label: String
     var metadata: Logger.Metadata = [:]
 
@@ -196,7 +196,7 @@ struct OpenClawFileLogHandler: AppLogLevelBackedHandler {
         line: UInt)
     {
         guard AppLogSettings.fileLoggingEnabled() else { return }
-        let (subsystem, category) = OpenClawLogging.parseLabel(self.label)
+        let (subsystem, category) = GensparxLogging.parseLabel(self.label)
         var fields: [String: String] = [
             "subsystem": subsystem,
             "category": category,

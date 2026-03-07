@@ -6,7 +6,7 @@ import CryptoKit
 import EventKit
 import Foundation
 import Darwin
-import OpenClawKit
+import GensparxKit
 import Network
 import Observation
 import os
@@ -755,7 +755,7 @@ final class GatewayConnectionController {
         if manualClientId?.isEmpty == false {
             return manualClientId!
         }
-        return "openclaw-ios"
+        return "gensparx-ios"
     }
 
     private func resolveManualPort(host: String, port: Int, useTLS: Bool) -> Int? {
@@ -785,32 +785,32 @@ final class GatewayConnectionController {
     }
 
     private func currentCaps() -> [String] {
-        var caps = [OpenClawCapability.canvas.rawValue, OpenClawCapability.screen.rawValue]
+        var caps = [GensparxCapability.canvas.rawValue, GensparxCapability.screen.rawValue]
 
         // Default-on: if the key doesn't exist yet, treat it as enabled.
         let cameraEnabled =
             UserDefaults.standard.object(forKey: "camera.enabled") == nil
                 ? true
                 : UserDefaults.standard.bool(forKey: "camera.enabled")
-        if cameraEnabled { caps.append(OpenClawCapability.camera.rawValue) }
+        if cameraEnabled { caps.append(GensparxCapability.camera.rawValue) }
 
         let voiceWakeEnabled = UserDefaults.standard.bool(forKey: VoiceWakePreferences.enabledKey)
-        if voiceWakeEnabled { caps.append(OpenClawCapability.voiceWake.rawValue) }
+        if voiceWakeEnabled { caps.append(GensparxCapability.voiceWake.rawValue) }
 
         let locationModeRaw = UserDefaults.standard.string(forKey: "location.enabledMode") ?? "off"
-        let locationMode = OpenClawLocationMode(rawValue: locationModeRaw) ?? .off
-        if locationMode != .off { caps.append(OpenClawCapability.location.rawValue) }
+        let locationMode = GensparxLocationMode(rawValue: locationModeRaw) ?? .off
+        if locationMode != .off { caps.append(GensparxCapability.location.rawValue) }
 
-        caps.append(OpenClawCapability.device.rawValue)
+        caps.append(GensparxCapability.device.rawValue)
         if WatchMessagingService.isSupportedOnDevice() {
-            caps.append(OpenClawCapability.watch.rawValue)
+            caps.append(GensparxCapability.watch.rawValue)
         }
-        caps.append(OpenClawCapability.photos.rawValue)
-        caps.append(OpenClawCapability.contacts.rawValue)
-        caps.append(OpenClawCapability.calendar.rawValue)
-        caps.append(OpenClawCapability.reminders.rawValue)
+        caps.append(GensparxCapability.photos.rawValue)
+        caps.append(GensparxCapability.contacts.rawValue)
+        caps.append(GensparxCapability.calendar.rawValue)
+        caps.append(GensparxCapability.reminders.rawValue)
         if Self.motionAvailable() {
-            caps.append(OpenClawCapability.motion.rawValue)
+            caps.append(GensparxCapability.motion.rawValue)
         }
 
         return caps
@@ -818,58 +818,58 @@ final class GatewayConnectionController {
 
     private func currentCommands() -> [String] {
         var commands: [String] = [
-            OpenClawCanvasCommand.present.rawValue,
-            OpenClawCanvasCommand.hide.rawValue,
-            OpenClawCanvasCommand.navigate.rawValue,
-            OpenClawCanvasCommand.evalJS.rawValue,
-            OpenClawCanvasCommand.snapshot.rawValue,
-            OpenClawCanvasA2UICommand.push.rawValue,
-            OpenClawCanvasA2UICommand.pushJSONL.rawValue,
-            OpenClawCanvasA2UICommand.reset.rawValue,
-            OpenClawScreenCommand.record.rawValue,
-            OpenClawSystemCommand.notify.rawValue,
-            OpenClawChatCommand.push.rawValue,
-            OpenClawTalkCommand.pttStart.rawValue,
-            OpenClawTalkCommand.pttStop.rawValue,
-            OpenClawTalkCommand.pttCancel.rawValue,
-            OpenClawTalkCommand.pttOnce.rawValue,
+            GensparxCanvasCommand.present.rawValue,
+            GensparxCanvasCommand.hide.rawValue,
+            GensparxCanvasCommand.navigate.rawValue,
+            GensparxCanvasCommand.evalJS.rawValue,
+            GensparxCanvasCommand.snapshot.rawValue,
+            GensparxCanvasA2UICommand.push.rawValue,
+            GensparxCanvasA2UICommand.pushJSONL.rawValue,
+            GensparxCanvasA2UICommand.reset.rawValue,
+            GensparxScreenCommand.record.rawValue,
+            GensparxSystemCommand.notify.rawValue,
+            GensparxChatCommand.push.rawValue,
+            GensparxTalkCommand.pttStart.rawValue,
+            GensparxTalkCommand.pttStop.rawValue,
+            GensparxTalkCommand.pttCancel.rawValue,
+            GensparxTalkCommand.pttOnce.rawValue,
         ]
 
         let caps = Set(self.currentCaps())
-        if caps.contains(OpenClawCapability.camera.rawValue) {
-            commands.append(OpenClawCameraCommand.list.rawValue)
-            commands.append(OpenClawCameraCommand.snap.rawValue)
-            commands.append(OpenClawCameraCommand.clip.rawValue)
+        if caps.contains(GensparxCapability.camera.rawValue) {
+            commands.append(GensparxCameraCommand.list.rawValue)
+            commands.append(GensparxCameraCommand.snap.rawValue)
+            commands.append(GensparxCameraCommand.clip.rawValue)
         }
-        if caps.contains(OpenClawCapability.location.rawValue) {
-            commands.append(OpenClawLocationCommand.get.rawValue)
+        if caps.contains(GensparxCapability.location.rawValue) {
+            commands.append(GensparxLocationCommand.get.rawValue)
         }
-        if caps.contains(OpenClawCapability.device.rawValue) {
-            commands.append(OpenClawDeviceCommand.status.rawValue)
-            commands.append(OpenClawDeviceCommand.info.rawValue)
+        if caps.contains(GensparxCapability.device.rawValue) {
+            commands.append(GensparxDeviceCommand.status.rawValue)
+            commands.append(GensparxDeviceCommand.info.rawValue)
         }
-        if caps.contains(OpenClawCapability.watch.rawValue) {
-            commands.append(OpenClawWatchCommand.status.rawValue)
-            commands.append(OpenClawWatchCommand.notify.rawValue)
+        if caps.contains(GensparxCapability.watch.rawValue) {
+            commands.append(GensparxWatchCommand.status.rawValue)
+            commands.append(GensparxWatchCommand.notify.rawValue)
         }
-        if caps.contains(OpenClawCapability.photos.rawValue) {
-            commands.append(OpenClawPhotosCommand.latest.rawValue)
+        if caps.contains(GensparxCapability.photos.rawValue) {
+            commands.append(GensparxPhotosCommand.latest.rawValue)
         }
-        if caps.contains(OpenClawCapability.contacts.rawValue) {
-            commands.append(OpenClawContactsCommand.search.rawValue)
-            commands.append(OpenClawContactsCommand.add.rawValue)
+        if caps.contains(GensparxCapability.contacts.rawValue) {
+            commands.append(GensparxContactsCommand.search.rawValue)
+            commands.append(GensparxContactsCommand.add.rawValue)
         }
-        if caps.contains(OpenClawCapability.calendar.rawValue) {
-            commands.append(OpenClawCalendarCommand.events.rawValue)
-            commands.append(OpenClawCalendarCommand.add.rawValue)
+        if caps.contains(GensparxCapability.calendar.rawValue) {
+            commands.append(GensparxCalendarCommand.events.rawValue)
+            commands.append(GensparxCalendarCommand.add.rawValue)
         }
-        if caps.contains(OpenClawCapability.reminders.rawValue) {
-            commands.append(OpenClawRemindersCommand.list.rawValue)
-            commands.append(OpenClawRemindersCommand.add.rawValue)
+        if caps.contains(GensparxCapability.reminders.rawValue) {
+            commands.append(GensparxRemindersCommand.list.rawValue)
+            commands.append(GensparxRemindersCommand.add.rawValue)
         }
-        if caps.contains(OpenClawCapability.motion.rawValue) {
-            commands.append(OpenClawMotionCommand.activity.rawValue)
-            commands.append(OpenClawMotionCommand.pedometer.rawValue)
+        if caps.contains(GensparxCapability.motion.rawValue) {
+            commands.append(GensparxMotionCommand.activity.rawValue)
+            commands.append(GensparxMotionCommand.pedometer.rawValue)
         }
 
         return commands

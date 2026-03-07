@@ -1,4 +1,4 @@
-package ai.openclaw.android.node
+package ai.gensparx.android.node
 
 import android.Manifest
 import android.app.NotificationChannel
@@ -9,13 +9,13 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import ai.openclaw.android.gateway.GatewaySession
+import ai.gensparx.android.gateway.GatewaySession
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 
-private const val NOTIFICATION_CHANNEL_BASE_ID = "openclaw.system.notify"
+private const val NOTIFICATION_CHANNEL_BASE_ID = "gensparx.system.notify"
 
 internal data class SystemNotifyRequest(
   val title: String,

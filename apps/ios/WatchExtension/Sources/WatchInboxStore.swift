@@ -217,7 +217,7 @@ struct WatchNotifyMessage: Sendable {
         content.title = title
         content.body = body
         content.sound = .default
-        content.threadIdentifier = "openclaw-watch"
+        content.threadIdentifier = "gensparx-watch"
 
         let request = UNNotificationRequest(
             identifier: identifier,
@@ -228,4 +228,3 @@ struct WatchNotifyMessage: Sendable {
         WKInterfaceDevice.current().play(self.mapHapticRisk(risk))
     }
 }
-

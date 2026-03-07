@@ -1,5 +1,5 @@
 import Foundation
-import OpenClawIPC
+import GensparxIPC
 import Testing
 
 @Suite struct CameraIPCTests {

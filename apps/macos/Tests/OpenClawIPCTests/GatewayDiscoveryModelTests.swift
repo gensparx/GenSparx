@@ -1,4 +1,4 @@
-@testable import OpenClawDiscovery
+@testable import GensparxDiscovery
 import Testing
 
 @Suite
@@ -35,7 +35,7 @@ struct GatewayDiscoveryModelTests {
         #expect(GatewayDiscoveryModel.isLocalGateway(
             lanHost: nil,
             tailnetDns: nil,
-            displayName: "Peter's Mac Studio (OpenClaw)",
+            displayName: "Peter's Mac Studio (Gensparx)",
             serviceName: nil,
             local: local))
     }
@@ -72,13 +72,13 @@ struct GatewayDiscoveryModelTests {
             lanHost: nil,
             tailnetDns: nil,
             displayName: nil,
-            serviceName: "steipetacstudio (OpenClaw)",
+            serviceName: "steipetacstudio (Gensparx)",
             local: local))
         #expect(GatewayDiscoveryModel.isLocalGateway(
             lanHost: nil,
             tailnetDns: nil,
             displayName: nil,
-            serviceName: "steipete (OpenClaw)",
+            serviceName: "steipete (Gensparx)",
             local: local))
     }
 
@@ -88,13 +88,13 @@ struct GatewayDiscoveryModelTests {
             "tailnetDns": "  peters-mac-studio-1.ts.net  ",
             "sshPort": " 2222 ",
             "gatewayPort": " 18799 ",
-            "cliPath": " /opt/openclaw ",
+            "cliPath": " /opt/gensparx ",
         ])
         #expect(parsed.lanHost == "studio.local")
         #expect(parsed.tailnetDns == "peters-mac-studio-1.ts.net")
         #expect(parsed.sshPort == 2222)
         #expect(parsed.gatewayPort == 18799)
-        #expect(parsed.cliPath == "/opt/openclaw")
+        #expect(parsed.cliPath == "/opt/gensparx")
     }
 
     @Test func parsesGatewayTXTDefaults() {
@@ -132,7 +132,7 @@ struct GatewayDiscoveryModelTests {
             sshPort: 22,
             gatewayPort: 443,
             cliPath: nil,
-            stableID: "wide-area|openclaw.internal.|gateway-host",
+            stableID: "wide-area|gensparx.internal.|gateway-host",
             debugID: "wide-area",
             isLocal: false)
         let serve = GatewayDiscoveryModel.DiscoveredGateway(

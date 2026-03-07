@@ -1,4 +1,4 @@
-package ai.openclaw.android.voice
+package ai.gensparx.android.voice
 
 import android.Manifest
 import android.content.Context

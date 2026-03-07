@@ -1,4 +1,4 @@
-package ai.openclaw.android.node
+package ai.gensparx.android.node
 
 import android.Manifest
 import android.content.Context
@@ -8,7 +8,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.SystemClock
 import androidx.core.content.ContextCompat
-import ai.openclaw.android.gateway.GatewaySession
+import ai.gensparx.android.gateway.GatewaySession
 import java.time.Instant
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull

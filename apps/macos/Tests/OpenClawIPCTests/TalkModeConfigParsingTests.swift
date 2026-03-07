@@ -1,6 +1,6 @@
-import OpenClawProtocol
+import GensparxProtocol
 import Testing
-@testable import OpenClaw
+@testable import Gensparx
 
 @Suite struct TalkModeConfigParsingTests {
     @Test func prefersNormalizedTalkProviderPayload() {

@@ -1,8 +1,8 @@
 import Foundation
-import OpenClawProtocol
+import GensparxProtocol
 
 public enum GatewayConnectChallengeSupport {
-    public static func nonce(from payload: [String: OpenClawProtocol.AnyCodable]?) -> String? {
+    public static func nonce(from payload: [String: GensparxProtocol.AnyCodable]?) -> String? {
         guard let nonce = payload?["nonce"]?.value as? String else { return nil }
         let trimmed = nonce.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return nil }

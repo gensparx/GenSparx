@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import OpenClawDiscovery
+@testable import GensparxDiscovery
 
 @Suite
 struct TailscaleServeGatewayDiscoveryTests {

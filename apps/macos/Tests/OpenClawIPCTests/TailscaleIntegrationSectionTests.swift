@@ -1,6 +1,6 @@
 import SwiftUI
 import Testing
-@testable import OpenClaw
+@testable import Gensparx
 
 @Suite(.serialized)
 @MainActor
@@ -17,7 +17,7 @@ struct TailscaleIntegrationSectionTests {
         let service = TailscaleService(
             isInstalled: true,
             isRunning: true,
-            tailscaleHostname: "openclaw.tailnet.ts.net",
+            tailscaleHostname: "gensparx.tailnet.ts.net",
             tailscaleIP: "100.64.0.1")
         var view = TailscaleIntegrationSection(connectionMode: .local, isPaused: false)
         view.setTestingService(service)

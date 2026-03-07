@@ -1,8 +1,8 @@
 import AppKit
-import OpenClawProtocol
+import GensparxProtocol
 import SwiftUI
 import Testing
-@testable import OpenClaw
+@testable import Gensparx
 
 @Suite(.serialized)
 @MainActor

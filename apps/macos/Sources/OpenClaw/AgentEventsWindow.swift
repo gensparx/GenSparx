@@ -1,4 +1,4 @@
-import OpenClawProtocol
+import GensparxProtocol
 import SwiftUI
 
 @MainActor
@@ -81,7 +81,7 @@ private struct EventRow: View {
         return f.string(from: date)
     }
 
-    private func prettyJSON(_ dict: [String: OpenClawProtocol.AnyCodable]) -> String? {
+    private func prettyJSON(_ dict: [String: GensparxProtocol.AnyCodable]) -> String? {
         let normalized = dict.mapValues { $0.value }
         guard JSONSerialization.isValidJSONObject(normalized),
               let data = try? JSONSerialization.data(withJSONObject: normalized, options: [.prettyPrinted]),
@@ -99,8 +99,8 @@ struct AgentEventsWindow_Previews: PreviewProvider {
             stream: "tool",
             ts: Date().timeIntervalSince1970 * 1000,
             data: [
-                "phase": OpenClawProtocol.AnyCodable("start"),
-                "name": OpenClawProtocol.AnyCodable("bash"),
+                "phase": GensparxProtocol.AnyCodable("start"),
+                "name": GensparxProtocol.AnyCodable("bash"),
             ],
             summary: nil)
         AgentEventStore.shared.append(sample)

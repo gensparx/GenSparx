@@ -1,5 +1,5 @@
-import OpenClawKit
-import OpenClawProtocol
+import GensparxKit
+import GensparxProtocol
 
-typealias ProtoAnyCodable = OpenClawProtocol.AnyCodable
-typealias KitAnyCodable = OpenClawKit.AnyCodable
+typealias ProtoAnyCodable = GensparxProtocol.AnyCodable
+typealias KitAnyCodable = GensparxKit.AnyCodable

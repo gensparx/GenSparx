@@ -1,5 +1,5 @@
 import Testing
-@testable import OpenClaw
+@testable import Gensparx
 
 struct VoiceWakeHelpersTests {
     @Test func sanitizeTriggersTrimsAndDropsEmpty() {

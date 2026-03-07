@@ -1,11 +1,11 @@
 import Foundation
 
-public enum OpenClawContactsCommand: String, Codable, Sendable {
+public enum GensparxContactsCommand: String, Codable, Sendable {
     case search = "contacts.search"
     case add = "contacts.add"
 }
 
-public struct OpenClawContactsSearchParams: Codable, Sendable, Equatable {
+public struct GensparxContactsSearchParams: Codable, Sendable, Equatable {
     public var query: String?
     public var limit: Int?
 
@@ -15,7 +15,7 @@ public struct OpenClawContactsSearchParams: Codable, Sendable, Equatable {
     }
 }
 
-public struct OpenClawContactsAddParams: Codable, Sendable, Equatable {
+public struct GensparxContactsAddParams: Codable, Sendable, Equatable {
     public var givenName: String?
     public var familyName: String?
     public var organizationName: String?
@@ -40,7 +40,7 @@ public struct OpenClawContactsAddParams: Codable, Sendable, Equatable {
     }
 }
 
-public struct OpenClawContactPayload: Codable, Sendable, Equatable {
+public struct GensparxContactPayload: Codable, Sendable, Equatable {
     public var identifier: String
     public var displayName: String
     public var givenName: String
@@ -68,18 +68,18 @@ public struct OpenClawContactPayload: Codable, Sendable, Equatable {
     }
 }
 
-public struct OpenClawContactsSearchPayload: Codable, Sendable, Equatable {
-    public var contacts: [OpenClawContactPayload]
+public struct GensparxContactsSearchPayload: Codable, Sendable, Equatable {
+    public var contacts: [GensparxContactPayload]
 
-    public init(contacts: [OpenClawContactPayload]) {
+    public init(contacts: [GensparxContactPayload]) {
         self.contacts = contacts
     }
 }
 
-public struct OpenClawContactsAddPayload: Codable, Sendable, Equatable {
-    public var contact: OpenClawContactPayload
+public struct GensparxContactsAddPayload: Codable, Sendable, Equatable {
+    public var contact: GensparxContactPayload
 
-    public init(contact: OpenClawContactPayload) {
+    public init(contact: GensparxContactPayload) {
         self.contact = contact
     }
 }

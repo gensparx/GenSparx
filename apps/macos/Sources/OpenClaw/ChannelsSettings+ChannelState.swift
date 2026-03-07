@@ -1,4 +1,4 @@
-import OpenClawProtocol
+import GensparxProtocol
 import SwiftUI
 
 extension ChannelsSettings {

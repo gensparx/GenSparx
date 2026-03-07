@@ -1,5 +1,5 @@
 import Foundation
-import OpenClawProtocol
+import GensparxProtocol
 
 extension ChannelsStore {
     func start() {

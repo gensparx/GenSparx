@@ -1,5 +1,5 @@
 import Testing
-@testable import OpenClawKit
+@testable import GensparxKit
 
 @Suite("DeviceAuthPayload")
 struct DeviceAuthPayloadTests {
@@ -7,7 +7,7 @@ struct DeviceAuthPayloadTests {
     func buildsCanonicalV3PayloadVector() {
         let payload = GatewayDeviceAuthPayload.buildV3(
             deviceId: "dev-1",
-            clientId: "openclaw-macos",
+            clientId: "gensparx-macos",
             clientMode: "ui",
             role: "operator",
             scopes: ["operator.admin", "operator.read"],
@@ -18,7 +18,7 @@ struct DeviceAuthPayloadTests {
             deviceFamily: "  iPhone  ")
         #expect(
             payload
-                == "v3|dev-1|openclaw-macos|ui|operator|operator.admin,operator.read|1700000000000|tok-123|nonce-abc|ios|iphone")
+                == "v3|dev-1|gensparx-macos|ui|operator|operator.admin,operator.read|1700000000000|tok-123|nonce-abc|ios|iphone")
     }
 
     @Test("normalizes metadata with ASCII-only lowercase")

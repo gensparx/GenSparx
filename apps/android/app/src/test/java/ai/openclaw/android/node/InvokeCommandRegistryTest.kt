@@ -1,16 +1,16 @@
-package ai.openclaw.android.node
+package ai.gensparx.android.node
 
-import ai.openclaw.android.protocol.OpenClawCalendarCommand
-import ai.openclaw.android.protocol.OpenClawCameraCommand
-import ai.openclaw.android.protocol.OpenClawCapability
-import ai.openclaw.android.protocol.OpenClawContactsCommand
-import ai.openclaw.android.protocol.OpenClawDeviceCommand
-import ai.openclaw.android.protocol.OpenClawLocationCommand
-import ai.openclaw.android.protocol.OpenClawMotionCommand
-import ai.openclaw.android.protocol.OpenClawNotificationsCommand
-import ai.openclaw.android.protocol.OpenClawPhotosCommand
-import ai.openclaw.android.protocol.OpenClawSmsCommand
-import ai.openclaw.android.protocol.OpenClawSystemCommand
+import ai.gensparx.android.protocol.GensparxCalendarCommand
+import ai.gensparx.android.protocol.GensparxCameraCommand
+import ai.gensparx.android.protocol.GensparxCapability
+import ai.gensparx.android.protocol.GensparxContactsCommand
+import ai.gensparx.android.protocol.GensparxDeviceCommand
+import ai.gensparx.android.protocol.GensparxLocationCommand
+import ai.gensparx.android.protocol.GensparxMotionCommand
+import ai.gensparx.android.protocol.GensparxNotificationsCommand
+import ai.gensparx.android.protocol.GensparxPhotosCommand
+import ai.gensparx.android.protocol.GensparxSmsCommand
+import ai.gensparx.android.protocol.GensparxSystemCommand
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -18,52 +18,52 @@ import org.junit.Test
 class InvokeCommandRegistryTest {
   private val coreCapabilities =
     setOf(
-      OpenClawCapability.Canvas.rawValue,
-      OpenClawCapability.Screen.rawValue,
-      OpenClawCapability.Device.rawValue,
-      OpenClawCapability.Notifications.rawValue,
-      OpenClawCapability.System.rawValue,
-      OpenClawCapability.AppUpdate.rawValue,
-      OpenClawCapability.Photos.rawValue,
-      OpenClawCapability.Contacts.rawValue,
-      OpenClawCapability.Calendar.rawValue,
+      GensparxCapability.Canvas.rawValue,
+      GensparxCapability.Screen.rawValue,
+      GensparxCapability.Device.rawValue,
+      GensparxCapability.Notifications.rawValue,
+      GensparxCapability.System.rawValue,
+      GensparxCapability.AppUpdate.rawValue,
+      GensparxCapability.Photos.rawValue,
+      GensparxCapability.Contacts.rawValue,
+      GensparxCapability.Calendar.rawValue,
     )
 
   private val optionalCapabilities =
     setOf(
-      OpenClawCapability.Camera.rawValue,
-      OpenClawCapability.Location.rawValue,
-      OpenClawCapability.Sms.rawValue,
-      OpenClawCapability.VoiceWake.rawValue,
-      OpenClawCapability.Motion.rawValue,
+      GensparxCapability.Camera.rawValue,
+      GensparxCapability.Location.rawValue,
+      GensparxCapability.Sms.rawValue,
+      GensparxCapability.VoiceWake.rawValue,
+      GensparxCapability.Motion.rawValue,
     )
 
   private val coreCommands =
     setOf(
-      OpenClawDeviceCommand.Status.rawValue,
-      OpenClawDeviceCommand.Info.rawValue,
-      OpenClawDeviceCommand.Permissions.rawValue,
-      OpenClawDeviceCommand.Health.rawValue,
-      OpenClawNotificationsCommand.List.rawValue,
-      OpenClawNotificationsCommand.Actions.rawValue,
-      OpenClawSystemCommand.Notify.rawValue,
-      OpenClawPhotosCommand.Latest.rawValue,
-      OpenClawContactsCommand.Search.rawValue,
-      OpenClawContactsCommand.Add.rawValue,
-      OpenClawCalendarCommand.Events.rawValue,
-      OpenClawCalendarCommand.Add.rawValue,
+      GensparxDeviceCommand.Status.rawValue,
+      GensparxDeviceCommand.Info.rawValue,
+      GensparxDeviceCommand.Permissions.rawValue,
+      GensparxDeviceCommand.Health.rawValue,
+      GensparxNotificationsCommand.List.rawValue,
+      GensparxNotificationsCommand.Actions.rawValue,
+      GensparxSystemCommand.Notify.rawValue,
+      GensparxPhotosCommand.Latest.rawValue,
+      GensparxContactsCommand.Search.rawValue,
+      GensparxContactsCommand.Add.rawValue,
+      GensparxCalendarCommand.Events.rawValue,
+      GensparxCalendarCommand.Add.rawValue,
       "app.update",
     )
 
   private val optionalCommands =
     setOf(
-      OpenClawCameraCommand.Snap.rawValue,
-      OpenClawCameraCommand.Clip.rawValue,
-      OpenClawCameraCommand.List.rawValue,
-      OpenClawLocationCommand.Get.rawValue,
-      OpenClawMotionCommand.Activity.rawValue,
-      OpenClawMotionCommand.Pedometer.rawValue,
-      OpenClawSmsCommand.Send.rawValue,
+      GensparxCameraCommand.Snap.rawValue,
+      GensparxCameraCommand.Clip.rawValue,
+      GensparxCameraCommand.List.rawValue,
+      GensparxLocationCommand.Get.rawValue,
+      GensparxMotionCommand.Activity.rawValue,
+      GensparxMotionCommand.Pedometer.rawValue,
+      GensparxSmsCommand.Send.rawValue,
     )
 
   private val debugCommands = setOf("debug.logs", "debug.ed25519")
@@ -133,8 +133,8 @@ class InvokeCommandRegistryTest {
         ),
       )
 
-    assertTrue(commands.contains(OpenClawMotionCommand.Activity.rawValue))
-    assertFalse(commands.contains(OpenClawMotionCommand.Pedometer.rawValue))
+    assertTrue(commands.contains(GensparxMotionCommand.Activity.rawValue))
+    assertFalse(commands.contains(GensparxMotionCommand.Pedometer.rawValue))
   }
 
   private fun defaultFlags(

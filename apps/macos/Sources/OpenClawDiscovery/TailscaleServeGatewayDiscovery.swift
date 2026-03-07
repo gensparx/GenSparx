@@ -1,5 +1,5 @@
 import Foundation
-import OpenClawKit
+import GensparxKit
 
 struct TailscaleServeGatewayBeacon: Sendable, Equatable {
     var displayName: String

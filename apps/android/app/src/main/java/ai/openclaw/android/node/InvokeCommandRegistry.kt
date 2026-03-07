@@ -1,19 +1,19 @@
-package ai.openclaw.android.node
+package ai.gensparx.android.node
 
-import ai.openclaw.android.protocol.OpenClawCalendarCommand
-import ai.openclaw.android.protocol.OpenClawCanvasA2UICommand
-import ai.openclaw.android.protocol.OpenClawCanvasCommand
-import ai.openclaw.android.protocol.OpenClawCameraCommand
-import ai.openclaw.android.protocol.OpenClawCapability
-import ai.openclaw.android.protocol.OpenClawContactsCommand
-import ai.openclaw.android.protocol.OpenClawDeviceCommand
-import ai.openclaw.android.protocol.OpenClawLocationCommand
-import ai.openclaw.android.protocol.OpenClawMotionCommand
-import ai.openclaw.android.protocol.OpenClawNotificationsCommand
-import ai.openclaw.android.protocol.OpenClawPhotosCommand
-import ai.openclaw.android.protocol.OpenClawScreenCommand
-import ai.openclaw.android.protocol.OpenClawSmsCommand
-import ai.openclaw.android.protocol.OpenClawSystemCommand
+import ai.gensparx.android.protocol.GensparxCalendarCommand
+import ai.gensparx.android.protocol.GensparxCanvasA2UICommand
+import ai.gensparx.android.protocol.GensparxCanvasCommand
+import ai.gensparx.android.protocol.GensparxCameraCommand
+import ai.gensparx.android.protocol.GensparxCapability
+import ai.gensparx.android.protocol.GensparxContactsCommand
+import ai.gensparx.android.protocol.GensparxDeviceCommand
+import ai.gensparx.android.protocol.GensparxLocationCommand
+import ai.gensparx.android.protocol.GensparxMotionCommand
+import ai.gensparx.android.protocol.GensparxNotificationsCommand
+import ai.gensparx.android.protocol.GensparxPhotosCommand
+import ai.gensparx.android.protocol.GensparxScreenCommand
+import ai.gensparx.android.protocol.GensparxSmsCommand
+import ai.gensparx.android.protocol.GensparxSystemCommand
 
 data class NodeRuntimeFlags(
   val cameraEnabled: Boolean,
@@ -58,33 +58,33 @@ data class InvokeCommandSpec(
 object InvokeCommandRegistry {
   val capabilityManifest: List<NodeCapabilitySpec> =
     listOf(
-      NodeCapabilitySpec(name = OpenClawCapability.Canvas.rawValue),
-      NodeCapabilitySpec(name = OpenClawCapability.Screen.rawValue),
-      NodeCapabilitySpec(name = OpenClawCapability.Device.rawValue),
-      NodeCapabilitySpec(name = OpenClawCapability.Notifications.rawValue),
-      NodeCapabilitySpec(name = OpenClawCapability.System.rawValue),
-      NodeCapabilitySpec(name = OpenClawCapability.AppUpdate.rawValue),
+      NodeCapabilitySpec(name = GensparxCapability.Canvas.rawValue),
+      NodeCapabilitySpec(name = GensparxCapability.Screen.rawValue),
+      NodeCapabilitySpec(name = GensparxCapability.Device.rawValue),
+      NodeCapabilitySpec(name = GensparxCapability.Notifications.rawValue),
+      NodeCapabilitySpec(name = GensparxCapability.System.rawValue),
+      NodeCapabilitySpec(name = GensparxCapability.AppUpdate.rawValue),
       NodeCapabilitySpec(
-        name = OpenClawCapability.Camera.rawValue,
+        name = GensparxCapability.Camera.rawValue,
         availability = NodeCapabilityAvailability.CameraEnabled,
       ),
       NodeCapabilitySpec(
-        name = OpenClawCapability.Sms.rawValue,
+        name = GensparxCapability.Sms.rawValue,
         availability = NodeCapabilityAvailability.SmsAvailable,
       ),
       NodeCapabilitySpec(
-        name = OpenClawCapability.VoiceWake.rawValue,
+        name = GensparxCapability.VoiceWake.rawValue,
         availability = NodeCapabilityAvailability.VoiceWakeEnabled,
       ),
       NodeCapabilitySpec(
-        name = OpenClawCapability.Location.rawValue,
+        name = GensparxCapability.Location.rawValue,
         availability = NodeCapabilityAvailability.LocationEnabled,
       ),
-      NodeCapabilitySpec(name = OpenClawCapability.Photos.rawValue),
-      NodeCapabilitySpec(name = OpenClawCapability.Contacts.rawValue),
-      NodeCapabilitySpec(name = OpenClawCapability.Calendar.rawValue),
+      NodeCapabilitySpec(name = GensparxCapability.Photos.rawValue),
+      NodeCapabilitySpec(name = GensparxCapability.Contacts.rawValue),
+      NodeCapabilitySpec(name = GensparxCapability.Calendar.rawValue),
       NodeCapabilitySpec(
-        name = OpenClawCapability.Motion.rawValue,
+        name = GensparxCapability.Motion.rawValue,
         availability = NodeCapabilityAvailability.MotionAvailable,
       ),
     )
@@ -92,106 +92,106 @@ object InvokeCommandRegistry {
   val all: List<InvokeCommandSpec> =
     listOf(
       InvokeCommandSpec(
-        name = OpenClawCanvasCommand.Present.rawValue,
+        name = GensparxCanvasCommand.Present.rawValue,
         requiresForeground = true,
       ),
       InvokeCommandSpec(
-        name = OpenClawCanvasCommand.Hide.rawValue,
+        name = GensparxCanvasCommand.Hide.rawValue,
         requiresForeground = true,
       ),
       InvokeCommandSpec(
-        name = OpenClawCanvasCommand.Navigate.rawValue,
+        name = GensparxCanvasCommand.Navigate.rawValue,
         requiresForeground = true,
       ),
       InvokeCommandSpec(
-        name = OpenClawCanvasCommand.Eval.rawValue,
+        name = GensparxCanvasCommand.Eval.rawValue,
         requiresForeground = true,
       ),
       InvokeCommandSpec(
-        name = OpenClawCanvasCommand.Snapshot.rawValue,
+        name = GensparxCanvasCommand.Snapshot.rawValue,
         requiresForeground = true,
       ),
       InvokeCommandSpec(
-        name = OpenClawCanvasA2UICommand.Push.rawValue,
+        name = GensparxCanvasA2UICommand.Push.rawValue,
         requiresForeground = true,
       ),
       InvokeCommandSpec(
-        name = OpenClawCanvasA2UICommand.PushJSONL.rawValue,
+        name = GensparxCanvasA2UICommand.PushJSONL.rawValue,
         requiresForeground = true,
       ),
       InvokeCommandSpec(
-        name = OpenClawCanvasA2UICommand.Reset.rawValue,
+        name = GensparxCanvasA2UICommand.Reset.rawValue,
         requiresForeground = true,
       ),
       InvokeCommandSpec(
-        name = OpenClawScreenCommand.Record.rawValue,
+        name = GensparxScreenCommand.Record.rawValue,
         requiresForeground = true,
       ),
       InvokeCommandSpec(
-        name = OpenClawSystemCommand.Notify.rawValue,
+        name = GensparxSystemCommand.Notify.rawValue,
       ),
       InvokeCommandSpec(
-        name = OpenClawCameraCommand.List.rawValue,
-        requiresForeground = true,
-        availability = InvokeCommandAvailability.CameraEnabled,
-      ),
-      InvokeCommandSpec(
-        name = OpenClawCameraCommand.Snap.rawValue,
+        name = GensparxCameraCommand.List.rawValue,
         requiresForeground = true,
         availability = InvokeCommandAvailability.CameraEnabled,
       ),
       InvokeCommandSpec(
-        name = OpenClawCameraCommand.Clip.rawValue,
+        name = GensparxCameraCommand.Snap.rawValue,
         requiresForeground = true,
         availability = InvokeCommandAvailability.CameraEnabled,
       ),
       InvokeCommandSpec(
-        name = OpenClawLocationCommand.Get.rawValue,
+        name = GensparxCameraCommand.Clip.rawValue,
+        requiresForeground = true,
+        availability = InvokeCommandAvailability.CameraEnabled,
+      ),
+      InvokeCommandSpec(
+        name = GensparxLocationCommand.Get.rawValue,
         availability = InvokeCommandAvailability.LocationEnabled,
       ),
       InvokeCommandSpec(
-        name = OpenClawDeviceCommand.Status.rawValue,
+        name = GensparxDeviceCommand.Status.rawValue,
       ),
       InvokeCommandSpec(
-        name = OpenClawDeviceCommand.Info.rawValue,
+        name = GensparxDeviceCommand.Info.rawValue,
       ),
       InvokeCommandSpec(
-        name = OpenClawDeviceCommand.Permissions.rawValue,
+        name = GensparxDeviceCommand.Permissions.rawValue,
       ),
       InvokeCommandSpec(
-        name = OpenClawDeviceCommand.Health.rawValue,
+        name = GensparxDeviceCommand.Health.rawValue,
       ),
       InvokeCommandSpec(
-        name = OpenClawNotificationsCommand.List.rawValue,
+        name = GensparxNotificationsCommand.List.rawValue,
       ),
       InvokeCommandSpec(
-        name = OpenClawNotificationsCommand.Actions.rawValue,
+        name = GensparxNotificationsCommand.Actions.rawValue,
       ),
       InvokeCommandSpec(
-        name = OpenClawPhotosCommand.Latest.rawValue,
+        name = GensparxPhotosCommand.Latest.rawValue,
       ),
       InvokeCommandSpec(
-        name = OpenClawContactsCommand.Search.rawValue,
+        name = GensparxContactsCommand.Search.rawValue,
       ),
       InvokeCommandSpec(
-        name = OpenClawContactsCommand.Add.rawValue,
+        name = GensparxContactsCommand.Add.rawValue,
       ),
       InvokeCommandSpec(
-        name = OpenClawCalendarCommand.Events.rawValue,
+        name = GensparxCalendarCommand.Events.rawValue,
       ),
       InvokeCommandSpec(
-        name = OpenClawCalendarCommand.Add.rawValue,
+        name = GensparxCalendarCommand.Add.rawValue,
       ),
       InvokeCommandSpec(
-        name = OpenClawMotionCommand.Activity.rawValue,
+        name = GensparxMotionCommand.Activity.rawValue,
         availability = InvokeCommandAvailability.MotionActivityAvailable,
       ),
       InvokeCommandSpec(
-        name = OpenClawMotionCommand.Pedometer.rawValue,
+        name = GensparxMotionCommand.Pedometer.rawValue,
         availability = InvokeCommandAvailability.MotionPedometerAvailable,
       ),
       InvokeCommandSpec(
-        name = OpenClawSmsCommand.Send.rawValue,
+        name = GensparxSmsCommand.Send.rawValue,
         availability = InvokeCommandAvailability.SmsAvailable,
       ),
       InvokeCommandSpec(

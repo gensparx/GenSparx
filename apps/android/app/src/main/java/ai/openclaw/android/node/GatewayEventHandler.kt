@@ -1,7 +1,7 @@
-package ai.openclaw.android.node
+package ai.gensparx.android.node
 
-import ai.openclaw.android.SecurePrefs
-import ai.openclaw.android.gateway.GatewaySession
+import ai.gensparx.android.SecurePrefs
+import ai.gensparx.android.gateway.GatewaySession
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

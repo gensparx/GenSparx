@@ -1,4 +1,4 @@
-package ai.openclaw.android.ui
+package ai.gensparx.android.ui
 
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -7,7 +7,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import ai.openclaw.android.R
+import ai.gensparx.android.R
 
 internal val mobileBackgroundGradient =
   Brush.verticalGradient(

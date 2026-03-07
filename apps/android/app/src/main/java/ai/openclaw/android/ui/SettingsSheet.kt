@@ -1,4 +1,4 @@
-package ai.openclaw.android.ui
+package ai.gensparx.android.ui
 
 import android.Manifest
 import android.content.Context
@@ -66,10 +66,10 @@ import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import ai.openclaw.android.BuildConfig
-import ai.openclaw.android.LocationMode
-import ai.openclaw.android.MainViewModel
-import ai.openclaw.android.node.DeviceNotificationListenerService
+import ai.gensparx.android.BuildConfig
+import ai.gensparx.android.LocationMode
+import ai.gensparx.android.MainViewModel
+import ai.gensparx.android.node.DeviceNotificationListenerService
 
 @Composable
 fun SettingsSheet(viewModel: MainViewModel) {

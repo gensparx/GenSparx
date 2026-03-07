@@ -1,8 +1,8 @@
 import Foundation
-import OpenClawKit
+import GensparxKit
 import Testing
-@testable import OpenClaw
-@testable import OpenClawIPC
+@testable import Gensparx
+@testable import GensparxIPC
 
 private final class FakeWebSocketTask: WebSocketTasking, @unchecked Sendable {
     var state: URLSessionTask.State = .running

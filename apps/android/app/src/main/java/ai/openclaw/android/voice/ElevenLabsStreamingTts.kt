@@ -1,4 +1,4 @@
-package ai.openclaw.android.voice
+package ai.gensparx.android.voice
 
 import android.media.AudioAttributes
 import android.media.AudioFormat

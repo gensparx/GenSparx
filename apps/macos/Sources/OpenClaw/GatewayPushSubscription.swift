@@ -1,4 +1,4 @@
-import OpenClawKit
+import GensparxKit
 
 enum GatewayPushSubscription {
     @MainActor

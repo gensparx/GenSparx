@@ -1,7 +1,7 @@
 import CoreLocation
-import OpenClawIPC
+import GensparxIPC
 import Testing
-@testable import OpenClaw
+@testable import Gensparx
 
 @Suite(.serialized)
 @MainActor

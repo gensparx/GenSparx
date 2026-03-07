@@ -1,13 +1,13 @@
 import Foundation
 import Testing
-@testable import OpenClaw
+@testable import Gensparx
 
 @Suite(.serialized)
-struct OpenClawConfigFileTests {
+struct GensparxConfigFileTests {
     private func makeConfigOverridePath() -> String {
         FileManager().temporaryDirectory
-            .appendingPathComponent("openclaw-config-\(UUID().uuidString)")
-            .appendingPathComponent("openclaw.json")
+            .appendingPathComponent("gensparx-config-\(UUID().uuidString)")
+            .appendingPathComponent("gensparx.json")
             .path
     }
 
@@ -15,8 +15,8 @@ struct OpenClawConfigFileTests {
     func configPathRespectsEnvOverride() async {
         let override = makeConfigOverridePath()
 
-        await TestIsolation.withEnvValues(["OPENCLAW_CONFIG_PATH": override]) {
-            #expect(OpenClawConfigFile.url().path == override)
+        await TestIsolation.withEnvValues(["GENSPARX_CONFIG_PATH": override]) {
+            #expect(GensparxConfigFile.url().path == override)
         }
     }
 
@@ -25,18 +25,18 @@ struct OpenClawConfigFileTests {
     func remoteGatewayPortParsesAndMatchesHost() async {
         let override = makeConfigOverridePath()
 
-        await TestIsolation.withEnvValues(["OPENCLAW_CONFIG_PATH": override]) {
-            OpenClawConfigFile.saveDict([
+        await TestIsolation.withEnvValues(["GENSPARX_CONFIG_PATH": override]) {
+            GensparxConfigFile.saveDict([
                 "gateway": [
                     "remote": [
                         "url": "ws://gateway.ts.net:19999",
                     ],
                 ],
             ])
-            #expect(OpenClawConfigFile.remoteGatewayPort() == 19999)
-            #expect(OpenClawConfigFile.remoteGatewayPort(matchingHost: "gateway.ts.net") == 19999)
-            #expect(OpenClawConfigFile.remoteGatewayPort(matchingHost: "gateway") == 19999)
-            #expect(OpenClawConfigFile.remoteGatewayPort(matchingHost: "other.ts.net") == nil)
+            #expect(GensparxConfigFile.remoteGatewayPort() == 19999)
+            #expect(GensparxConfigFile.remoteGatewayPort(matchingHost: "gateway.ts.net") == 19999)
+            #expect(GensparxConfigFile.remoteGatewayPort(matchingHost: "gateway") == 19999)
+            #expect(GensparxConfigFile.remoteGatewayPort(matchingHost: "other.ts.net") == nil)
         }
     }
 
@@ -45,16 +45,16 @@ struct OpenClawConfigFileTests {
     func setRemoteGatewayUrlPreservesScheme() async {
         let override = makeConfigOverridePath()
 
-        await TestIsolation.withEnvValues(["OPENCLAW_CONFIG_PATH": override]) {
-            OpenClawConfigFile.saveDict([
+        await TestIsolation.withEnvValues(["GENSPARX_CONFIG_PATH": override]) {
+            GensparxConfigFile.saveDict([
                 "gateway": [
                     "remote": [
                         "url": "wss://old-host:111",
                     ],
                 ],
             ])
-            OpenClawConfigFile.setRemoteGatewayUrl(host: "new-host", port: 2222)
-            let root = OpenClawConfigFile.loadDict()
+            GensparxConfigFile.setRemoteGatewayUrl(host: "new-host", port: 2222)
+            let root = GensparxConfigFile.loadDict()
             let url = ((root["gateway"] as? [String: Any])?["remote"] as? [String: Any])?["url"] as? String
             #expect(url == "wss://new-host:2222")
         }
@@ -65,8 +65,8 @@ struct OpenClawConfigFileTests {
     func clearRemoteGatewayUrlRemovesOnlyUrlField() async {
         let override = makeConfigOverridePath()
 
-        await TestIsolation.withEnvValues(["OPENCLAW_CONFIG_PATH": override]) {
-            OpenClawConfigFile.saveDict([
+        await TestIsolation.withEnvValues(["GENSPARX_CONFIG_PATH": override]) {
+            GensparxConfigFile.saveDict([
                 "gateway": [
                     "remote": [
                         "url": "wss://old-host:111",
@@ -74,8 +74,8 @@ struct OpenClawConfigFileTests {
                     ],
                 ],
             ])
-            OpenClawConfigFile.clearRemoteGatewayUrl()
-            let root = OpenClawConfigFile.loadDict()
+            GensparxConfigFile.clearRemoteGatewayUrl()
+            let root = GensparxConfigFile.loadDict()
             let remote = ((root["gateway"] as? [String: Any])?["remote"] as? [String: Any]) ?? [:]
             #expect((remote["url"] as? String) == nil)
             #expect((remote["token"] as? String) == "tok")
@@ -85,15 +85,15 @@ struct OpenClawConfigFileTests {
     @Test
     func stateDirOverrideSetsConfigPath() async {
         let dir = FileManager().temporaryDirectory
-            .appendingPathComponent("openclaw-state-\(UUID().uuidString)", isDirectory: true)
+            .appendingPathComponent("gensparx-state-\(UUID().uuidString)", isDirectory: true)
             .path
 
         await TestIsolation.withEnvValues([
-            "OPENCLAW_CONFIG_PATH": nil,
-            "OPENCLAW_STATE_DIR": dir,
+            "GENSPARX_CONFIG_PATH": nil,
+            "GENSPARX_STATE_DIR": dir,
         ]) {
-            #expect(OpenClawConfigFile.stateDirURL().path == dir)
-            #expect(OpenClawConfigFile.url().path == "\(dir)/openclaw.json")
+            #expect(GensparxConfigFile.stateDirURL().path == dir)
+            #expect(GensparxConfigFile.url().path == "\(dir)/gensparx.json")
         }
     }
 
@@ -101,17 +101,17 @@ struct OpenClawConfigFileTests {
     @Test
     func saveDictAppendsConfigAuditLog() async throws {
         let stateDir = FileManager().temporaryDirectory
-            .appendingPathComponent("openclaw-state-\(UUID().uuidString)", isDirectory: true)
-        let configPath = stateDir.appendingPathComponent("openclaw.json")
+            .appendingPathComponent("gensparx-state-\(UUID().uuidString)", isDirectory: true)
+        let configPath = stateDir.appendingPathComponent("gensparx.json")
         let auditPath = stateDir.appendingPathComponent("logs/config-audit.jsonl")
 
         defer { try? FileManager().removeItem(at: stateDir) }
 
         try await TestIsolation.withEnvValues([
-            "OPENCLAW_STATE_DIR": stateDir.path,
-            "OPENCLAW_CONFIG_PATH": configPath.path,
+            "GENSPARX_STATE_DIR": stateDir.path,
+            "GENSPARX_CONFIG_PATH": configPath.path,
         ]) {
-            OpenClawConfigFile.saveDict([
+            GensparxConfigFile.saveDict([
                 "gateway": ["mode": "local"],
             ])
 
@@ -129,7 +129,7 @@ struct OpenClawConfigFileTests {
                 return
             }
             let auditRoot = try JSONSerialization.jsonObject(with: Data(last.utf8)) as? [String: Any]
-            #expect(auditRoot?["source"] as? String == "macos-openclaw-config-file")
+            #expect(auditRoot?["source"] as? String == "macos-gensparx-config-file")
             #expect(auditRoot?["event"] as? String == "config.write")
             #expect(auditRoot?["result"] as? String == "success")
             #expect(auditRoot?["configPath"] as? String == configPath.path)

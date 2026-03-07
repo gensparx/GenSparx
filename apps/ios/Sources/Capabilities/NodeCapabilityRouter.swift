@@ -1,5 +1,5 @@
 import Foundation
-import OpenClawKit
+import GensparxKit
 
 @MainActor
 final class NodeCapabilityRouter {

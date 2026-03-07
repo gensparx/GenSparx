@@ -1,5 +1,5 @@
 import Observation
-import OpenClawProtocol
+import GensparxProtocol
 import SwiftUI
 
 extension OnboardingView {

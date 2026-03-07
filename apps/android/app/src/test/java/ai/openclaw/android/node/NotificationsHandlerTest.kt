@@ -1,7 +1,7 @@
-package ai.openclaw.android.node
+package ai.gensparx.android.node
 
 import android.content.Context
-import ai.openclaw.android.gateway.GatewaySession
+import ai.gensparx.android.gateway.GatewaySession
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject

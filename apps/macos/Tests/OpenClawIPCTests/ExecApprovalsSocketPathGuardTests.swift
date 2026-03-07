@@ -1,13 +1,13 @@
 import Foundation
 import Testing
-@testable import OpenClaw
+@testable import Gensparx
 
 @Suite(.serialized)
 struct ExecApprovalsSocketPathGuardTests {
     @Test
     func hardenParentDirectoryCreatesDirectoryWith0700Permissions() throws {
         let root = FileManager().temporaryDirectory
-            .appendingPathComponent("openclaw-socket-guard-\(UUID().uuidString)", isDirectory: true)
+            .appendingPathComponent("gensparx-socket-guard-\(UUID().uuidString)", isDirectory: true)
         defer { try? FileManager().removeItem(at: root) }
         let socketPath = root
             .appendingPathComponent("nested", isDirectory: true)
@@ -26,7 +26,7 @@ struct ExecApprovalsSocketPathGuardTests {
     @Test
     func removeExistingSocketRejectsSymlinkPath() throws {
         let root = FileManager().temporaryDirectory
-            .appendingPathComponent("openclaw-socket-guard-\(UUID().uuidString)", isDirectory: true)
+            .appendingPathComponent("gensparx-socket-guard-\(UUID().uuidString)", isDirectory: true)
         defer { try? FileManager().removeItem(at: root) }
         try FileManager().createDirectory(at: root, withIntermediateDirectories: true)
 
@@ -52,7 +52,7 @@ struct ExecApprovalsSocketPathGuardTests {
     @Test
     func removeExistingSocketRejectsRegularFilePath() throws {
         let root = FileManager().temporaryDirectory
-            .appendingPathComponent("openclaw-socket-guard-\(UUID().uuidString)", isDirectory: true)
+            .appendingPathComponent("gensparx-socket-guard-\(UUID().uuidString)", isDirectory: true)
         defer { try? FileManager().removeItem(at: root) }
         try FileManager().createDirectory(at: root, withIntermediateDirectories: true)
 

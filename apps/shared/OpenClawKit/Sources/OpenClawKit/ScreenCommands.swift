@@ -1,10 +1,10 @@
 import Foundation
 
-public enum OpenClawScreenCommand: String, Codable, Sendable {
+public enum GensparxScreenCommand: String, Codable, Sendable {
     case record = "screen.record"
 }
 
-public struct OpenClawScreenRecordParams: Codable, Sendable, Equatable {
+public struct GensparxScreenRecordParams: Codable, Sendable, Equatable {
     public var screenIndex: Int?
     public var durationMs: Int?
     public var fps: Double?

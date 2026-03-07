@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import OpenClaw
+@testable import Gensparx
 
 @Suite struct FileHandleSafeReadTests {
     @Test func readToEndSafelyReturnsEmptyForClosedHandle() {

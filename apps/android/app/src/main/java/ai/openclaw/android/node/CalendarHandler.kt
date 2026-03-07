@@ -1,4 +1,4 @@
-package ai.openclaw.android.node
+package ai.gensparx.android.node
 
 import android.Manifest
 import android.content.ContentResolver
@@ -7,7 +7,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.provider.CalendarContract
 import androidx.core.content.ContextCompat
-import ai.openclaw.android.gateway.GatewaySession
+import ai.gensparx.android.gateway.GatewaySession
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.TimeZone

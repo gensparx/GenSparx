@@ -1,4 +1,4 @@
-package ai.openclaw.android.gateway
+package ai.gensparx.android.gateway
 
 import android.annotation.SuppressLint
 import kotlinx.coroutines.Dispatchers

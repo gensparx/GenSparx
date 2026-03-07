@@ -1,6 +1,6 @@
 import CoreLocation
 import Testing
-@testable import OpenClaw
+@testable import Gensparx
 
 @Suite("PermissionManager Location")
 struct PermissionManagerLocationTests {

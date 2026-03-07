@@ -1,4 +1,4 @@
-package ai.openclaw.android.gateway
+package ai.gensparx.android.gateway
 
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -135,7 +135,7 @@ class GatewaySessionInvokeTest {
       startGatewayServer(json) { webSocket, id, method, frame ->
         when (method) {
           "connect" -> {
-            webSocket.send(connectResponseFrame(id, canvasHostUrl = "http://127.0.0.1/__openclaw__/cap/old-cap"))
+            webSocket.send(connectResponseFrame(id, canvasHostUrl = "http://127.0.0.1/__gensparx__/cap/old-cap"))
           }
           "node.canvas.capability.refresh" -> {
             if (!refreshRequestParams.isCompleted) {
@@ -165,7 +165,7 @@ class GatewaySessionInvokeTest {
       assertEquals(true, refreshed)
       assertEquals("{}", refreshParamsJson)
       assertEquals(
-        "http://127.0.0.1:${server.port}/__openclaw__/cap/new-cap",
+        "http://127.0.0.1:${server.port}/__gensparx__/cap/new-cap",
         harness.session.currentCanvasHostUrl(),
       )
     } finally {
@@ -221,7 +221,7 @@ class GatewaySessionInvokeTest {
           permissions = emptyMap(),
           client =
             GatewayClientInfo(
-              id = "openclaw-android-test",
+              id = "gensparx-android-test",
               displayName = "Android Test",
               version = "1.0.0-test",
               platform = "android",

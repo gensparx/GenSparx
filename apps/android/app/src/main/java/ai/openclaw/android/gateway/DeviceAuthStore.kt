@@ -1,6 +1,6 @@
-package ai.openclaw.android.gateway
+package ai.gensparx.android.gateway
 
-import ai.openclaw.android.SecurePrefs
+import ai.gensparx.android.SecurePrefs
 
 interface DeviceAuthTokenStore {
   fun loadToken(deviceId: String, role: String): String?
