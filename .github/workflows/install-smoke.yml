@@ -38,13 +38,13 @@ jobs:
 
       - name: Run root Dockerfile CLI smoke
         run: |
-          docker build -t openclaw-dockerfile-smoke:local -f Dockerfile .
-          docker run --rm --entrypoint sh openclaw-dockerfile-smoke:local -lc 'which openclaw && openclaw --version'
+          docker build -t gensparx-dockerfile-smoke:local -f Dockerfile .
+          docker run --rm --entrypoint sh gensparx-dockerfile-smoke:local -lc 'which gensparx && gensparx --version'
 
       - name: Run installer docker tests
         env:
-          CLAWDBOT_INSTALL_URL: https://openclaw.ai/install.sh
-          CLAWDBOT_INSTALL_CLI_URL: https://openclaw.ai/install-cli.sh
+          CLAWDBOT_INSTALL_URL: https://gensparx.ai/install.sh
+          CLAWDBOT_INSTALL_CLI_URL: https://gensparx.ai/install-cli.sh
           CLAWDBOT_NO_ONBOARD: "1"
           CLAWDBOT_INSTALL_SMOKE_SKIP_CLI: "1"
           CLAWDBOT_INSTALL_SMOKE_SKIP_NONROOT: ${{ github.event_name == 'pull_request' && '1' || '0' }}

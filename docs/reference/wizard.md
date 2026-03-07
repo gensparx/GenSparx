@@ -10,20 +10,20 @@ sidebarTitle: "Wizard Reference"
 
 # Onboarding Wizard Reference
 
-This is the full reference for the `openclaw onboard` CLI wizard.
+This is the full reference for the `gensparx onboard` CLI wizard.
 For a high-level overview, see [Onboarding Wizard](/start/wizard).
 
 ## Flow details (local mode)
 
 <Steps>
   <Step title="Existing config detection">
-    - If `~/.openclaw/openclaw.json` exists, choose **Keep / Modify / Reset**.
+    - If `~/.gensparx/gensparx.json` exists, choose **Keep / Modify / Reset**.
     - Re-running the wizard does **not** wipe anything unless you explicitly choose **Reset**
       (or pass `--reset`).
     - CLI `--reset` defaults to `config+creds+sessions`; use `--reset-scope full`
       to also remove workspace.
     - If the config is invalid or contains legacy keys, the wizard stops and asks
-      you to run `openclaw doctor` before continuing.
+      you to run `gensparx doctor` before continuing.
     - Reset uses `trash` (never `rm`) and offers scopes:
       - Config only
       - Config + credentials + sessions
@@ -55,16 +55,16 @@ For a high-level overview, see [Onboarding Wizard](/start/wizard).
     - Pick a default model from detected options (or enter provider/model manually). For best quality and lower prompt-injection risk, choose the strongest latest-generation model available in your provider stack.
     - Wizard runs a model check and warns if the configured model is unknown or missing auth.
     - API key storage mode defaults to plaintext auth-profile values. Use `--secret-input-mode ref` to store env-backed refs instead (for example `keyRef: { source: "env", provider: "default", id: "OPENAI_API_KEY" }`).
-    - OAuth credentials live in `~/.openclaw/credentials/oauth.json`; auth profiles live in `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` (API keys + OAuth).
+    - OAuth credentials live in `~/.gensparx/credentials/oauth.json`; auth profiles live in `~/.gensparx/agents/<agentId>/agent/auth-profiles.json` (API keys + OAuth).
     - More detail: [/concepts/oauth](/concepts/oauth)
     <Note>
     Headless/server tip: complete OAuth on a machine with a browser, then copy
-    `~/.openclaw/credentials/oauth.json` (or `$OPENCLAW_STATE_DIR/credentials/oauth.json`) to the
+    `~/.gensparx/credentials/oauth.json` (or `$GENSPARX_STATE_DIR/credentials/oauth.json`) to the
     gateway host.
     </Note>
   </Step>
   <Step title="Workspace">
-    - Default `~/.openclaw/workspace` (configurable).
+    - Default `~/.gensparx/workspace` (configurable).
     - Seeds the workspace files needed for the agent bootstrap ritual.
     - Full workspace layout + backup guide: [Agent workspace](/concepts/agent-workspace)
   </Step>
@@ -92,7 +92,7 @@ For a high-level overview, see [Onboarding Wizard](/start/wizard).
     - [Signal](/channels/signal): optional `signal-cli` install + account config.
     - [BlueBubbles](/channels/bluebubbles): **recommended for iMessage**; server URL + password + webhook.
     - [iMessage](/channels/imessage): legacy `imsg` CLI path + DB access.
-    - DM security: default is pairing. First DM sends a code; approve via `openclaw pairing approve <channel> <code>` or use allowlists.
+    - DM security: default is pairing. First DM sends a code; approve via `gensparx pairing approve <channel> <code>` or use allowlists.
   </Step>
   <Step title="Daemon install">
     - macOS: LaunchAgent
@@ -106,8 +106,8 @@ For a high-level overview, see [Onboarding Wizard](/start/wizard).
     - If both `gateway.auth.token` and `gateway.auth.password` are configured and `gateway.auth.mode` is unset, daemon install is blocked until mode is set explicitly.
   </Step>
   <Step title="Health check">
-    - Starts the Gateway (if needed) and runs `openclaw health`.
-    - Tip: `openclaw status --deep` adds gateway health probes to status output (requires a reachable gateway).
+    - Starts the Gateway (if needed) and runs `gensparx health`.
+    - Tip: `gensparx status --deep` adds gateway health probes to status output (requires a reachable gateway).
   </Step>
   <Step title="Skills (recommended)">
     - Reads the available skills and checks requirements.
@@ -129,7 +129,7 @@ If the Control UI assets are missing, the wizard attempts to build them; fallbac
 Use `--non-interactive` to automate or script onboarding:
 
 ```bash
-openclaw onboard --non-interactive \
+gensparx onboard --non-interactive \
   --mode local \
   --auth-choice apiKey \
   --anthropic-api-key "$ANTHROPIC_API_KEY" \
@@ -145,12 +145,12 @@ Add `--json` for a machine‑readable summary.
 Gateway token SecretRef in non-interactive mode:
 
 ```bash
-export OPENCLAW_GATEWAY_TOKEN="your-token"
-openclaw onboard --non-interactive \
+export GENSPARX_GATEWAY_TOKEN="your-token"
+gensparx onboard --non-interactive \
   --mode local \
   --auth-choice skip \
   --gateway-auth token \
-  --gateway-token-ref-env OPENCLAW_GATEWAY_TOKEN
+  --gateway-token-ref-env GENSPARX_GATEWAY_TOKEN
 ```
 
 `--gateway-token` and `--gateway-token-ref-env` are mutually exclusive.
@@ -162,7 +162,7 @@ openclaw onboard --non-interactive \
 <AccordionGroup>
   <Accordion title="Gemini example">
     ```bash
-    openclaw onboard --non-interactive \
+    gensparx onboard --non-interactive \
       --mode local \
       --auth-choice gemini-api-key \
       --gemini-api-key "$GEMINI_API_KEY" \
@@ -172,7 +172,7 @@ openclaw onboard --non-interactive \
   </Accordion>
   <Accordion title="Z.AI example">
     ```bash
-    openclaw onboard --non-interactive \
+    gensparx onboard --non-interactive \
       --mode local \
       --auth-choice zai-api-key \
       --zai-api-key "$ZAI_API_KEY" \
@@ -182,7 +182,7 @@ openclaw onboard --non-interactive \
   </Accordion>
   <Accordion title="Vercel AI Gateway example">
     ```bash
-    openclaw onboard --non-interactive \
+    gensparx onboard --non-interactive \
       --mode local \
       --auth-choice ai-gateway-api-key \
       --ai-gateway-api-key "$AI_GATEWAY_API_KEY" \
@@ -192,7 +192,7 @@ openclaw onboard --non-interactive \
   </Accordion>
   <Accordion title="Cloudflare AI Gateway example">
     ```bash
-    openclaw onboard --non-interactive \
+    gensparx onboard --non-interactive \
       --mode local \
       --auth-choice cloudflare-ai-gateway-api-key \
       --cloudflare-ai-gateway-account-id "your-account-id" \
@@ -204,7 +204,7 @@ openclaw onboard --non-interactive \
   </Accordion>
   <Accordion title="Moonshot example">
     ```bash
-    openclaw onboard --non-interactive \
+    gensparx onboard --non-interactive \
       --mode local \
       --auth-choice moonshot-api-key \
       --moonshot-api-key "$MOONSHOT_API_KEY" \
@@ -214,7 +214,7 @@ openclaw onboard --non-interactive \
   </Accordion>
   <Accordion title="Synthetic example">
     ```bash
-    openclaw onboard --non-interactive \
+    gensparx onboard --non-interactive \
       --mode local \
       --auth-choice synthetic-api-key \
       --synthetic-api-key "$SYNTHETIC_API_KEY" \
@@ -224,7 +224,7 @@ openclaw onboard --non-interactive \
   </Accordion>
   <Accordion title="OpenCode Zen example">
     ```bash
-    openclaw onboard --non-interactive \
+    gensparx onboard --non-interactive \
       --mode local \
       --auth-choice opencode-zen \
       --opencode-zen-api-key "$OPENCODE_API_KEY" \
@@ -237,8 +237,8 @@ openclaw onboard --non-interactive \
 ### Add agent (non-interactive)
 
 ```bash
-openclaw agents add work \
-  --workspace ~/.openclaw/workspace-work \
+gensparx agents add work \
+  --workspace ~/.gensparx/workspace-work \
   --model openai/gpt-5.2 \
   --bind whatsapp:biz \
   --non-interactive \
@@ -255,7 +255,7 @@ Clients (macOS app, Control UI) can render steps without re‑implementing onboa
 The wizard can install `signal-cli` from GitHub releases:
 
 - Downloads the appropriate release asset.
-- Stores it under `~/.openclaw/tools/signal-cli/<version>/`.
+- Stores it under `~/.gensparx/tools/signal-cli/<version>/`.
 - Writes `channels.signal.cliPath` to your config.
 
 Notes:
@@ -266,7 +266,7 @@ Notes:
 
 ## What the wizard writes
 
-Typical fields in `~/.openclaw/openclaw.json`:
+Typical fields in `~/.gensparx/gensparx.json`:
 
 - `agents.defaults.workspace`
 - `agents.defaults.model` / `models.providers` (if Minimax chosen)
@@ -282,10 +282,10 @@ Typical fields in `~/.openclaw/openclaw.json`:
 - `wizard.lastRunCommand`
 - `wizard.lastRunMode`
 
-`openclaw agents add` writes `agents.list[]` and optional `bindings`.
+`gensparx agents add` writes `agents.list[]` and optional `bindings`.
 
-WhatsApp credentials go under `~/.openclaw/credentials/whatsapp/<accountId>/`.
-Sessions are stored under `~/.openclaw/agents/<agentId>/sessions/`.
+WhatsApp credentials go under `~/.gensparx/credentials/whatsapp/<accountId>/`.
+Sessions are stored under `~/.gensparx/agents/<agentId>/sessions/`.
 
 Some channels are delivered as plugins. When you pick one during onboarding, the wizard
 will prompt to install it (npm or a local path) before it can be configured.

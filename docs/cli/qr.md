@@ -1,23 +1,23 @@
 ---
-summary: "CLI reference for `openclaw qr` (generate iOS pairing QR + setup code)"
+summary: "CLI reference for `gensparx qr` (generate iOS pairing QR + setup code)"
 read_when:
   - You want to pair the iOS app with a gateway quickly
   - You need setup-code output for remote/manual sharing
 title: "qr"
 ---
 
-# `openclaw qr`
+# `gensparx qr`
 
 Generate an iOS pairing QR and setup code from your current Gateway configuration.
 
 ## Usage
 
 ```bash
-openclaw qr
-openclaw qr --setup-code-only
-openclaw qr --json
-openclaw qr --remote
-openclaw qr --url wss://gateway.example/ws --token '<token>'
+gensparx qr
+gensparx qr --setup-code-only
+gensparx qr --json
+gensparx qr --remote
+gensparx qr --url wss://gateway.example/ws --token '<token>'
 ```
 
 ## Options
@@ -41,5 +41,5 @@ openclaw qr --url wss://gateway.example/ws --token '<token>'
 - If both `gateway.auth.token` and `gateway.auth.password` are configured (including SecretRefs) and `gateway.auth.mode` is unset, setup-code resolution fails until mode is set explicitly.
 - Gateway version skew note: this command path requires a gateway that supports `secrets.resolve`; older gateways return an unknown-method error.
 - After scanning, approve device pairing with:
-  - `openclaw devices list`
-  - `openclaw devices approve <requestId>`
+  - `gensparx devices list`
+  - `gensparx devices approve <requestId>`

@@ -1,12 +1,12 @@
 ---
-summary: "CLI reference for `openclaw hooks` (agent hooks)"
+summary: "CLI reference for `gensparx hooks` (agent hooks)"
 read_when:
   - You want to manage agent hooks
   - You want to install or update hooks
 title: "hooks"
 ---
 
-# `openclaw hooks`
+# `gensparx hooks`
 
 Manage agent hooks (event-driven automations for commands like `/new`, `/reset`, and gateway startup).
 
@@ -18,7 +18,7 @@ Related:
 ## List All Hooks
 
 ```bash
-openclaw hooks list
+gensparx hooks list
 ```
 
 List all discovered hooks from workspace, managed, and bundled directories.
@@ -44,7 +44,7 @@ Ready:
 **Example (verbose):**
 
 ```bash
-openclaw hooks list --verbose
+gensparx hooks list --verbose
 ```
 
 Shows missing requirements for ineligible hooks.
@@ -52,7 +52,7 @@ Shows missing requirements for ineligible hooks.
 **Example (JSON):**
 
 ```bash
-openclaw hooks list --json
+gensparx hooks list --json
 ```
 
 Returns structured JSON for programmatic use.
@@ -60,7 +60,7 @@ Returns structured JSON for programmatic use.
 ## Get Hook Information
 
 ```bash
-openclaw hooks info <name>
+gensparx hooks info <name>
 ```
 
 Show detailed information about a specific hook.
@@ -76,7 +76,7 @@ Show detailed information about a specific hook.
 **Example:**
 
 ```bash
-openclaw hooks info session-memory
+gensparx hooks info session-memory
 ```
 
 **Output:**
@@ -87,10 +87,10 @@ openclaw hooks info session-memory
 Save session context to memory when /new command is issued
 
 Details:
-  Source: openclaw-bundled
-  Path: /path/to/openclaw/hooks/bundled/session-memory/HOOK.md
-  Handler: /path/to/openclaw/hooks/bundled/session-memory/handler.ts
-  Homepage: https://docs.openclaw.ai/automation/hooks#session-memory
+  Source: gensparx-bundled
+  Path: /path/to/gensparx/hooks/bundled/session-memory/HOOK.md
+  Handler: /path/to/gensparx/hooks/bundled/session-memory/handler.ts
+  Homepage: https://docs.gensparx.ai/automation/hooks#session-memory
   Events: command:new
 
 Requirements:
@@ -100,7 +100,7 @@ Requirements:
 ## Check Hooks Eligibility
 
 ```bash
-openclaw hooks check
+gensparx hooks check
 ```
 
 Show summary of hook eligibility status (how many are ready vs. not ready).
@@ -122,12 +122,12 @@ Not ready: 0
 ## Enable a Hook
 
 ```bash
-openclaw hooks enable <name>
+gensparx hooks enable <name>
 ```
 
-Enable a specific hook by adding it to your config (`~/.openclaw/config.json`).
+Enable a specific hook by adding it to your config (`~/.gensparx/config.json`).
 
-**Note:** Hooks managed by plugins show `plugin:<id>` in `openclaw hooks list` and
+**Note:** Hooks managed by plugins show `plugin:<id>` in `gensparx hooks list` and
 can’t be enabled/disabled here. Enable/disable the plugin instead.
 
 **Arguments:**
@@ -137,7 +137,7 @@ can’t be enabled/disabled here. Enable/disable the plugin instead.
 **Example:**
 
 ```bash
-openclaw hooks enable session-memory
+gensparx hooks enable session-memory
 ```
 
 **Output:**
@@ -159,7 +159,7 @@ openclaw hooks enable session-memory
 ## Disable a Hook
 
 ```bash
-openclaw hooks disable <name>
+gensparx hooks disable <name>
 ```
 
 Disable a specific hook by updating your config.
@@ -171,7 +171,7 @@ Disable a specific hook by updating your config.
 **Example:**
 
 ```bash
-openclaw hooks disable command-logger
+gensparx hooks disable command-logger
 ```
 
 **Output:**
@@ -187,8 +187,8 @@ openclaw hooks disable command-logger
 ## Install Hooks
 
 ```bash
-openclaw hooks install <path-or-spec>
-openclaw hooks install <npm-spec> --pin
+gensparx hooks install <path-or-spec>
+gensparx hooks install <npm-spec> --pin
 ```
 
 Install a hook pack from a local folder/archive or npm.
@@ -198,7 +198,7 @@ specs are rejected. Dependency installs run with `--ignore-scripts` for safety.
 
 **What it does:**
 
-- Copies the hook pack into `~/.openclaw/hooks/<id>`
+- Copies the hook pack into `~/.gensparx/hooks/<id>`
 - Enables the installed hooks in `hooks.internal.entries.*`
 - Records the install under `hooks.internal.installs`
 
@@ -213,23 +213,23 @@ specs are rejected. Dependency installs run with `--ignore-scripts` for safety.
 
 ```bash
 # Local directory
-openclaw hooks install ./my-hook-pack
+gensparx hooks install ./my-hook-pack
 
 # Local archive
-openclaw hooks install ./my-hook-pack.zip
+gensparx hooks install ./my-hook-pack.zip
 
 # NPM package
-openclaw hooks install @openclaw/my-hook-pack
+gensparx hooks install @gensparx/my-hook-pack
 
 # Link a local directory without copying
-openclaw hooks install -l ./my-hook-pack
+gensparx hooks install -l ./my-hook-pack
 ```
 
 ## Update Hooks
 
 ```bash
-openclaw hooks update <id>
-openclaw hooks update --all
+gensparx hooks update <id>
+gensparx hooks update --all
 ```
 
 Update installed hook packs (npm installs only).
@@ -240,7 +240,7 @@ Update installed hook packs (npm installs only).
 - `--dry-run`: Show what would change without writing
 
 When a stored integrity hash exists and the fetched artifact hash changes,
-OpenClaw prints a warning and asks for confirmation before proceeding. Use
+gensparx prints a warning and asks for confirmation before proceeding. Use
 global `--yes` to bypass prompts in CI/non-interactive runs.
 
 ## Bundled Hooks
@@ -252,10 +252,10 @@ Saves session context to memory when you issue `/new`.
 **Enable:**
 
 ```bash
-openclaw hooks enable session-memory
+gensparx hooks enable session-memory
 ```
 
-**Output:** `~/.openclaw/workspace/memory/YYYY-MM-DD-slug.md`
+**Output:** `~/.gensparx/workspace/memory/YYYY-MM-DD-slug.md`
 
 **See:** [session-memory documentation](/automation/hooks#session-memory)
 
@@ -266,7 +266,7 @@ Injects additional bootstrap files (for example monorepo-local `AGENTS.md` / `TO
 **Enable:**
 
 ```bash
-openclaw hooks enable bootstrap-extra-files
+gensparx hooks enable bootstrap-extra-files
 ```
 
 **See:** [bootstrap-extra-files documentation](/automation/hooks#bootstrap-extra-files)
@@ -278,22 +278,22 @@ Logs all command events to a centralized audit file.
 **Enable:**
 
 ```bash
-openclaw hooks enable command-logger
+gensparx hooks enable command-logger
 ```
 
-**Output:** `~/.openclaw/logs/commands.log`
+**Output:** `~/.gensparx/logs/commands.log`
 
 **View logs:**
 
 ```bash
 # Recent commands
-tail -n 20 ~/.openclaw/logs/commands.log
+tail -n 20 ~/.gensparx/logs/commands.log
 
 # Pretty-print
-cat ~/.openclaw/logs/commands.log | jq .
+cat ~/.gensparx/logs/commands.log | jq .
 
 # Filter by action
-grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .
+grep '"action":"new"' ~/.gensparx/logs/commands.log | jq .
 ```
 
 **See:** [command-logger documentation](/automation/hooks#command-logger)
@@ -307,7 +307,7 @@ Runs `BOOT.md` when the gateway starts (after channels start).
 **Enable**:
 
 ```bash
-openclaw hooks enable boot-md
+gensparx hooks enable boot-md
 ```
 
 **See:** [boot-md documentation](/automation/hooks#boot-md)
