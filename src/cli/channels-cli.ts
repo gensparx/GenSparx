@@ -85,7 +85,7 @@ export function registerChannelsCli(program: Command) {
           ["gensparx channels login --channel whatsapp", "Link a WhatsApp Web account."],
         ])}\n\n${theme.muted("Docs:")} ${formatDocsLink(
           "/cli/channels",
-          "docs.openclaw.ai/cli/channels",
+          "docs.gensparx.com/cli/channels",
         )}\n`,
     );
 

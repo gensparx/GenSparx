@@ -49,18 +49,18 @@ describe("runDaemonInstall integration", () => {
   beforeAll(async () => {
     envSnapshot = captureEnv([
       "HOME",
-      "OPENCLAW_STATE_DIR",
-      "OPENCLAW_CONFIG_PATH",
-      "OPENCLAW_GATEWAY_TOKEN",
+      "GENSPARX_STATE_DIR",
+      "GENSPARX_CONFIG_PATH",
+      "GENSPARX_GATEWAY_TOKEN",
       "CLAWDBOT_GATEWAY_TOKEN",
-      "OPENCLAW_GATEWAY_PASSWORD",
+      "GENSPARX_GATEWAY_PASSWORD",
       "CLAWDBOT_GATEWAY_PASSWORD",
     ]);
-    tempHome = await makeTempWorkspace("openclaw-daemon-install-int-");
-    configPath = path.join(tempHome, "openclaw.json");
+    tempHome = await makeTempWorkspace("gensparx-daemon-install-int-");
+    configPath = path.join(tempHome, "gensparx.json");
     process.env.HOME = tempHome;
-    process.env.OPENCLAW_STATE_DIR = tempHome;
-    process.env.OPENCLAW_CONFIG_PATH = configPath;
+    process.env.GENSPARX_STATE_DIR = tempHome;
+    process.env.GENSPARX_CONFIG_PATH = configPath;
   });
 
   afterAll(async () => {
@@ -72,9 +72,9 @@ describe("runDaemonInstall integration", () => {
     runtimeLogs.length = 0;
     runtimeErrors.length = 0;
     vi.clearAllMocks();
-    delete process.env.OPENCLAW_GATEWAY_TOKEN;
+    delete process.env.GENSPARX_GATEWAY_TOKEN;
     delete process.env.CLAWDBOT_GATEWAY_TOKEN;
-    delete process.env.OPENCLAW_GATEWAY_PASSWORD;
+    delete process.env.GENSPARX_GATEWAY_PASSWORD;
     delete process.env.CLAWDBOT_GATEWAY_PASSWORD;
     serviceMock.isLoaded.mockResolvedValue(false);
     await fs.writeFile(configPath, JSON.stringify({}, null, 2));
@@ -142,6 +142,6 @@ describe("runDaemonInstall integration", () => {
     expect((persistedToken ?? "").length).toBeGreaterThan(0);
 
     const installEnv = serviceMock.install.mock.calls[0]?.[0]?.environment;
-    expect(installEnv?.OPENCLAW_GATEWAY_TOKEN).toBe(persistedToken);
+    expect(installEnv?.GENSPARX_GATEWAY_TOKEN).toBe(persistedToken);
   });
 });

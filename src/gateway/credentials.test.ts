@@ -1,22 +1,22 @@
 import { describe, expect, it } from "vitest";
-import type { OpenClawConfig } from "../config/config.js";
+import type { GensparxConfig } from "../config/config.js";
 import {
   resolveGatewayCredentialsFromConfig,
   resolveGatewayCredentialsFromValues,
 } from "./credentials.js";
 
-function cfg(input: Partial<OpenClawConfig>): OpenClawConfig {
-  return input as OpenClawConfig;
+function cfg(input: Partial<GensparxConfig>): GensparxConfig {
+  return input as GensparxConfig;
 }
 
 type ResolveFromConfigInput = Parameters<typeof resolveGatewayCredentialsFromConfig>[0];
-type GatewayConfig = NonNullable<OpenClawConfig["gateway"]>;
+type GatewayConfig = NonNullable<GensparxConfig["gateway"]>;
 
 const DEFAULT_GATEWAY_AUTH = { token: "config-token", password: "config-password" };
 const DEFAULT_REMOTE_AUTH = { token: "remote-token", password: "remote-password" };
 const DEFAULT_GATEWAY_ENV = {
-  OPENCLAW_GATEWAY_TOKEN: "env-token",
-  OPENCLAW_GATEWAY_PASSWORD: "env-password",
+  GENSPARX_GATEWAY_TOKEN: "env-token",
+  GENSPARX_GATEWAY_PASSWORD: "env-password",
 } as NodeJS.ProcessEnv;
 
 function resolveGatewayCredentialsFor(
@@ -133,7 +133,7 @@ describe("resolveGatewayCredentialsFromConfig", () => {
               default: { source: "env" },
             },
           },
-        } as unknown as OpenClawConfig,
+        } as unknown as GensparxConfig,
         env: {} as NodeJS.ProcessEnv,
         includeLegacyEnv: false,
       }),
@@ -147,12 +147,12 @@ describe("resolveGatewayCredentialsFromConfig", () => {
           mode: "local",
           auth: {
             mode: "token",
-            token: "${OPENCLAW_GATEWAY_TOKEN}",
+            token: "${GENSPARX_GATEWAY_TOKEN}",
           },
         },
       }),
       env: {
-        OPENCLAW_GATEWAY_TOKEN: "env-token",
+        GENSPARX_GATEWAY_TOKEN: "env-token",
       } as NodeJS.ProcessEnv,
       includeLegacyEnv: false,
     });
@@ -171,7 +171,7 @@ describe("resolveGatewayCredentialsFromConfig", () => {
             mode: "local",
             auth: {
               mode: "token",
-              token: "${OPENCLAW_GATEWAY_TOKEN}",
+              token: "${GENSPARX_GATEWAY_TOKEN}",
             },
           },
         }),
@@ -196,7 +196,7 @@ describe("resolveGatewayCredentialsFromConfig", () => {
             default: { source: "env" },
           },
         },
-      } as unknown as OpenClawConfig,
+      } as unknown as GensparxConfig,
       env: {} as NodeJS.ProcessEnv,
       includeLegacyEnv: false,
     });
@@ -221,7 +221,7 @@ describe("resolveGatewayCredentialsFromConfig", () => {
             default: { source: "env" },
           },
         },
-      } as unknown as OpenClawConfig,
+      } as unknown as GensparxConfig,
       env: {} as NodeJS.ProcessEnv,
       includeLegacyEnv: false,
     });
@@ -314,7 +314,7 @@ describe("resolveGatewayCredentialsFromConfig", () => {
         },
       }),
       env: {
-        OPENCLAW_GATEWAY_TOKEN: "env-token",
+        GENSPARX_GATEWAY_TOKEN: "env-token",
       } as NodeJS.ProcessEnv,
       remoteTokenFallback: "remote-only",
     });
@@ -338,7 +338,7 @@ describe("resolveGatewayCredentialsFromConfig", () => {
               default: { source: "env" },
             },
           },
-        } as unknown as OpenClawConfig,
+        } as unknown as GensparxConfig,
         env: {} as NodeJS.ProcessEnv,
         includeLegacyEnv: false,
         remoteTokenFallback: "remote-only",
@@ -364,7 +364,7 @@ describe("resolveGatewayCredentialsFromConfig", () => {
             default: { source: "env" },
           },
         },
-      } as unknown as OpenClawConfig,
+      } as unknown as GensparxConfig,
       env: {} as NodeJS.ProcessEnv,
       includeLegacyEnv: false,
       remoteTokenFallback: "remote-only",
@@ -395,7 +395,7 @@ describe("resolveGatewayCredentialsFromConfig", () => {
               default: { source: "env" },
             },
           },
-        } as unknown as OpenClawConfig,
+        } as unknown as GensparxConfig,
         env: {} as NodeJS.ProcessEnv,
         includeLegacyEnv: false,
         remoteTokenFallback: "remote-env-local",
@@ -421,7 +421,7 @@ describe("resolveGatewayCredentialsFromConfig", () => {
             default: { source: "env" },
           },
         },
-      } as unknown as OpenClawConfig,
+      } as unknown as GensparxConfig,
       env: {} as NodeJS.ProcessEnv,
       includeLegacyEnv: false,
     });
@@ -448,7 +448,7 @@ describe("resolveGatewayCredentialsFromConfig", () => {
               default: { source: "env" },
             },
           },
-        } as unknown as OpenClawConfig,
+        } as unknown as GensparxConfig,
         env: {} as NodeJS.ProcessEnv,
         includeLegacyEnv: false,
         remotePasswordFallback: "remote-only",
@@ -479,8 +479,8 @@ describe("resolveGatewayCredentialsFromValues", () => {
       configToken: "config-token",
       configPassword: "config-password",
       env: {
-        OPENCLAW_GATEWAY_TOKEN: "env-token",
-        OPENCLAW_GATEWAY_PASSWORD: "env-password",
+        GENSPARX_GATEWAY_TOKEN: "env-token",
+        GENSPARX_GATEWAY_PASSWORD: "env-password",
       } as NodeJS.ProcessEnv,
       includeLegacyEnv: false,
       tokenPrecedence: "config-first",
@@ -497,8 +497,8 @@ describe("resolveGatewayCredentialsFromValues", () => {
       configToken: "config-token",
       configPassword: "config-password",
       env: {
-        OPENCLAW_GATEWAY_TOKEN: "env-token",
-        OPENCLAW_GATEWAY_PASSWORD: "env-password",
+        GENSPARX_GATEWAY_TOKEN: "env-token",
+        GENSPARX_GATEWAY_PASSWORD: "env-password",
       } as NodeJS.ProcessEnv,
     });
     expect(resolved).toEqual({

@@ -5,7 +5,7 @@ import {
   resolveStateDir,
 } from "../../config/config.js";
 import type {
-  OpenClawConfig,
+  GensparxConfig,
   GatewayBindMode,
   GatewayControlUiConfig,
 } from "../../config/types.js";
@@ -115,17 +115,17 @@ function trimToUndefined(value: unknown): string | undefined {
 }
 
 function readGatewayTokenEnv(env: Record<string, string | undefined>): string | undefined {
-  return trimToUndefined(env.OPENCLAW_GATEWAY_TOKEN) ?? trimToUndefined(env.CLAWDBOT_GATEWAY_TOKEN);
+  return trimToUndefined(env.GENSPARX_GATEWAY_TOKEN) ?? trimToUndefined(env.CLAWDBOT_GATEWAY_TOKEN);
 }
 
 function readGatewayPasswordEnv(env: Record<string, string | undefined>): string | undefined {
   return (
-    trimToUndefined(env.OPENCLAW_GATEWAY_PASSWORD) ?? trimToUndefined(env.CLAWDBOT_GATEWAY_PASSWORD)
+    trimToUndefined(env.GENSPARX_GATEWAY_PASSWORD) ?? trimToUndefined(env.CLAWDBOT_GATEWAY_PASSWORD)
   );
 }
 
 async function resolveDaemonProbeToken(params: {
-  daemonCfg: OpenClawConfig;
+  daemonCfg: GensparxConfig;
   mergedDaemonEnv: Record<string, string | undefined>;
   explicitToken?: string;
   explicitPassword?: string;
@@ -174,7 +174,7 @@ async function resolveDaemonProbeToken(params: {
 }
 
 async function resolveDaemonProbePassword(params: {
-  daemonCfg: OpenClawConfig;
+  daemonCfg: GensparxConfig;
   mergedDaemonEnv: Record<string, string | undefined>;
   explicitToken?: string;
   explicitPassword?: string;

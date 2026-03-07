@@ -1,13 +1,13 @@
-import type { OpenClawConfig } from "../../config/config.js";
+import type { GensparxConfig } from "../../config/config.js";
 import { normalizeAccountId } from "../../routing/session-key.js";
 
 const MB = 1024 * 1024;
 
 export function resolveChannelMediaMaxBytes(params: {
-  cfg: OpenClawConfig;
+  cfg: GensparxConfig;
   // Channel-specific config lives under different keys; keep this helper generic
   // so shared plugin helpers don't need channel-id branching.
-  resolveChannelLimitMb: (params: { cfg: OpenClawConfig; accountId: string }) => number | undefined;
+  resolveChannelLimitMb: (params: { cfg: GensparxConfig; accountId: string }) => number | undefined;
   accountId?: string | null;
 }): number | undefined {
   const accountId = normalizeAccountId(params.accountId);

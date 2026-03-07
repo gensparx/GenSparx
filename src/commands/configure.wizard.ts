@@ -1,7 +1,7 @@
 import fsPromises from "node:fs/promises";
 import nodePath from "node:path";
 import { formatCliCommand } from "../cli/command-format.js";
-import type { OpenClawConfig } from "../config/config.js";
+import type { GensparxConfig } from "../config/config.js";
 import { readConfigFileSnapshot, resolveGatewayPort, writeConfigFile } from "../config/config.js";
 import { logConfigUpdated } from "../config/logging.js";
 import { ensureControlUiAssetsBuilt } from "../infra/control-ui-assets.js";
@@ -49,7 +49,7 @@ import { setupSkills } from "./onboard-skills.js";
 type ConfigureSectionChoice = WizardSection | "__continue";
 
 async function resolveGatewaySecretInputForWizard(params: {
-  cfg: OpenClawConfig;
+  cfg: GensparxConfig;
   value: unknown;
   path: string;
 }): Promise<string | undefined> {
@@ -66,7 +66,7 @@ async function resolveGatewaySecretInputForWizard(params: {
 }
 
 async function runGatewayHealthCheck(params: {
-  cfg: OpenClawConfig;
+  cfg: GensparxConfig;
   runtime: RuntimeEnv;
   port: number;
 }): Promise<void> {
@@ -89,9 +89,9 @@ async function runGatewayHealthCheck(params: {
     path: "gateway.auth.password",
   });
   const token =
-    process.env.OPENCLAW_GATEWAY_TOKEN ?? process.env.CLAWDBOT_GATEWAY_TOKEN ?? configuredToken;
+    process.env.GENSPARX_GATEWAY_TOKEN ?? process.env.CLAWDBOT_GATEWAY_TOKEN ?? configuredToken;
   const password =
-    process.env.OPENCLAW_GATEWAY_PASSWORD ??
+    process.env.GENSPARX_GATEWAY_PASSWORD ??
     process.env.CLAWDBOT_GATEWAY_PASSWORD ??
     configuredPassword;
 
@@ -151,7 +151,7 @@ async function promptChannelMode(runtime: RuntimeEnv): Promise<ChannelsWizardMod
         {
           value: "remove",
           label: "Remove channel config",
-          hint: "Delete channel tokens/settings from openclaw.json",
+          hint: "Delete channel tokens/settings from gensparx.json",
         },
       ],
       initialValue: "configure",
@@ -161,9 +161,9 @@ async function promptChannelMode(runtime: RuntimeEnv): Promise<ChannelsWizardMod
 }
 
 async function promptWebToolsConfig(
-  nextConfig: OpenClawConfig,
+  nextConfig: GensparxConfig,
   runtime: RuntimeEnv,
-): Promise<OpenClawConfig> {
+): Promise<GensparxConfig> {
   const existingSearch = nextConfig.tools?.web?.search;
   const existingFetch = nextConfig.tools?.web?.fetch;
   const existingProvider = existingSearch?.provider ?? "brave";
@@ -178,7 +178,7 @@ async function promptWebToolsConfig(
       "Web search lets your agent look things up online using the `web_search` tool.",
       "Choose a provider: Perplexity Search (recommended) or Brave Search.",
       "Both return structured results (title, URL, snippet) for fast research.",
-      "Docs: https://docs.openclaw.ai/tools/web",
+      "Docs: https://docs.gensparx.ai/tools/web",
     ].join("\n"),
     "Web search",
   );
@@ -240,7 +240,7 @@ async function promptWebToolsConfig(
             "No key stored yet, so web_search will stay unavailable.",
             "Store a key here or set PERPLEXITY_API_KEY in the Gateway environment.",
             "Get your API key at: https://www.perplexity.ai/settings/api",
-            "Docs: https://docs.openclaw.ai/tools/web",
+            "Docs: https://docs.gensparx.ai/tools/web",
           ].join("\n"),
           "Web search",
         );
@@ -265,7 +265,7 @@ async function promptWebToolsConfig(
             "No key stored yet, so web_search will stay unavailable.",
             "Store a key here or set BRAVE_API_KEY in the Gateway environment.",
             "Get your API key at: https://brave.com/search/api/",
-            "Docs: https://docs.openclaw.ai/tools/web",
+            "Docs: https://docs.gensparx.ai/tools/web",
           ].join("\n"),
           "Web search",
         );
@@ -305,11 +305,11 @@ export async function runConfigureWizard(
 ) {
   try {
     printWizardHeader(runtime);
-    intro(opts.command === "update" ? "OpenClaw update wizard" : "OpenClaw configure");
+    intro(opts.command === "update" ? "gensparx update wizard" : "gensparx configure");
     const prompter = createClackPrompter();
 
     const snapshot = await readConfigFileSnapshot();
-    const baseConfig: OpenClawConfig = snapshot.valid ? snapshot.config : {};
+    const baseConfig: GensparxConfig = snapshot.valid ? snapshot.config : {};
 
     if (snapshot.exists) {
       const title = snapshot.valid ? "Existing config detected" : "Invalid config";
@@ -319,14 +319,14 @@ export async function runConfigureWizard(
           [
             ...snapshot.issues.map((iss) => `- ${iss.path}: ${iss.message}`),
             "",
-            "Docs: https://docs.openclaw.ai/gateway/configuration",
+            "Docs: https://docs.gensparx.ai/gateway/configuration",
           ].join("\n"),
           "Config issues",
         );
       }
       if (!snapshot.valid) {
         outro(
-          `Config invalid. Run \`${formatCliCommand("openclaw doctor")}\` to repair it, then re-run configure.`,
+          `Config invalid. Run \`${formatCliCommand("gensparx doctor")}\` to repair it, then re-run configure.`,
         );
         runtime.exit(1);
         return;
@@ -347,11 +347,11 @@ export async function runConfigureWizard(
     const localProbe = await probeGatewayReachable({
       url: localUrl,
       token:
-        process.env.OPENCLAW_GATEWAY_TOKEN ??
+        process.env.GENSPARX_GATEWAY_TOKEN ??
         process.env.CLAWDBOT_GATEWAY_TOKEN ??
         baseLocalProbeToken,
       password:
-        process.env.OPENCLAW_GATEWAY_PASSWORD ??
+        process.env.GENSPARX_GATEWAY_PASSWORD ??
         process.env.CLAWDBOT_GATEWAY_PASSWORD ??
         baseLocalProbePassword,
     });
@@ -639,7 +639,7 @@ export async function runConfigureWizard(
     });
     // Try both new and old passwords since gateway may still have old config.
     const newPassword =
-      process.env.OPENCLAW_GATEWAY_PASSWORD ??
+      process.env.GENSPARX_GATEWAY_PASSWORD ??
       process.env.CLAWDBOT_GATEWAY_PASSWORD ??
       (await resolveGatewaySecretInputForWizard({
         cfg: nextConfig,
@@ -647,7 +647,7 @@ export async function runConfigureWizard(
         path: "gateway.auth.password",
       }));
     const oldPassword =
-      process.env.OPENCLAW_GATEWAY_PASSWORD ??
+      process.env.GENSPARX_GATEWAY_PASSWORD ??
       process.env.CLAWDBOT_GATEWAY_PASSWORD ??
       (await resolveGatewaySecretInputForWizard({
         cfg: baseConfig,
@@ -655,7 +655,7 @@ export async function runConfigureWizard(
         path: "gateway.auth.password",
       }));
     const token =
-      process.env.OPENCLAW_GATEWAY_TOKEN ??
+      process.env.GENSPARX_GATEWAY_TOKEN ??
       process.env.CLAWDBOT_GATEWAY_TOKEN ??
       (await resolveGatewaySecretInputForWizard({
         cfg: nextConfig,
@@ -685,7 +685,7 @@ export async function runConfigureWizard(
         `Web UI: ${links.httpUrl}`,
         `Gateway WS: ${links.wsUrl}`,
         gatewayStatusLine,
-        "Docs: https://docs.openclaw.ai/web/control-ui",
+        "Docs: https://docs.gensparx.ai/web/control-ui",
       ].join("\n"),
       "Control UI",
     );

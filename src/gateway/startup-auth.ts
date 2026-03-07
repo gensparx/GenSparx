@@ -2,7 +2,7 @@ import crypto from "node:crypto";
 import type {
   GatewayAuthConfig,
   GatewayTailscaleConfig,
-  OpenClawConfig,
+  GensparxConfig,
 } from "../config/config.js";
 import { writeConfigFile } from "../config/config.js";
 import { hasConfiguredSecretInput, resolveSecretInputRef } from "../config/types.secrets.js";
@@ -58,7 +58,7 @@ export function mergeGatewayTailscaleConfig(
 }
 
 function resolveGatewayAuthFromConfig(params: {
-  cfg: OpenClawConfig;
+  cfg: GensparxConfig;
   env: NodeJS.ProcessEnv;
   authOverride?: GatewayAuthConfig;
   tailscaleOverride?: GatewayTailscaleConfig;
@@ -93,12 +93,12 @@ function shouldPersistGeneratedToken(params: {
 }
 
 function hasGatewayTokenCandidate(params: {
-  cfg: OpenClawConfig;
+  cfg: GensparxConfig;
   env: NodeJS.ProcessEnv;
   authOverride?: GatewayAuthConfig;
 }): boolean {
   const envToken =
-    params.env.OPENCLAW_GATEWAY_TOKEN?.trim() || params.env.CLAWDBOT_GATEWAY_TOKEN?.trim();
+    params.env.GENSPARX_GATEWAY_TOKEN?.trim() || params.env.CLAWDBOT_GATEWAY_TOKEN?.trim();
   if (envToken) {
     return true;
   }
@@ -118,11 +118,11 @@ function hasGatewayTokenOverrideCandidate(params: { authOverride?: GatewayAuthCo
 }
 
 function hasGatewayTokenEnvCandidate(env: NodeJS.ProcessEnv): boolean {
-  return Boolean(env.OPENCLAW_GATEWAY_TOKEN?.trim() || env.CLAWDBOT_GATEWAY_TOKEN?.trim());
+  return Boolean(env.GENSPARX_GATEWAY_TOKEN?.trim() || env.CLAWDBOT_GATEWAY_TOKEN?.trim());
 }
 
 function hasGatewayPasswordEnvCandidate(env: NodeJS.ProcessEnv): boolean {
-  return Boolean(env.OPENCLAW_GATEWAY_PASSWORD?.trim() || env.CLAWDBOT_GATEWAY_PASSWORD?.trim());
+  return Boolean(env.GENSPARX_GATEWAY_PASSWORD?.trim() || env.CLAWDBOT_GATEWAY_PASSWORD?.trim());
 }
 
 function hasGatewayPasswordOverrideCandidate(params: {
@@ -139,7 +139,7 @@ function hasGatewayPasswordOverrideCandidate(params: {
 }
 
 function shouldResolveGatewayTokenSecretRef(params: {
-  cfg: OpenClawConfig;
+  cfg: GensparxConfig;
   env: NodeJS.ProcessEnv;
   authOverride?: GatewayAuthConfig;
 }): boolean {
@@ -167,7 +167,7 @@ function shouldResolveGatewayTokenSecretRef(params: {
 }
 
 async function resolveGatewayTokenSecretRef(
-  cfg: OpenClawConfig,
+  cfg: GensparxConfig,
   env: NodeJS.ProcessEnv,
   authOverride?: GatewayAuthConfig,
 ): Promise<string | undefined> {
@@ -194,7 +194,7 @@ async function resolveGatewayTokenSecretRef(
 }
 
 function shouldResolveGatewayPasswordSecretRef(params: {
-  cfg: OpenClawConfig;
+  cfg: GensparxConfig;
   env: NodeJS.ProcessEnv;
   authOverride?: GatewayAuthConfig;
 }): boolean {
@@ -216,7 +216,7 @@ function shouldResolveGatewayPasswordSecretRef(params: {
 }
 
 async function resolveGatewayPasswordSecretRef(
-  cfg: OpenClawConfig,
+  cfg: GensparxConfig,
   env: NodeJS.ProcessEnv,
   authOverride?: GatewayAuthConfig,
 ): Promise<string | undefined> {
@@ -243,13 +243,13 @@ async function resolveGatewayPasswordSecretRef(
 }
 
 export async function ensureGatewayStartupAuth(params: {
-  cfg: OpenClawConfig;
+  cfg: GensparxConfig;
   env?: NodeJS.ProcessEnv;
   authOverride?: GatewayAuthConfig;
   tailscaleOverride?: GatewayTailscaleConfig;
   persist?: boolean;
 }): Promise<{
-  cfg: OpenClawConfig;
+  cfg: GensparxConfig;
   auth: ReturnType<typeof resolveGatewayAuth>;
   generatedToken?: string;
   persistedGeneratedToken: boolean;
@@ -281,7 +281,7 @@ export async function ensureGatewayStartupAuth(params: {
   }
 
   const generatedToken = crypto.randomBytes(24).toString("hex");
-  const nextCfg: OpenClawConfig = {
+  const nextCfg: GensparxConfig = {
     ...params.cfg,
     gateway: {
       ...params.cfg.gateway,
@@ -316,7 +316,7 @@ export async function ensureGatewayStartupAuth(params: {
 }
 
 export function assertHooksTokenSeparateFromGatewayAuth(params: {
-  cfg: OpenClawConfig;
+  cfg: GensparxConfig;
   auth: ResolvedGatewayAuth;
 }): void {
   if (params.cfg.hooks?.enabled !== true) {

@@ -1,5 +1,5 @@
 /**
- * Hook system for OpenClaw agent events
+ * Hook system for gensparx agent events
  *
  * Provides an extensible event-driven hook system for agent events
  * like command processing, session lifecycle, etc.
@@ -7,7 +7,7 @@
 
 import type { WorkspaceBootstrapFile } from "../agents/workspace.js";
 import type { CliDeps } from "../cli/deps.js";
-import type { OpenClawConfig } from "../config/config.js";
+import type { GensparxConfig } from "../config/config.js";
 import { createSubsystemLogger } from "../logging/subsystem.js";
 
 export type InternalHookEventType = "command" | "session" | "agent" | "gateway" | "message";
@@ -15,7 +15,7 @@ export type InternalHookEventType = "command" | "session" | "agent" | "gateway" 
 export type AgentBootstrapHookContext = {
   workspaceDir: string;
   bootstrapFiles: WorkspaceBootstrapFile[];
-  cfg?: OpenClawConfig;
+  cfg?: GensparxConfig;
   sessionKey?: string;
   sessionId?: string;
   agentId?: string;
@@ -28,7 +28,7 @@ export type AgentBootstrapHookEvent = InternalHookEvent & {
 };
 
 export type GatewayStartupHookContext = {
-  cfg?: OpenClawConfig;
+  cfg?: GensparxConfig;
   deps?: CliDeps;
   workspaceDir?: string;
 };
@@ -211,9 +211,9 @@ export type InternalHookHandler = (event: InternalHookEvent) => Promise<void> | 
  * to silently fire with zero handlers.
  */
 const _g = globalThis as typeof globalThis & {
-  __openclaw_internal_hook_handlers__?: Map<string, InternalHookHandler[]>;
+  __gensparx_internal_hook_handlers__?: Map<string, InternalHookHandler[]>;
 };
-const handlers = (_g.__openclaw_internal_hook_handlers__ ??= new Map<
+const handlers = (_g.__gensparx_internal_hook_handlers__ ??= new Map<
   string,
   InternalHookHandler[]
 >());

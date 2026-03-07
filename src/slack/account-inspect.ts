@@ -1,4 +1,4 @@
-import type { OpenClawConfig } from "../config/config.js";
+import type { GensparxConfig } from "../config/config.js";
 import { hasConfiguredSecretInput, normalizeSecretInputString } from "../config/types.secrets.js";
 import type { SlackAccountConfig } from "../config/types.slack.js";
 import { resolveAccountEntry } from "../routing/account-lookup.js";
@@ -40,13 +40,13 @@ export type InspectedSlackAccount = {
 };
 
 function resolveSlackAccountConfig(
-  cfg: OpenClawConfig,
+  cfg: GensparxConfig,
   accountId: string,
 ): SlackAccountConfig | undefined {
   return resolveAccountEntry(cfg.channels?.slack?.accounts, accountId);
 }
 
-function mergeSlackAccountConfig(cfg: OpenClawConfig, accountId: string): SlackAccountConfig {
+function mergeSlackAccountConfig(cfg: GensparxConfig, accountId: string): SlackAccountConfig {
   const { accounts: _ignored, ...base } = (cfg.channels?.slack ?? {}) as SlackAccountConfig & {
     accounts?: unknown;
   };
@@ -80,7 +80,7 @@ function inspectSlackToken(value: unknown): {
 }
 
 export function inspectSlackAccount(params: {
-  cfg: OpenClawConfig;
+  cfg: GensparxConfig;
   accountId?: string | null;
   envBotToken?: string | null;
   envAppToken?: string | null;

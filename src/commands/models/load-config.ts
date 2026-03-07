@@ -1,12 +1,12 @@
 import { resolveCommandSecretRefsViaGateway } from "../../cli/command-secret-gateway.js";
 import { getModelsCommandSecretTargetIds } from "../../cli/command-secret-targets.js";
-import { loadConfig, type OpenClawConfig } from "../../config/config.js";
+import { loadConfig, type GensparxConfig } from "../../config/config.js";
 import type { RuntimeEnv } from "../../runtime.js";
 
 export async function loadModelsConfig(params: {
   commandName: string;
   runtime?: RuntimeEnv;
-}): Promise<OpenClawConfig> {
+}): Promise<GensparxConfig> {
   const loadedRaw = loadConfig();
   const { resolvedConfig, diagnostics } = await resolveCommandSecretRefsViaGateway({
     config: loadedRaw,

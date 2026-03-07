@@ -97,9 +97,9 @@ describe("configureGatewayForOnboarding", () => {
     expect(result.nextConfig.gateway?.nodes?.denyCommands).toEqual(DEFAULT_DANGEROUS_NODE_COMMANDS);
   });
 
-  it("prefers OPENCLAW_GATEWAY_TOKEN during quickstart token setup", async () => {
-    const prevToken = process.env.OPENCLAW_GATEWAY_TOKEN;
-    process.env.OPENCLAW_GATEWAY_TOKEN = "token-from-env";
+  it("prefers GENSPARX_GATEWAY_TOKEN during quickstart token setup", async () => {
+    const prevToken = process.env.GENSPARX_GATEWAY_TOKEN;
+    process.env.GENSPARX_GATEWAY_TOKEN = "token-from-env";
     mocks.randomToken.mockReturnValue("generated-token");
     mocks.randomToken.mockClear();
 
@@ -112,9 +112,9 @@ describe("configureGatewayForOnboarding", () => {
       expect(result.settings.gatewayToken).toBe("token-from-env");
     } finally {
       if (prevToken === undefined) {
-        delete process.env.OPENCLAW_GATEWAY_TOKEN;
+        delete process.env.GENSPARX_GATEWAY_TOKEN;
       } else {
-        process.env.OPENCLAW_GATEWAY_TOKEN = prevToken;
+        process.env.GENSPARX_GATEWAY_TOKEN = prevToken;
       }
     }
   });
@@ -144,12 +144,12 @@ describe("configureGatewayForOnboarding", () => {
   });
 
   it("honors secretInputMode=ref for gateway password prompts", async () => {
-    const previous = process.env.OPENCLAW_GATEWAY_PASSWORD;
-    process.env.OPENCLAW_GATEWAY_PASSWORD = "gateway-secret";
+    const previous = process.env.GENSPARX_GATEWAY_PASSWORD;
+    process.env.GENSPARX_GATEWAY_PASSWORD = "gateway-secret";
     try {
       const prompter = createPrompter({
         selectQueue: ["loopback", "password", "off", "env"],
-        textQueue: ["18789", "OPENCLAW_GATEWAY_PASSWORD"],
+        textQueue: ["18789", "GENSPARX_GATEWAY_PASSWORD"],
       });
       const runtime = createRuntime();
 
@@ -168,24 +168,24 @@ describe("configureGatewayForOnboarding", () => {
       expect(result.nextConfig.gateway?.auth?.password).toEqual({
         source: "env",
         provider: "default",
-        id: "OPENCLAW_GATEWAY_PASSWORD",
+        id: "GENSPARX_GATEWAY_PASSWORD",
       });
     } finally {
       if (previous === undefined) {
-        delete process.env.OPENCLAW_GATEWAY_PASSWORD;
+        delete process.env.GENSPARX_GATEWAY_PASSWORD;
       } else {
-        process.env.OPENCLAW_GATEWAY_PASSWORD = previous;
+        process.env.GENSPARX_GATEWAY_PASSWORD = previous;
       }
     }
   });
 
   it("stores gateway token as SecretRef when secretInputMode=ref", async () => {
-    const previous = process.env.OPENCLAW_GATEWAY_TOKEN;
-    process.env.OPENCLAW_GATEWAY_TOKEN = "token-from-env";
+    const previous = process.env.GENSPARX_GATEWAY_TOKEN;
+    process.env.GENSPARX_GATEWAY_TOKEN = "token-from-env";
     try {
       const prompter = createPrompter({
         selectQueue: ["loopback", "token", "off", "env"],
-        textQueue: ["18789", "OPENCLAW_GATEWAY_TOKEN"],
+        textQueue: ["18789", "GENSPARX_GATEWAY_TOKEN"],
       });
       const runtime = createRuntime();
 
@@ -204,14 +204,14 @@ describe("configureGatewayForOnboarding", () => {
       expect(result.nextConfig.gateway?.auth?.token).toEqual({
         source: "env",
         provider: "default",
-        id: "OPENCLAW_GATEWAY_TOKEN",
+        id: "GENSPARX_GATEWAY_TOKEN",
       });
       expect(result.settings.gatewayToken).toBe("token-from-env");
     } finally {
       if (previous === undefined) {
-        delete process.env.OPENCLAW_GATEWAY_TOKEN;
+        delete process.env.GENSPARX_GATEWAY_TOKEN;
       } else {
-        process.env.OPENCLAW_GATEWAY_TOKEN = previous;
+        process.env.GENSPARX_GATEWAY_TOKEN = previous;
       }
     }
   });

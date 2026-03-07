@@ -2,5 +2,5 @@
 // Keep this list additive and scoped to symbols used under extensions/qwen-portal-auth.
 
 export { emptyPluginConfigSchema } from "../plugins/config-schema.js";
-export type { OpenClawPluginApi, ProviderAuthContext } from "../plugins/types.js";
+export type { GensparxPluginApi, ProviderAuthContext } from "../plugins/types.js";
 export { generatePkceVerifierChallenge, toFormUrlEncoded } from "./oauth-utils.js";

@@ -125,7 +125,7 @@ function runScript(
 
 describe("scripts/ios-team-id.sh", () => {
   beforeAll(async () => {
-    fixtureRoot = await mkdtemp(path.join(os.tmpdir(), "openclaw-ios-team-id-"));
+    fixtureRoot = await mkdtemp(path.join(os.tmpdir(), "gensparx-ios-team-id-"));
     sharedBinDir = path.join(fixtureRoot, "shared-bin");
     await mkdir(sharedBinDir, { recursive: true });
     sharedHomeDir = path.join(fixtureRoot, "home");
@@ -149,7 +149,7 @@ if [[ "$3" == "DVTDeveloperAccountManagerAppleIDLists" ]]; then
   exit 0
 fi
 if [[ "$3" == "IDEProvisioningTeamIdentifiers" ]]; then
-  if [[ "\${OPENCLAW_TEST_NO_TEAMS:-0}" == "1" ]]; then
+  if [[ "\${GENSPARX_TEST_NO_TEAMS:-0}" == "1" ]]; then
     exit 0
   fi
   echo '("AAAAA11111", "BBBBB22222")'
@@ -230,7 +230,7 @@ printf 'BBBBB22222\\t0\\tBeta Team\\r\\n'`,
   it.runIf(process.platform !== "win32")(
     "prints actionable guidance when Xcode account exists but no Team ID is resolvable",
     async () => {
-      const result = runScript(sharedHomeDir, { OPENCLAW_TEST_NO_TEAMS: "1" });
+      const result = runScript(sharedHomeDir, { GENSPARX_TEST_NO_TEAMS: "1" });
       expect(result.ok).toBe(false);
       expect(
         result.stderr.includes("An Apple account is signed in to Xcode") ||

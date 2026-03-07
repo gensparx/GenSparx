@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import type { OpenClawConfig } from "../../../config/config.js";
+import type { GensparxConfig } from "../../../config/config.js";
 import { configureChannelAccessWithAllowlist } from "./channel-access-configure.js";
 import type { ChannelAccessPolicy } from "./channel-access.js";
 
@@ -13,13 +13,13 @@ function createPrompter(params: { confirm: boolean; policy?: ChannelAccessPolicy
 }
 
 async function runConfigureChannelAccess<TResolved>(params: {
-  cfg: OpenClawConfig;
+  cfg: GensparxConfig;
   prompter: ReturnType<typeof createPrompter>;
   label?: string;
   placeholder?: string;
-  setPolicy: (cfg: OpenClawConfig, policy: ChannelAccessPolicy) => OpenClawConfig;
-  resolveAllowlist: (params: { cfg: OpenClawConfig; entries: string[] }) => Promise<TResolved>;
-  applyAllowlist: (params: { cfg: OpenClawConfig; resolved: TResolved }) => OpenClawConfig;
+  setPolicy: (cfg: GensparxConfig, policy: ChannelAccessPolicy) => GensparxConfig;
+  resolveAllowlist: (params: { cfg: GensparxConfig; entries: string[] }) => Promise<TResolved>;
+  applyAllowlist: (params: { cfg: GensparxConfig; resolved: TResolved }) => GensparxConfig;
 }) {
   return await configureChannelAccessWithAllowlist({
     cfg: params.cfg,
@@ -38,11 +38,11 @@ async function runConfigureChannelAccess<TResolved>(params: {
 
 describe("configureChannelAccessWithAllowlist", () => {
   it("returns input config when user skips access configuration", async () => {
-    const cfg: OpenClawConfig = {};
+    const cfg: GensparxConfig = {};
     const prompter = createPrompter({ confirm: false });
-    const setPolicy = vi.fn((next: OpenClawConfig) => next);
+    const setPolicy = vi.fn((next: GensparxConfig) => next);
     const resolveAllowlist = vi.fn(async () => [] as string[]);
-    const applyAllowlist = vi.fn((params: { cfg: OpenClawConfig }) => params.cfg);
+    const applyAllowlist = vi.fn((params: { cfg: GensparxConfig }) => params.cfg);
 
     const next = await runConfigureChannelAccess({
       cfg,
@@ -59,19 +59,19 @@ describe("configureChannelAccessWithAllowlist", () => {
   });
 
   it("applies non-allowlist policy directly", async () => {
-    const cfg: OpenClawConfig = {};
+    const cfg: GensparxConfig = {};
     const prompter = createPrompter({
       confirm: true,
       policy: "open",
     });
     const setPolicy = vi.fn(
-      (next: OpenClawConfig, policy: ChannelAccessPolicy): OpenClawConfig => ({
+      (next: GensparxConfig, policy: ChannelAccessPolicy): GensparxConfig => ({
         ...next,
         channels: { discord: { groupPolicy: policy } },
       }),
     );
     const resolveAllowlist = vi.fn(async () => ["ignored"]);
-    const applyAllowlist = vi.fn((params: { cfg: OpenClawConfig }) => params.cfg);
+    const applyAllowlist = vi.fn((params: { cfg: GensparxConfig }) => params.cfg);
 
     const next = await runConfigureChannelAccess({
       cfg,
@@ -90,27 +90,27 @@ describe("configureChannelAccessWithAllowlist", () => {
   });
 
   it("resolves allowlist entries and applies them after forcing allowlist policy", async () => {
-    const cfg: OpenClawConfig = {};
+    const cfg: GensparxConfig = {};
     const prompter = createPrompter({
       confirm: true,
       policy: "allowlist",
       text: "#general, #support",
     });
     const calls: string[] = [];
-    const setPolicy = vi.fn((next: OpenClawConfig, policy: ChannelAccessPolicy): OpenClawConfig => {
+    const setPolicy = vi.fn((next: GensparxConfig, policy: ChannelAccessPolicy): GensparxConfig => {
       calls.push("setPolicy");
       return {
         ...next,
         channels: { slack: { groupPolicy: policy } },
       };
     });
-    const resolveAllowlist = vi.fn(async (params: { cfg: OpenClawConfig; entries: string[] }) => {
+    const resolveAllowlist = vi.fn(async (params: { cfg: GensparxConfig; entries: string[] }) => {
       calls.push("resolve");
       expect(params.cfg).toBe(cfg);
       expect(params.entries).toEqual(["#general", "#support"]);
       return ["C1", "C2"];
     });
-    const applyAllowlist = vi.fn((params: { cfg: OpenClawConfig; resolved: string[] }) => {
+    const applyAllowlist = vi.fn((params: { cfg: GensparxConfig; resolved: string[] }) => {
       calls.push("apply");
       expect(params.cfg.channels?.slack?.groupPolicy).toBe("allowlist");
       return {

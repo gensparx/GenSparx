@@ -6,7 +6,7 @@ import {
   resetSessionsSpawnConfigOverride,
   setSessionsSpawnConfigOverride,
   setupSessionsSpawnGatewayMock,
-} from "./openclaw-tools.subagents.sessions-spawn.test-harness.js";
+} from "./gensparx-tools.subagents.sessions-spawn.test-harness.js";
 import { resetSubagentRegistryForTests } from "./subagent-registry.js";
 
 const MAIN_SESSION_KEY = "agent:test:main";

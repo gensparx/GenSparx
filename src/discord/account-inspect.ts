@@ -1,4 +1,4 @@
-import type { OpenClawConfig } from "../config/config.js";
+import type { GensparxConfig } from "../config/config.js";
 import type { DiscordAccountConfig } from "../config/types.discord.js";
 import { hasConfiguredSecretInput, normalizeSecretInputString } from "../config/types.secrets.js";
 import { resolveAccountEntry } from "../routing/account-lookup.js";
@@ -19,13 +19,13 @@ export type InspectedDiscordAccount = {
 };
 
 function resolveDiscordAccountConfig(
-  cfg: OpenClawConfig,
+  cfg: GensparxConfig,
   accountId: string,
 ): DiscordAccountConfig | undefined {
   return resolveAccountEntry(cfg.channels?.discord?.accounts, accountId);
 }
 
-function mergeDiscordAccountConfig(cfg: OpenClawConfig, accountId: string): DiscordAccountConfig {
+function mergeDiscordAccountConfig(cfg: GensparxConfig, accountId: string): DiscordAccountConfig {
   const { accounts: _ignored, ...base } = (cfg.channels?.discord ?? {}) as DiscordAccountConfig & {
     accounts?: unknown;
   };
@@ -57,7 +57,7 @@ function inspectDiscordTokenValue(value: unknown): {
 }
 
 export function inspectDiscordAccount(params: {
-  cfg: OpenClawConfig;
+  cfg: GensparxConfig;
   accountId?: string | null;
   envToken?: string | null;
 }): InspectedDiscordAccount {

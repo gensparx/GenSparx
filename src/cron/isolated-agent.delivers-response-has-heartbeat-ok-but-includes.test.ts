@@ -9,7 +9,7 @@ import { makeCfg, makeJob, writeSessionStore } from "./isolated-agent.test-harne
 import { setupIsolatedAgentTurnMocks } from "./isolated-agent.test-setup.js";
 
 async function withTempHome<T>(fn: (home: string) => Promise<T>): Promise<T> {
-  return withTempHomeBase(fn, { prefix: "openclaw-cron-heartbeat-suite-" });
+  return withTempHomeBase(fn, { prefix: "gensparx-cron-heartbeat-suite-" });
 }
 
 async function createTelegramDeliveryFixture(home: string): Promise<{
@@ -158,7 +158,7 @@ describe("runCronIsolatedAgentTurn", () => {
 
       vi.mocked(runSubagentAnnounceFlow).mockClear();
       vi.mocked(deps.sendMessageTelegram).mockClear();
-      mockEmbeddedAgentPayloads([{ text: "HEARTBEAT_OK 🦞" }]);
+      mockEmbeddedAgentPayloads([{ text: "HEARTBEAT_OK ⚡" }]);
 
       const cfg = makeCfg(home, storePath);
       cfg.agents = {

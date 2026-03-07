@@ -1,6 +1,6 @@
 import { listAgentIds, resolveDefaultAgentId } from "../agents/agent-scope.js";
 import { resolveStorePath } from "../config/sessions.js";
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { GensparxConfig } from "../config/types.gensparx.js";
 import { normalizeAgentId } from "../routing/session-key.js";
 import type { RuntimeEnv } from "../runtime.js";
 
@@ -26,7 +26,7 @@ function dedupeTargetsByStorePath(targets: SessionStoreTarget[]): SessionStoreTa
 }
 
 export function resolveSessionStoreTargets(
-  cfg: OpenClawConfig,
+  cfg: GensparxConfig,
   opts: SessionStoreSelectionOptions,
 ): SessionStoreTarget[] {
   const defaultAgentId = resolveDefaultAgentId(cfg);
@@ -81,7 +81,7 @@ export function resolveSessionStoreTargets(
 }
 
 export function resolveSessionStoreTargetsOrExit(params: {
-  cfg: OpenClawConfig;
+  cfg: GensparxConfig;
   opts: SessionStoreSelectionOptions;
   runtime: RuntimeEnv;
 }): SessionStoreTarget[] | null {

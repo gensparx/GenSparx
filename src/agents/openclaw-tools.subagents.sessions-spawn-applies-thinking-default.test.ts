@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import "./test-helpers/fast-core-tools.js";
-import * as harness from "./openclaw-tools.subagents.sessions-spawn.test-harness.js";
+import * as harness from "./gensparx-tools.subagents.sessions-spawn.test-harness.js";
 import { resetSubagentRegistryForTests } from "./subagent-registry.js";
 
 const MAIN_SESSION_KEY = "agent:test:main";

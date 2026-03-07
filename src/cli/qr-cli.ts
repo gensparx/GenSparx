@@ -41,7 +41,7 @@ function readDevicePairPublicUrlFromConfig(cfg: ReturnType<typeof loadConfig>): 
 }
 
 function readGatewayTokenEnv(env: NodeJS.ProcessEnv): string | undefined {
-  const primary = typeof env.OPENCLAW_GATEWAY_TOKEN === "string" ? env.OPENCLAW_GATEWAY_TOKEN : "";
+  const primary = typeof env.GENSPARX_GATEWAY_TOKEN === "string" ? env.GENSPARX_GATEWAY_TOKEN : "";
   if (primary.trim().length > 0) {
     return primary.trim();
   }
@@ -54,7 +54,7 @@ function readGatewayTokenEnv(env: NodeJS.ProcessEnv): string | undefined {
 
 function readGatewayPasswordEnv(env: NodeJS.ProcessEnv): string | undefined {
   const primary =
-    typeof env.OPENCLAW_GATEWAY_PASSWORD === "string" ? env.OPENCLAW_GATEWAY_PASSWORD : "";
+    typeof env.GENSPARX_GATEWAY_PASSWORD === "string" ? env.GENSPARX_GATEWAY_PASSWORD : "";
   if (primary.trim().length > 0) {
     return primary.trim();
   }

@@ -6,8 +6,8 @@ import { withStateDirEnv } from "../test-helpers/state-dir-env.js";
 import { createCanvasHostHandler } from "./server.js";
 
 describe("canvas host state dir defaults", () => {
-  it("uses OPENCLAW_STATE_DIR for the default canvas root", async () => {
-    await withStateDirEnv("openclaw-canvas-state-", async ({ stateDir }) => {
+  it("uses GENSPARX_STATE_DIR for the default canvas root", async () => {
+    await withStateDirEnv("gensparx-canvas-state-", async ({ stateDir }) => {
       const handler = await createCanvasHostHandler({
         runtime: defaultRuntime,
         allowInTests: true,

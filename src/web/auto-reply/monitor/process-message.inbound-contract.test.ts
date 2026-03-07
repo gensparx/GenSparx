@@ -115,7 +115,7 @@ describe("web processMessage inbound contract", () => {
     capturedDispatchParams = undefined;
     backgroundTasks = new Set();
     deliverWebReplyMock.mockClear();
-    sessionDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-process-message-"));
+    sessionDir = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-process-message-"));
     sessionStorePath = path.join(sessionDir, "sessions.json");
   });
 
@@ -196,7 +196,7 @@ describe("web processMessage inbound contract", () => {
               {
                 id: "main",
                 default: true,
-                identity: { name: "Mainbot", emoji: "🦞", theme: "space lobster" },
+                identity: { name: "Mainbot", emoji: "⚡", theme: "space lobster" },
               },
             ],
           },
@@ -219,7 +219,7 @@ describe("web processMessage inbound contract", () => {
     expect(dispatcherOptions?.responsePrefix).toBe("[Mainbot]");
   });
 
-  it("does not force an [openclaw] response prefix in self-chats when identity is unset", async () => {
+  it("does not force an [gensparx] response prefix in self-chats when identity is unset", async () => {
     capturedDispatchParams = undefined;
 
     await processMessage(

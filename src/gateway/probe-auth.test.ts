@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { OpenClawConfig } from "../config/config.js";
+import type { GensparxConfig } from "../config/config.js";
 import { resolveGatewayProbeAuthSafe } from "./probe-auth.js";
 
 describe("resolveGatewayProbeAuthSafe", () => {
@@ -11,7 +11,7 @@ describe("resolveGatewayProbeAuthSafe", () => {
             token: "token-value",
           },
         },
-      } as OpenClawConfig,
+      } as GensparxConfig,
       mode: "local",
       env: {} as NodeJS.ProcessEnv,
     });
@@ -38,7 +38,7 @@ describe("resolveGatewayProbeAuthSafe", () => {
             default: { source: "env" },
           },
         },
-      } as OpenClawConfig,
+      } as GensparxConfig,
       mode: "local",
       env: {} as NodeJS.ProcessEnv,
     });
@@ -66,7 +66,7 @@ describe("resolveGatewayProbeAuthSafe", () => {
             default: { source: "env" },
           },
         },
-      } as OpenClawConfig,
+      } as GensparxConfig,
       mode: "remote",
       env: {} as NodeJS.ProcessEnv,
     });

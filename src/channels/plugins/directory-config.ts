@@ -1,4 +1,4 @@
-import type { OpenClawConfig } from "../../config/types.js";
+import type { GensparxConfig } from "../../config/types.js";
 import { inspectDiscordAccount } from "../../discord/account-inspect.js";
 import { inspectSlackAccount } from "../../slack/account-inspect.js";
 import { inspectTelegramAccount } from "../../telegram/account-inspect.js";
@@ -8,7 +8,7 @@ import { normalizeSlackMessagingTarget } from "./normalize/slack.js";
 import type { ChannelDirectoryEntry } from "./types.js";
 
 export type DirectoryConfigParams = {
-  cfg: OpenClawConfig;
+  cfg: GensparxConfig;
   accountId?: string | null;
   query?: string | null;
   limit?: number | null;

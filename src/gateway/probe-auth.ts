@@ -1,11 +1,11 @@
-import type { OpenClawConfig } from "../config/config.js";
+import type { GensparxConfig } from "../config/config.js";
 import {
   isGatewaySecretRefUnavailableError,
   resolveGatewayCredentialsFromConfig,
 } from "./credentials.js";
 
 export function resolveGatewayProbeAuth(params: {
-  cfg: OpenClawConfig;
+  cfg: GensparxConfig;
   mode: "local" | "remote";
   env?: NodeJS.ProcessEnv;
 }): { token?: string; password?: string } {
@@ -19,7 +19,7 @@ export function resolveGatewayProbeAuth(params: {
 }
 
 export function resolveGatewayProbeAuthSafe(params: {
-  cfg: OpenClawConfig;
+  cfg: GensparxConfig;
   mode: "local" | "remote";
   env?: NodeJS.ProcessEnv;
 }): {

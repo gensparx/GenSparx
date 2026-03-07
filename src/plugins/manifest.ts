@@ -1,12 +1,19 @@
 import fs from "node:fs";
 import path from "node:path";
-import { MANIFEST_KEY } from "../compat/legacy-names.js";
+import {
+  LEGACY_MANIFEST_KEYS,
+  LEGACY_PLUGIN_MANIFEST_FILENAMES,
+  MANIFEST_KEY,
+} from "../compat/legacy-names.js";
 import { openBoundaryFileSync } from "../infra/boundary-file-read.js";
 import { isRecord } from "../utils.js";
 import type { PluginConfigUiHint, PluginKind } from "./types.js";
 
-export const PLUGIN_MANIFEST_FILENAME = "openclaw.plugin.json";
-export const PLUGIN_MANIFEST_FILENAMES = [PLUGIN_MANIFEST_FILENAME] as const;
+export const PLUGIN_MANIFEST_FILENAME = "gensparx.plugin.json";
+export const PLUGIN_MANIFEST_FILENAMES = [
+  PLUGIN_MANIFEST_FILENAME,
+  ...LEGACY_PLUGIN_MANIFEST_FILENAMES,
+] as const;
 
 export type PluginManifest = {
   id: string;
@@ -118,7 +125,7 @@ export function loadPluginManifest(
   };
 }
 
-// package.json "openclaw" metadata (used for onboarding/catalog)
+// package.json "gensparx" metadata (used for onboarding/catalog)
 export type PluginPackageChannel = {
   id?: string;
   label?: string;
@@ -146,7 +153,7 @@ export type PluginPackageInstall = {
   defaultChoice?: "npm" | "local";
 };
 
-export type OpenClawPackageManifest = {
+export type GensparxPackageManifest = {
   extensions?: string[];
   channel?: PluginPackageChannel;
   install?: PluginPackageInstall;
@@ -164,21 +171,28 @@ export type PackageExtensionResolution =
   | { status: "missing"; entries: [] }
   | { status: "empty"; entries: [] };
 
-export type ManifestKey = typeof MANIFEST_KEY;
+export type ManifestKey = typeof MANIFEST_KEY | (typeof LEGACY_MANIFEST_KEYS)[number];
 
 export type PackageManifest = {
   name?: string;
   version?: string;
   description?: string;
-} & Partial<Record<ManifestKey, OpenClawPackageManifest>>;
+} & Partial<Record<ManifestKey, GensparxPackageManifest>>;
 
 export function getPackageManifestMetadata(
   manifest: PackageManifest | undefined,
-): OpenClawPackageManifest | undefined {
+): GensparxPackageManifest | undefined {
   if (!manifest) {
     return undefined;
   }
-  return manifest[MANIFEST_KEY];
+  const keys = [MANIFEST_KEY, ...LEGACY_MANIFEST_KEYS] as const;
+  for (const key of keys) {
+    const candidate = manifest[key];
+    if (candidate && typeof candidate === "object") {
+      return candidate;
+    }
+  }
+  return undefined;
 }
 
 export function resolvePackageExtensionEntries(

@@ -5,17 +5,17 @@ describe("buildSystemdUnit", () => {
   it("quotes arguments with whitespace", () => {
     const unit = buildSystemdUnit({
       description: "gensparx Gateway",
-      programArguments: ["/usr/bin/openclaw", "gateway", "--name", "My Bot"],
+      programArguments: ["/usr/bin/gensparx", "gateway", "--name", "My Bot"],
       environment: {},
     });
     const execStart = unit.split("\n").find((line) => line.startsWith("ExecStart="));
-    expect(execStart).toBe('ExecStart=/usr/bin/openclaw gateway --name "My Bot"');
+    expect(execStart).toBe('ExecStart=/usr/bin/gensparx gateway --name "My Bot"');
   });
 
   it("renders control-group kill mode for child-process cleanup", () => {
     const unit = buildSystemdUnit({
       description: "gensparx Gateway",
-      programArguments: ["/usr/bin/openclaw", "gateway", "run"],
+      programArguments: ["/usr/bin/gensparx", "gateway", "run"],
       environment: {},
     });
     expect(unit).toContain("KillMode=control-group");
@@ -25,7 +25,7 @@ describe("buildSystemdUnit", () => {
     expect(() =>
       buildSystemdUnit({
         description: "gensparx Gateway",
-        programArguments: ["/usr/bin/openclaw", "gateway", "start"],
+        programArguments: ["/usr/bin/gensparx", "gateway", "start"],
         environment: {
           INJECT: "ok\nExecStartPre=/bin/touch /tmp/oc15789_rce",
         },

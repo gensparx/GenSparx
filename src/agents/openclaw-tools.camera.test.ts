@@ -15,7 +15,7 @@ vi.mock("../media/image-ops.js", () => ({
 }));
 
 import "./test-helpers/fast-core-tools.js";
-import { createOpenClawTools } from "./openclaw-tools.js";
+import { createGensparxTools } from "./gensparx-tools.js";
 
 const NODE_ID = "mac-1";
 const BASE_RUN_INPUT = { action: "run", node: NODE_ID, command: ["echo", "hi"] } as const;
@@ -43,7 +43,7 @@ function getNodesTool(options?: { modelHasVision?: boolean; allowMediaInvokeComm
   if (options?.allowMediaInvokeCommands !== undefined) {
     toolOptions.allowMediaInvokeCommands = options.allowMediaInvokeCommands;
   }
-  const tool = createOpenClawTools(toolOptions).find((candidate) => candidate.name === "nodes");
+  const tool = createGensparxTools(toolOptions).find((candidate) => candidate.name === "nodes");
   if (!tool) {
     throw new Error("missing nodes tool");
   }

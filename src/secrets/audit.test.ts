@@ -33,9 +33,9 @@ function hasFinding(
 }
 
 async function createAuditFixture(): Promise<AuditFixture> {
-  const rootDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-secrets-audit-"));
-  const stateDir = path.join(rootDir, ".openclaw");
-  const configPath = path.join(stateDir, "openclaw.json");
+  const rootDir = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-secrets-audit-"));
+  const stateDir = path.join(rootDir, ".gensparx");
+  const configPath = path.join(stateDir, "gensparx.json");
   const authStorePath = path.join(stateDir, "agents", "main", "agent", "auth-profiles.json");
   const authJsonPath = path.join(stateDir, "agents", "main", "agent", "auth.json");
   const envPath = path.join(stateDir, ".env");
@@ -51,8 +51,8 @@ async function createAuditFixture(): Promise<AuditFixture> {
     authJsonPath,
     envPath,
     env: {
-      OPENCLAW_STATE_DIR: stateDir,
-      OPENCLAW_CONFIG_PATH: configPath,
+      GENSPARX_STATE_DIR: stateDir,
+      GENSPARX_CONFIG_PATH: configPath,
       OPENAI_API_KEY: "env-openai-key",
       PATH: resolveRuntimePathEnv(),
     },

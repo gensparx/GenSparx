@@ -4,7 +4,7 @@ import type { GensparxApp } from "../app.ts";
 
 export function mountApp(pathname: string) {
   window.history.replaceState({}, "", pathname);
-  const app = document.createElement("openclaw-app") as GensparxApp;
+  const app = document.createElement("gensparx-app") as GensparxApp;
   app.connect = () => {
     // no-op: avoid real gateway WS connections in browser tests
   };
@@ -14,13 +14,13 @@ export function mountApp(pathname: string) {
 
 export function registerAppMountHooks() {
   beforeEach(() => {
-    window.__OPENCLAW_CONTROL_UI_BASE_PATH__ = undefined;
+    window.__GENSPARX_CONTROL_UI_BASE_PATH__ = undefined;
     localStorage.clear();
     document.body.innerHTML = "";
   });
 
   afterEach(() => {
-    window.__OPENCLAW_CONTROL_UI_BASE_PATH__ = undefined;
+    window.__GENSPARX_CONTROL_UI_BASE_PATH__ = undefined;
     localStorage.clear();
     document.body.innerHTML = "";
   });

@@ -2,7 +2,7 @@ import { ChannelType } from "discord-api-types/v10";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { NativeCommandSpec } from "../../auto-reply/commands-registry.js";
 import * as dispatcherModule from "../../auto-reply/reply/provider-dispatcher.js";
-import type { OpenClawConfig } from "../../config/config.js";
+import type { GensparxConfig } from "../../config/config.js";
 import * as pluginCommandsModule from "../../plugins/commands.js";
 import { createDiscordNativeCommand } from "./native-command.js";
 import { createNoopThreadBindingManager } from "./thread-bindings.js";
@@ -77,14 +77,14 @@ function createInteraction(params?: {
   };
 }
 
-function createConfig(): OpenClawConfig {
+function createConfig(): GensparxConfig {
   return {
     channels: {
       discord: {
         dm: { enabled: true, policy: "open" },
       },
     },
-  } as OpenClawConfig;
+  } as GensparxConfig;
 }
 
 describe("Discord native plugin command dispatch", () => {
@@ -168,7 +168,7 @@ describe("Discord native plugin command dispatch", () => {
           },
         },
       ],
-    } as OpenClawConfig;
+    } as GensparxConfig;
     const commandSpec: NativeCommandSpec = {
       name: "status",
       description: "Status",
@@ -265,7 +265,7 @@ describe("Discord native plugin command dispatch", () => {
           dm: { enabled: true, policy: "open" },
         },
       },
-    } as OpenClawConfig;
+    } as GensparxConfig;
     const commandSpec: NativeCommandSpec = {
       name: "status",
       description: "Status",

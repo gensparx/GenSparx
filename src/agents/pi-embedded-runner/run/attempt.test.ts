@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import type { OpenClawConfig } from "../../../config/config.js";
+import type { GensparxConfig } from "../../../config/config.js";
 import {
   buildAfterTurnLegacyCompactionParams,
   composeSystemPromptWithHookContext,
@@ -16,7 +16,7 @@ import {
   wrapStreamFnTrimToolCallNames,
 } from "./attempt.js";
 
-function createOllamaProviderConfig(injectNumCtxForOpenAICompat: boolean): OpenClawConfig {
+function createOllamaProviderConfig(injectNumCtxForOpenAICompat: boolean): GensparxConfig {
   return {
     models: {
       providers: {
@@ -143,7 +143,7 @@ describe("resolvePromptModeForSession", () => {
 
 describe("resolveAttemptFsWorkspaceOnly", () => {
   it("uses global tools.fs.workspaceOnly when agent has no override", () => {
-    const cfg: OpenClawConfig = {
+    const cfg: GensparxConfig = {
       tools: {
         fs: { workspaceOnly: true },
       },
@@ -158,7 +158,7 @@ describe("resolveAttemptFsWorkspaceOnly", () => {
   });
 
   it("prefers agent-specific tools.fs.workspaceOnly override", () => {
-    const cfg: OpenClawConfig = {
+    const cfg: GensparxConfig = {
       tools: {
         fs: { workspaceOnly: true },
       },
@@ -577,7 +577,7 @@ describe("buildAfterTurnLegacyCompactionParams", () => {
         messageProvider: "slack",
         agentAccountId: "acct-1",
         authProfileId: "openai:p1",
-        config: { plugins: { slots: { contextEngine: "lossless-claw" } } } as OpenClawConfig,
+        config: { plugins: { slots: { contextEngine: "lossless-claw" } } } as GensparxConfig,
         skillsSnapshot: undefined,
         senderIsOwner: true,
         provider: "openai-codex",
