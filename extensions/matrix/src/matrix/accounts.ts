@@ -2,7 +2,7 @@ import {
   DEFAULT_ACCOUNT_ID,
   normalizeAccountId,
   normalizeOptionalAccountId,
-} from "openclaw/plugin-sdk/account-id";
+} from "gensparx/plugin-sdk/account-id";
 import { hasConfiguredSecretInput } from "../secret-input.js";
 import type { CoreConfig, MatrixConfig } from "../types.js";
 import { resolveMatrixConfigForAccount } from "./client.js";

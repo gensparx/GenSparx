@@ -1,4 +1,4 @@
-import type { OpenClawConfig } from "openclaw/plugin-sdk/matrix";
+import type { GensparxConfig } from "gensparx/plugin-sdk/matrix";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
@@ -38,7 +38,7 @@ describe("matrixOutbound cfg threading", () => {
           accessToken: "resolved-token",
         },
       },
-    } as OpenClawConfig;
+    } as GensparxConfig;
 
     await matrixOutbound.sendText!({
       cfg,
@@ -68,7 +68,7 @@ describe("matrixOutbound cfg threading", () => {
           accessToken: "resolved-token",
         },
       },
-    } as OpenClawConfig;
+    } as GensparxConfig;
 
     await matrixOutbound.sendMedia!({
       cfg,
@@ -95,7 +95,7 @@ describe("matrixOutbound cfg threading", () => {
           accessToken: "resolved-token",
         },
       },
-    } as OpenClawConfig;
+    } as GensparxConfig;
     const sendMatrix = vi.fn(async () => ({
       messageId: "evt-injected",
       roomId: "!room:example",
@@ -130,7 +130,7 @@ describe("matrixOutbound cfg threading", () => {
           accessToken: "resolved-token",
         },
       },
-    } as OpenClawConfig;
+    } as GensparxConfig;
 
     await matrixOutbound.sendPoll!({
       cfg,

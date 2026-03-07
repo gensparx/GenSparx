@@ -1,1 +1,1 @@
-export { promptAccountId } from "openclaw/plugin-sdk/mattermost";
+export { promptAccountId } from "gensparx/plugin-sdk/mattermost";

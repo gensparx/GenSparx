@@ -7,7 +7,7 @@ import {
   readWebhookBodyOrReject,
   resolveWebhookTargetWithAuthOrRejectSync,
   resolveWebhookTargets,
-} from "openclaw/plugin-sdk/bluebubbles";
+} from "gensparx/plugin-sdk/bluebubbles";
 import { createBlueBubblesDebounceRegistry } from "./monitor-debounce.js";
 import { normalizeWebhookMessage, normalizeWebhookReaction } from "./monitor-normalize.js";
 import { logVerbose, processMessage, processReaction } from "./monitor-processing.js";

@@ -1,7 +1,7 @@
 import {
   resolveAllowlistMatchSimple,
   resolveEffectiveAllowFromLists,
-} from "openclaw/plugin-sdk/mattermost";
+} from "gensparx/plugin-sdk/mattermost";
 
 export function normalizeMattermostAllowEntry(entry: string): string {
   const trimmed = entry.trim();

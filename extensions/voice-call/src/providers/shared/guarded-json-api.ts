@@ -1,4 +1,4 @@
-import { fetchWithSsrFGuard } from "openclaw/plugin-sdk/voice-call";
+import { fetchWithSsrFGuard } from "gensparx/plugin-sdk/voice-call";
 
 type GuardedJsonApiRequestParams = {
   url: string;

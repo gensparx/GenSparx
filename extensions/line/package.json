@@ -1,10 +1,10 @@
 {
-  "name": "@openclaw/line",
+  "name": "@gensparx/line",
   "version": "2026.3.2",
   "private": true,
-  "description": "OpenClaw LINE channel plugin",
+  "description": "gensparx LINE channel plugin",
   "type": "module",
-  "openclaw": {
+  "gensparx": {
     "extensions": [
       "./index.ts"
     ],
@@ -19,7 +19,7 @@
       "quickstartAllowFrom": true
     },
     "install": {
-      "npmSpec": "@openclaw/line",
+      "npmSpec": "@gensparx/line",
       "localPath": "extensions/line",
       "defaultChoice": "npm"
     }

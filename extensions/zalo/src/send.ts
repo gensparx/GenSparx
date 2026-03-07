@@ -1,4 +1,4 @@
-import type { OpenClawConfig } from "openclaw/plugin-sdk/zalo";
+import type { GensparxConfig } from "gensparx/plugin-sdk/zalo";
 import { resolveZaloAccount } from "./accounts.js";
 import type { ZaloFetch } from "./api.js";
 import { sendMessage, sendPhoto } from "./api.js";
@@ -8,7 +8,7 @@ import { resolveZaloToken } from "./token.js";
 export type ZaloSendOptions = {
   token?: string;
   accountId?: string;
-  cfg?: OpenClawConfig;
+  cfg?: GensparxConfig;
   mediaUrl?: string;
   caption?: string;
   verbose?: boolean;

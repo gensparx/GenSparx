@@ -1,4 +1,4 @@
-import type { PluginRuntime } from "openclaw/plugin-sdk/msteams";
+import type { PluginRuntime } from "gensparx/plugin-sdk/msteams";
 
 let runtime: PluginRuntime | null = null;
 

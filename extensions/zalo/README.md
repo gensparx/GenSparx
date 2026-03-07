@@ -1,17 +1,17 @@
-# @openclaw/zalo
+# @gensparx/zalo
 
-Zalo channel plugin for OpenClaw (Bot API).
+Zalo channel plugin for gensparx (Bot API).
 
 ## Install (local checkout)
 
 ```bash
-openclaw plugins install ./extensions/zalo
+gensparx plugins install ./extensions/zalo
 ```
 
 ## Install (npm)
 
 ```bash
-openclaw plugins install @openclaw/zalo
+gensparx plugins install @gensparx/zalo
 ```
 
 Onboarding: select Zalo and confirm the install prompt to fetch the plugin automatically.

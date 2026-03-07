@@ -1,4 +1,4 @@
-import type { OpenClawConfig } from "openclaw/plugin-sdk/bluebubbles";
+import type { GensparxConfig } from "gensparx/plugin-sdk/bluebubbles";
 import { resolveBlueBubblesAccount } from "./accounts.js";
 import { normalizeResolvedSecretInputString } from "./secret-input.js";
 
@@ -6,7 +6,7 @@ export type BlueBubblesAccountResolveOpts = {
   serverUrl?: string;
   password?: string;
   accountId?: string;
-  cfg?: OpenClawConfig;
+  cfg?: GensparxConfig;
 };
 
 export function resolveBlueBubblesServerAccount(params: BlueBubblesAccountResolveOpts): {

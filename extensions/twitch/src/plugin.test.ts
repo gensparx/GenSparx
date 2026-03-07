@@ -1,4 +1,4 @@
-import type { OpenClawConfig } from "openclaw/plugin-sdk/twitch";
+import type { GensparxConfig } from "gensparx/plugin-sdk/twitch";
 import { describe, expect, it } from "vitest";
 import { twitchPlugin } from "./plugin.js";
 
@@ -27,7 +27,7 @@ describe("twitchPlugin.status.buildAccountSnapshot", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as GensparxConfig;
 
     const snapshot = await twitchPlugin.status?.buildAccountSnapshot?.({
       account: secondary,

@@ -27,7 +27,7 @@
     },
     "dbPath": {
       "label": "Database Path",
-      "placeholder": "~/.openclaw/memory/lancedb",
+      "placeholder": "~/.gensparx/memory/lancedb",
       "advanced": true
     },
     "autoCapture": {

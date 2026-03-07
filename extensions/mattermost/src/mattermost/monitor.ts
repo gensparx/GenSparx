@@ -1,10 +1,10 @@
 import type {
   ChannelAccountSnapshot,
   ChatType,
-  OpenClawConfig,
+  GensparxConfig,
   ReplyPayload,
   RuntimeEnv,
-} from "openclaw/plugin-sdk/mattermost";
+} from "gensparx/plugin-sdk/mattermost";
 import {
   buildAgentMediaPayload,
   DM_GROUP_ACCESS_REASON,
@@ -28,7 +28,7 @@ import {
   warnMissingProviderGroupPolicyFallbackOnce,
   listSkillCommandsForAgents,
   type HistoryEntry,
-} from "openclaw/plugin-sdk/mattermost";
+} from "gensparx/plugin-sdk/mattermost";
 import { getMattermostRuntime } from "../runtime.js";
 import { resolveMattermostAccount } from "./accounts.js";
 import {
@@ -82,7 +82,7 @@ export type MonitorMattermostOpts = {
   botToken?: string;
   baseUrl?: string;
   accountId?: string;
-  config?: OpenClawConfig;
+  config?: GensparxConfig;
   runtime?: RuntimeEnv;
   abortSignal?: AbortSignal;
   statusSink?: (patch: Partial<ChannelAccountSnapshot>) => void;
@@ -169,7 +169,7 @@ function channelChatType(kind: ChatType): "direct" | "group" | "channel" {
 }
 
 export type MattermostRequireMentionResolverInput = {
-  cfg: OpenClawConfig;
+  cfg: GensparxConfig;
   channel: "mattermost";
   accountId: string;
   groupId: string;
@@ -178,7 +178,7 @@ export type MattermostRequireMentionResolverInput = {
 
 export type MattermostMentionGateInput = {
   kind: ChatType;
-  cfg: OpenClawConfig;
+  cfg: GensparxConfig;
   accountId: string;
   channelId: string;
   threadRootId?: string;
@@ -325,10 +325,10 @@ export async function monitorMattermostProvider(opts: MonitorMattermostOpts = {}
     try {
       const teams = await fetchMattermostUserTeams(client, botUserId);
 
-      // Use the *runtime* listener port when available (e.g. `openclaw gateway run --port <port>`).
-      // The gateway sets OPENCLAW_GATEWAY_PORT when it boots, but the config file may still contain
+      // Use the *runtime* listener port when available (e.g. `gensparx gateway run --port <port>`).
+      // The gateway sets GENSPARX_GATEWAY_PORT when it boots, but the config file may still contain
       // a different port.
-      const envPortRaw = process.env.OPENCLAW_GATEWAY_PORT?.trim();
+      const envPortRaw = process.env.GENSPARX_GATEWAY_PORT?.trim();
       const envPort = envPortRaw ? Number.parseInt(envPortRaw, 10) : NaN;
       const slashGatewayPort =
         Number.isFinite(envPort) && envPort > 0 ? envPort : (cfg.gateway?.port ?? 18789);

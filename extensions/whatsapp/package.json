@@ -1,10 +1,10 @@
 {
-  "name": "@openclaw/whatsapp",
+  "name": "@gensparx/whatsapp",
   "version": "2026.3.2",
   "private": true,
-  "description": "OpenClaw WhatsApp channel plugin",
+  "description": "gensparx WhatsApp channel plugin",
   "type": "module",
-  "openclaw": {
+  "gensparx": {
     "extensions": [
       "./index.ts"
     ]

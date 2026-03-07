@@ -1,18 +1,18 @@
 import type {
   ChannelOnboardingAdapter,
   ChannelOnboardingDmPolicy,
-  OpenClawConfig,
+  GensparxConfig,
   DmPolicy,
   WizardPrompter,
   MSTeamsTeamConfig,
-} from "openclaw/plugin-sdk/msteams";
+} from "gensparx/plugin-sdk/msteams";
 import {
   addWildcardAllowFrom,
   DEFAULT_ACCOUNT_ID,
   formatDocsLink,
   mergeAllowFromEntries,
   promptChannelAccessConfig,
-} from "openclaw/plugin-sdk/msteams";
+} from "gensparx/plugin-sdk/msteams";
 import {
   parseMSTeamsTeamEntry,
   resolveMSTeamsChannelAllowlist,
@@ -23,7 +23,7 @@ import { hasConfiguredMSTeamsCredentials, resolveMSTeamsCredentials } from "./to
 
 const channel = "msteams" as const;
 
-function setMSTeamsDmPolicy(cfg: OpenClawConfig, dmPolicy: DmPolicy) {
+function setMSTeamsDmPolicy(cfg: GensparxConfig, dmPolicy: DmPolicy) {
   const allowFrom =
     dmPolicy === "open"
       ? addWildcardAllowFrom(cfg.channels?.msteams?.allowFrom)?.map((entry) => String(entry))
@@ -41,7 +41,7 @@ function setMSTeamsDmPolicy(cfg: OpenClawConfig, dmPolicy: DmPolicy) {
   };
 }
 
-function setMSTeamsAllowFrom(cfg: OpenClawConfig, allowFrom: string[]): OpenClawConfig {
+function setMSTeamsAllowFrom(cfg: GensparxConfig, allowFrom: string[]): GensparxConfig {
   return {
     ...cfg,
     channels: {
@@ -92,9 +92,9 @@ async function promptMSTeamsCredentials(prompter: WizardPrompter): Promise<{
 }
 
 async function promptMSTeamsAllowFrom(params: {
-  cfg: OpenClawConfig;
+  cfg: GensparxConfig;
   prompter: WizardPrompter;
-}): Promise<OpenClawConfig> {
+}): Promise<GensparxConfig> {
   const existing = params.cfg.channels?.msteams?.allowFrom ?? [];
   await params.prompter.note(
     [
@@ -168,9 +168,9 @@ async function noteMSTeamsCredentialHelp(prompter: WizardPrompter): Promise<void
 }
 
 function setMSTeamsGroupPolicy(
-  cfg: OpenClawConfig,
+  cfg: GensparxConfig,
   groupPolicy: "open" | "allowlist" | "disabled",
-): OpenClawConfig {
+): GensparxConfig {
   return {
     ...cfg,
     channels: {
@@ -185,9 +185,9 @@ function setMSTeamsGroupPolicy(
 }
 
 function setMSTeamsTeamsAllowlist(
-  cfg: OpenClawConfig,
+  cfg: GensparxConfig,
   entries: Array<{ teamKey: string; channelKey?: string }>,
-): OpenClawConfig {
+): GensparxConfig {
   const baseTeams = cfg.channels?.msteams?.teams ?? {};
   const teams: Record<string, { channels?: Record<string, unknown> }> = { ...baseTeams };
   for (const entry of entries) {

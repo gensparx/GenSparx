@@ -2,14 +2,14 @@ import {
   DEFAULT_ACCOUNT_ID,
   normalizeAccountId,
   normalizeOptionalAccountId,
-} from "openclaw/plugin-sdk/account-id";
-import type { OpenClawConfig } from "openclaw/plugin-sdk/zalo";
+} from "gensparx/plugin-sdk/account-id";
+import type { GensparxConfig } from "gensparx/plugin-sdk/zalo";
 import { resolveZaloToken } from "./token.js";
 import type { ResolvedZaloAccount, ZaloAccountConfig, ZaloConfig } from "./types.js";
 
 export type { ResolvedZaloAccount };
 
-function listConfiguredAccountIds(cfg: OpenClawConfig): string[] {
+function listConfiguredAccountIds(cfg: GensparxConfig): string[] {
   const accounts = (cfg.channels?.zalo as ZaloConfig | undefined)?.accounts;
   if (!accounts || typeof accounts !== "object") {
     return [];
@@ -17,7 +17,7 @@ function listConfiguredAccountIds(cfg: OpenClawConfig): string[] {
   return Object.keys(accounts).filter(Boolean);
 }
 
-export function listZaloAccountIds(cfg: OpenClawConfig): string[] {
+export function listZaloAccountIds(cfg: GensparxConfig): string[] {
   const ids = listConfiguredAccountIds(cfg);
   if (ids.length === 0) {
     return [DEFAULT_ACCOUNT_ID];
@@ -25,7 +25,7 @@ export function listZaloAccountIds(cfg: OpenClawConfig): string[] {
   return ids.toSorted((a, b) => a.localeCompare(b));
 }
 
-export function resolveDefaultZaloAccountId(cfg: OpenClawConfig): string {
+export function resolveDefaultZaloAccountId(cfg: GensparxConfig): string {
   const zaloConfig = cfg.channels?.zalo as ZaloConfig | undefined;
   const preferred = normalizeOptionalAccountId(zaloConfig?.defaultAccount);
   if (
@@ -42,7 +42,7 @@ export function resolveDefaultZaloAccountId(cfg: OpenClawConfig): string {
 }
 
 function resolveAccountConfig(
-  cfg: OpenClawConfig,
+  cfg: GensparxConfig,
   accountId: string,
 ): ZaloAccountConfig | undefined {
   const accounts = (cfg.channels?.zalo as ZaloConfig | undefined)?.accounts;
@@ -52,7 +52,7 @@ function resolveAccountConfig(
   return accounts[accountId] as ZaloAccountConfig | undefined;
 }
 
-function mergeZaloAccountConfig(cfg: OpenClawConfig, accountId: string): ZaloAccountConfig {
+function mergeZaloAccountConfig(cfg: GensparxConfig, accountId: string): ZaloAccountConfig {
   const raw = (cfg.channels?.zalo ?? {}) as ZaloConfig;
   const { accounts: _ignored, defaultAccount: _ignored2, ...base } = raw;
   const account = resolveAccountConfig(cfg, accountId) ?? {};
@@ -60,7 +60,7 @@ function mergeZaloAccountConfig(cfg: OpenClawConfig, accountId: string): ZaloAcc
 }
 
 export function resolveZaloAccount(params: {
-  cfg: OpenClawConfig;
+  cfg: GensparxConfig;
   accountId?: string | null;
   allowUnresolvedSecretRef?: boolean;
 }): ResolvedZaloAccount {
@@ -85,7 +85,7 @@ export function resolveZaloAccount(params: {
   };
 }
 
-export function listEnabledZaloAccounts(cfg: OpenClawConfig): ResolvedZaloAccount[] {
+export function listEnabledZaloAccounts(cfg: GensparxConfig): ResolvedZaloAccount[] {
   return listZaloAccountIds(cfg)
     .map((accountId) => resolveZaloAccount({ cfg, accountId }))
     .filter((account) => account.enabled);

@@ -1,4 +1,4 @@
-import type { OpenClawPluginApi } from "openclaw/plugin-sdk/talk-voice";
+import type { GensparxPluginApi } from "gensparx/plugin-sdk/talk-voice";
 
 type ElevenLabsVoice = {
   voice_id: string;
@@ -77,7 +77,7 @@ function asTrimmedString(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
-export default function register(api: OpenClawPluginApi) {
+export default function register(api: GensparxPluginApi) {
   api.registerCommand({
     name: "voice",
     description: "List/set ElevenLabs Talk voice (affects iOS Talk playback).",

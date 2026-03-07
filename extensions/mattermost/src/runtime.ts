@@ -1,4 +1,4 @@
-import type { PluginRuntime } from "openclaw/plugin-sdk/mattermost";
+import type { PluginRuntime } from "gensparx/plugin-sdk/mattermost";
 
 let runtime: PluginRuntime | null = null;
 

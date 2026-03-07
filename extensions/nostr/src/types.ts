@@ -2,8 +2,8 @@ import {
   DEFAULT_ACCOUNT_ID,
   normalizeAccountId,
   normalizeOptionalAccountId,
-} from "openclaw/plugin-sdk/account-id";
-import type { OpenClawConfig } from "openclaw/plugin-sdk/nostr";
+} from "gensparx/plugin-sdk/account-id";
+import type { GensparxConfig } from "gensparx/plugin-sdk/nostr";
 import type { NostrProfile } from "./config-schema.js";
 import { getPublicKeyFromPrivate } from "./nostr-bus.js";
 import { DEFAULT_RELAYS } from "./nostr-bus.js";
@@ -31,7 +31,7 @@ export interface ResolvedNostrAccount {
   config: NostrAccountConfig;
 }
 
-function resolveConfiguredDefaultNostrAccountId(cfg: OpenClawConfig): string | undefined {
+function resolveConfiguredDefaultNostrAccountId(cfg: GensparxConfig): string | undefined {
   const nostrCfg = (cfg.channels as Record<string, unknown> | undefined)?.nostr as
     | NostrAccountConfig
     | undefined;
@@ -41,7 +41,7 @@ function resolveConfiguredDefaultNostrAccountId(cfg: OpenClawConfig): string | u
 /**
  * List all configured Nostr account IDs
  */
-export function listNostrAccountIds(cfg: OpenClawConfig): string[] {
+export function listNostrAccountIds(cfg: GensparxConfig): string[] {
   const nostrCfg = (cfg.channels as Record<string, unknown> | undefined)?.nostr as
     | NostrAccountConfig
     | undefined;
@@ -57,7 +57,7 @@ export function listNostrAccountIds(cfg: OpenClawConfig): string[] {
 /**
  * Get the default account ID
  */
-export function resolveDefaultNostrAccountId(cfg: OpenClawConfig): string {
+export function resolveDefaultNostrAccountId(cfg: GensparxConfig): string {
   const preferred = resolveConfiguredDefaultNostrAccountId(cfg);
   if (preferred) {
     return preferred;
@@ -73,7 +73,7 @@ export function resolveDefaultNostrAccountId(cfg: OpenClawConfig): string {
  * Resolve a Nostr account from config
  */
 export function resolveNostrAccount(opts: {
-  cfg: OpenClawConfig;
+  cfg: GensparxConfig;
   accountId?: string | null;
 }): ResolvedNostrAccount {
   const accountId = normalizeAccountId(opts.accountId ?? resolveDefaultNostrAccountId(opts.cfg));

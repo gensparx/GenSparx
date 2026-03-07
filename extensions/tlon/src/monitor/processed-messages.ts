@@ -1,4 +1,4 @@
-import { createDedupeCache } from "openclaw/plugin-sdk/tlon";
+import { createDedupeCache } from "gensparx/plugin-sdk/tlon";
 
 export type ProcessedMessageTracker = {
   mark: (id?: string | null) => boolean;

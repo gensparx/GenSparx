@@ -1,4 +1,4 @@
-import type { AcpRuntime, OpenClawPluginServiceContext } from "openclaw/plugin-sdk/acpx";
+import type { AcpRuntime, GensparxPluginServiceContext } from "gensparx/plugin-sdk/acpx";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AcpRuntimeError } from "../../../src/acp/runtime/errors.js";
 import {
@@ -54,8 +54,8 @@ function createRuntimeStub(healthy: boolean): {
 }
 
 function createServiceContext(
-  overrides: Partial<OpenClawPluginServiceContext> = {},
-): OpenClawPluginServiceContext {
+  overrides: Partial<GensparxPluginServiceContext> = {},
+): GensparxPluginServiceContext {
   return {
     config: {},
     workspaceDir: "/tmp/workspace",

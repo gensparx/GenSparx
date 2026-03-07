@@ -1,5 +1,5 @@
-import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "openclaw/plugin-sdk/account-id";
-import { fetchWithSsrFGuard } from "openclaw/plugin-sdk/matrix";
+import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "gensparx/plugin-sdk/account-id";
+import { fetchWithSsrFGuard } from "gensparx/plugin-sdk/matrix";
 import { getMatrixRuntime } from "../../runtime.js";
 import {
   normalizeResolvedSecretInputString,
@@ -195,7 +195,7 @@ export async function resolveMatrixAuth(params?: {
         type: "m.login.password",
         identifier: { type: "m.id.user", user: resolved.userId },
         password: resolved.password,
-        initial_device_display_name: resolved.deviceName ?? "OpenClaw Gateway",
+        initial_device_display_name: resolved.deviceName ?? "gensparx Gateway",
       }),
     },
     auditContext: "matrix.login",

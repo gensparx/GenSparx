@@ -1,10 +1,10 @@
 {
-  "name": "@openclaw/signal",
+  "name": "@gensparx/signal",
   "version": "2026.3.2",
   "private": true,
-  "description": "OpenClaw Signal channel plugin",
+  "description": "gensparx Signal channel plugin",
   "type": "module",
-  "openclaw": {
+  "gensparx": {
     "extensions": [
       "./index.ts"
     ]

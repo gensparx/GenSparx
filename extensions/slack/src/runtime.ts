@@ -1,4 +1,4 @@
-import type { PluginRuntime } from "openclaw/plugin-sdk/slack";
+import type { PluginRuntime } from "gensparx/plugin-sdk/slack";
 
 let runtime: PluginRuntime | null = null;
 

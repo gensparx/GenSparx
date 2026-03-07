@@ -1,4 +1,4 @@
-import type { ChannelDirectoryEntry } from "openclaw/plugin-sdk/msteams";
+import type { ChannelDirectoryEntry } from "gensparx/plugin-sdk/msteams";
 import { searchGraphUsers } from "./graph-users.js";
 import {
   type GraphChannel,

@@ -1,10 +1,10 @@
 {
-  "name": "@openclaw/open-prose",
+  "name": "@gensparx/open-prose",
   "version": "2026.3.2",
   "private": true,
   "description": "OpenProse VM skill pack plugin (slash command + telemetry).",
   "type": "module",
-  "openclaw": {
+  "gensparx": {
     "extensions": [
       "./index.ts"
     ]

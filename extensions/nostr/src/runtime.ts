@@ -1,4 +1,4 @@
-import type { PluginRuntime } from "openclaw/plugin-sdk/nostr";
+import type { PluginRuntime } from "gensparx/plugin-sdk/nostr";
 
 let runtime: PluginRuntime | null = null;
 

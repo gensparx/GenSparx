@@ -1,9 +1,9 @@
 {
-  "name": "@openclaw/discord",
+  "name": "@gensparx/discord",
   "version": "2026.3.2",
-  "description": "OpenClaw Discord channel plugin",
+  "description": "gensparx Discord channel plugin",
   "type": "module",
-  "openclaw": {
+  "gensparx": {
     "extensions": [
       "./index.ts"
     ]

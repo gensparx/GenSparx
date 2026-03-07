@@ -1,4 +1,4 @@
-import type { PluginRuntime } from "openclaw/plugin-sdk/tlon";
+import type { PluginRuntime } from "gensparx/plugin-sdk/tlon";
 
 let runtime: PluginRuntime | null = null;
 

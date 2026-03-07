@@ -1,16 +1,16 @@
 import os from "node:os";
 import path from "node:path";
-import type { PluginRuntime } from "openclaw/plugin-sdk/msteams";
+import type { PluginRuntime } from "gensparx/plugin-sdk/msteams";
 
 export const msteamsRuntimeStub = {
   state: {
     resolveStateDir: (env: NodeJS.ProcessEnv = process.env, homedir?: () => string) => {
-      const override = env.OPENCLAW_STATE_DIR?.trim() || env.OPENCLAW_STATE_DIR?.trim();
+      const override = env.GENSPARX_STATE_DIR?.trim() || env.GENSPARX_STATE_DIR?.trim();
       if (override) {
         return override;
       }
       const resolvedHome = homedir ? homedir() : os.homedir();
-      return path.join(resolvedHome, ".openclaw");
+      return path.join(resolvedHome, ".gensparx");
     },
   },
 } as unknown as PluginRuntime;

@@ -1,4 +1,4 @@
-import type { OpenClawConfig, PluginRuntime, RuntimeEnv } from "openclaw/plugin-sdk/zalouser";
+import type { GensparxConfig, PluginRuntime, RuntimeEnv } from "gensparx/plugin-sdk/zalouser";
 import { describe, expect, it, vi } from "vitest";
 import { __testing } from "./monitor.js";
 import { setZalouserRuntime } from "./runtime.js";
@@ -67,7 +67,7 @@ describe("zalouser monitor pairing account scoping", () => {
       },
     };
 
-    const config: OpenClawConfig = {
+    const config: GensparxConfig = {
       channels: {
         zalouser: {
           accounts: {

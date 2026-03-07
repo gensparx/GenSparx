@@ -11,7 +11,7 @@ import {
   resolveDefaultGroupPolicy,
   setAccountEnabledInConfigSection,
   type ChannelPlugin,
-} from "openclaw/plugin-sdk/irc";
+} from "gensparx/plugin-sdk/irc";
 import {
   listIrcAccountIds,
   resolveDefaultIrcAccountId,

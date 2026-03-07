@@ -1,4 +1,4 @@
-import type { PluginRuntime } from "openclaw/plugin-sdk/googlechat";
+import type { PluginRuntime } from "gensparx/plugin-sdk/googlechat";
 
 let runtime: PluginRuntime | null = null;
 

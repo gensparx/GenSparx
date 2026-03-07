@@ -1,18 +1,18 @@
-# OpenClaw gateway — Podman Quadlet (rootless)
-# Installed by setup-podman.sh into openclaw's ~/.config/containers/systemd/
-# {{OPENCLAW_HOME}} is replaced at install time.
+# gensparx gateway — Podman Quadlet (rootless)
+# Installed by setup-podman.sh into gensparx's ~/.config/containers/systemd/
+# {{GENSPARX_HOME}} is replaced at install time.
 
 [Unit]
-Description=OpenClaw gateway (rootless Podman)
+Description=gensparx gateway (rootless Podman)
 
 [Container]
-Image=openclaw:local
-ContainerName=openclaw
+Image=gensparx:local
+ContainerName=gensparx
 UserNS=keep-id
 # Keep container UID/GID aligned with the invoking user so mounted config is readable.
 User=%U:%G
-Volume={{OPENCLAW_HOME}}/.openclaw:/home/node/.openclaw
-EnvironmentFile={{OPENCLAW_HOME}}/.openclaw/.env
+Volume={{GENSPARX_HOME}}/.gensparx:/home/node/.gensparx
+EnvironmentFile={{GENSPARX_HOME}}/.gensparx/.env
 Environment=HOME=/home/node
 Environment=TERM=xterm-256color
 PublishPort=18789:18789

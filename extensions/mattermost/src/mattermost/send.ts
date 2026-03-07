@@ -1,4 +1,4 @@
-import { loadOutboundMediaFromUrl, type OpenClawConfig } from "openclaw/plugin-sdk/mattermost";
+import { loadOutboundMediaFromUrl, type GensparxConfig } from "gensparx/plugin-sdk/mattermost";
 import { getMattermostRuntime } from "../runtime.js";
 import { resolveMattermostAccount } from "./accounts.js";
 import {
@@ -15,7 +15,7 @@ import {
 } from "./client.js";
 
 export type MattermostSendOpts = {
-  cfg?: OpenClawConfig;
+  cfg?: GensparxConfig;
   botToken?: string;
   baseUrl?: string;
   accountId?: string;

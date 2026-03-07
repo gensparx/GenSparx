@@ -2,8 +2,8 @@ import type {
   ChannelAccountSnapshot,
   ChannelDock,
   ChannelPlugin,
-  OpenClawConfig,
-} from "openclaw/plugin-sdk/zalo";
+  GensparxConfig,
+} from "gensparx/plugin-sdk/zalo";
 import {
   applyAccountNameToChannelSection,
   buildChannelConfigSchema,
@@ -20,7 +20,7 @@ import {
   resolveOpenProviderRuntimeGroupPolicy,
   resolveChannelAccountConfigBasePath,
   setAccountEnabledInConfigSection,
-} from "openclaw/plugin-sdk/zalo";
+} from "gensparx/plugin-sdk/zalo";
 import {
   listZaloAccountIds,
   resolveDefaultZaloAccountId,
@@ -261,7 +261,7 @@ export const zaloPlugin: ChannelPlugin<ResolvedZaloAccount> = {
                     : {}),
             },
           },
-        } as OpenClawConfig;
+        } as GensparxConfig;
       }
       return {
         ...next,
@@ -284,7 +284,7 @@ export const zaloPlugin: ChannelPlugin<ResolvedZaloAccount> = {
             },
           },
         },
-      } as OpenClawConfig;
+      } as GensparxConfig;
     },
   },
   pairing: {

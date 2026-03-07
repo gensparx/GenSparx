@@ -3,7 +3,7 @@ import {
   issuePairingChallenge,
   readStoreAllowFromForDmPolicy,
   resolveDmGroupAccessWithLists,
-} from "openclaw/plugin-sdk/matrix";
+} from "gensparx/plugin-sdk/matrix";
 import {
   normalizeMatrixAllowList,
   resolveMatrixAllowListMatch,
@@ -99,12 +99,12 @@ export async function enforceMatrixDirectMessageAccess(params: {
       upsertPairingRequest: params.upsertPairingRequest,
       buildReplyText: ({ code }) =>
         [
-          "OpenClaw: access not configured.",
+          "Gensparx: access not configured.",
           "",
           `Pairing code: ${code}`,
           "",
           "Ask the bot owner to approve with:",
-          "openclaw pairing approve matrix <code>",
+          "gensparx pairing approve matrix <code>",
         ].join("\n"),
       sendPairingReply: params.sendPairingReply,
       onCreated: () => {

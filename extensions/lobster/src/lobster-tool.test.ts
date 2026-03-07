@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { PassThrough } from "node:stream";
-import type { OpenClawPluginApi, OpenClawPluginToolContext } from "openclaw/plugin-sdk/lobster";
+import type { GensparxPluginApi, GensparxPluginToolContext } from "gensparx/plugin-sdk/lobster";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createWindowsCmdShimFixture,
@@ -27,7 +27,7 @@ vi.mock("node:child_process", async (importOriginal) => {
 
 let createLobsterTool: typeof import("./lobster-tool.js").createLobsterTool;
 
-function fakeApi(overrides: Partial<OpenClawPluginApi> = {}): OpenClawPluginApi {
+function fakeApi(overrides: Partial<GensparxPluginApi> = {}): GensparxPluginApi {
   return {
     id: "lobster",
     name: "lobster",
@@ -53,7 +53,7 @@ function fakeApi(overrides: Partial<OpenClawPluginApi> = {}): OpenClawPluginApi 
   };
 }
 
-function fakeCtx(overrides: Partial<OpenClawPluginToolContext> = {}): OpenClawPluginToolContext {
+function fakeCtx(overrides: Partial<GensparxPluginToolContext> = {}): GensparxPluginToolContext {
   return {
     config: {},
     workspaceDir: "/tmp",
@@ -74,7 +74,7 @@ describe("lobster plugin tool", () => {
   beforeAll(async () => {
     ({ createLobsterTool } = await import("./lobster-tool.js"));
 
-    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-lobster-plugin-"));
+    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "gensparx-lobster-plugin-"));
   });
 
   afterEach(() => {
@@ -298,7 +298,7 @@ describe("lobster plugin tool", () => {
 
   it("can be gated off in sandboxed contexts", async () => {
     const api = fakeApi();
-    const factoryTool = (ctx: OpenClawPluginToolContext) => {
+    const factoryTool = (ctx: GensparxPluginToolContext) => {
       if (ctx.sandboxed) {
         return null;
       }

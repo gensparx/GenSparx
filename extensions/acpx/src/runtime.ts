@@ -10,8 +10,8 @@ import type {
   AcpRuntimeStatus,
   AcpRuntimeTurnInput,
   PluginLogger,
-} from "openclaw/plugin-sdk/acpx";
-import { AcpRuntimeError } from "openclaw/plugin-sdk/acpx";
+} from "gensparx/plugin-sdk/acpx";
+import { AcpRuntimeError } from "gensparx/plugin-sdk/acpx";
 import { type ResolvedAcpxPluginConfig } from "./config.js";
 import { checkAcpxVersion } from "./ensure.js";
 import {

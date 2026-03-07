@@ -1,14 +1,14 @@
 {
-  "name": "@openclaw/llm-task",
+  "name": "@gensparx/llm-task",
   "version": "2026.3.2",
   "private": true,
-  "description": "OpenClaw JSON-only LLM task plugin",
+  "description": "gensparx JSON-only LLM task plugin",
   "type": "module",
   "dependencies": {
     "@sinclair/typebox": "0.34.48",
     "ajv": "^8.18.0"
   },
-  "openclaw": {
+  "gensparx": {
     "extensions": [
       "./index.ts"
     ]

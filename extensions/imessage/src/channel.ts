@@ -26,7 +26,7 @@ import {
   setAccountEnabledInConfigSection,
   type ChannelPlugin,
   type ResolvedIMessageAccount,
-} from "openclaw/plugin-sdk/imessage";
+} from "gensparx/plugin-sdk/imessage";
 import { getIMessageRuntime } from "./runtime.js";
 
 const meta = getChatChannelMeta("imessage");

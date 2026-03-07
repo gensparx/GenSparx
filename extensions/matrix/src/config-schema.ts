@@ -1,4 +1,4 @@
-import { MarkdownConfigSchema, ToolPolicySchema } from "openclaw/plugin-sdk/matrix";
+import { MarkdownConfigSchema, ToolPolicySchema } from "gensparx/plugin-sdk/matrix";
 import { z } from "zod";
 import { buildSecretInputSchema } from "./secret-input.js";
 

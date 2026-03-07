@@ -1,7 +1,7 @@
 {
-  "name": "@openclaw/voice-call",
+  "name": "@gensparx/voice-call",
   "version": "2026.3.2",
-  "description": "OpenClaw voice-call plugin",
+  "description": "gensparx voice-call plugin",
   "type": "module",
   "dependencies": {
     "@sinclair/typebox": "0.34.48",
@@ -9,7 +9,7 @@
     "ws": "^8.19.0",
     "zod": "^4.3.6"
   },
-  "openclaw": {
+  "gensparx": {
     "extensions": [
       "./index.ts"
     ]

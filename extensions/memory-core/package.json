@@ -1,18 +1,18 @@
 {
-  "name": "@openclaw/memory-core",
+  "name": "@gensparx/memory-core",
   "version": "2026.3.2",
   "private": true,
-  "description": "OpenClaw core memory search plugin",
+  "description": "gensparx core memory search plugin",
   "type": "module",
   "peerDependencies": {
-    "openclaw": ">=2026.3.2"
+    "gensparx": ">=2026.3.2"
   },
   "peerDependenciesMeta": {
-    "openclaw": {
+    "gensparx": {
       "optional": true
     }
   },
-  "openclaw": {
+  "gensparx": {
     "extensions": [
       "./index.ts"
     ]

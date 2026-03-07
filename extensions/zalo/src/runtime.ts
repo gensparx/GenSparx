@@ -1,4 +1,4 @@
-import type { PluginRuntime } from "openclaw/plugin-sdk/zalo";
+import type { PluginRuntime } from "gensparx/plugin-sdk/zalo";
 
 let runtime: PluginRuntime | null = null;
 

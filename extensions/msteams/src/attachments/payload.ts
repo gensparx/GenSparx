@@ -1,4 +1,4 @@
-import { buildMediaPayload } from "openclaw/plugin-sdk/msteams";
+import { buildMediaPayload } from "gensparx/plugin-sdk/msteams";
 
 export function buildMSTeamsMediaPayload(
   mediaList: Array<{ path: string; contentType?: string }>,
