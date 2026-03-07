@@ -80,7 +80,7 @@ Multi-account config (advanced):
 
 ## Full documentation
 
-See https://docs.gensparx.ai/channels/twitch for:
+See https://docs.gensparx.com/channels/twitch for:
 
 - Token refresh setup
 - Access control patterns

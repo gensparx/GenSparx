@@ -1,7 +1,7 @@
 ---
 name: session-memory
 description: "Save session context to memory when /new or /reset command is issued"
-homepage: https://docs.gensparx.ai/automation/hooks#session-memory
+homepage: https://docs.gensparx.com/automation/hooks#session-memory
 metadata:
   {
     "gensparx":

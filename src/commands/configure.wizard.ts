@@ -178,7 +178,7 @@ async function promptWebToolsConfig(
       "Web search lets your agent look things up online using the `web_search` tool.",
       "Choose a provider: Perplexity Search (recommended) or Brave Search.",
       "Both return structured results (title, URL, snippet) for fast research.",
-      "Docs: https://docs.gensparx.ai/tools/web",
+      "Docs: https://docs.gensparx.com/tools/web",
     ].join("\n"),
     "Web search",
   );
@@ -240,7 +240,7 @@ async function promptWebToolsConfig(
             "No key stored yet, so web_search will stay unavailable.",
             "Store a key here or set PERPLEXITY_API_KEY in the Gateway environment.",
             "Get your API key at: https://www.perplexity.ai/settings/api",
-            "Docs: https://docs.gensparx.ai/tools/web",
+            "Docs: https://docs.gensparx.com/tools/web",
           ].join("\n"),
           "Web search",
         );
@@ -265,7 +265,7 @@ async function promptWebToolsConfig(
             "No key stored yet, so web_search will stay unavailable.",
             "Store a key here or set BRAVE_API_KEY in the Gateway environment.",
             "Get your API key at: https://brave.com/search/api/",
-            "Docs: https://docs.gensparx.ai/tools/web",
+            "Docs: https://docs.gensparx.com/tools/web",
           ].join("\n"),
           "Web search",
         );
@@ -319,7 +319,7 @@ export async function runConfigureWizard(
           [
             ...snapshot.issues.map((iss) => `- ${iss.path}: ${iss.message}`),
             "",
-            "Docs: https://docs.gensparx.ai/gateway/configuration",
+            "Docs: https://docs.gensparx.com/gateway/configuration",
           ].join("\n"),
           "Config issues",
         );
@@ -685,7 +685,7 @@ export async function runConfigureWizard(
         `Web UI: ${links.httpUrl}`,
         `Gateway WS: ${links.wsUrl}`,
         gatewayStatusLine,
-        "Docs: https://docs.gensparx.ai/web/control-ui",
+        "Docs: https://docs.gensparx.com/web/control-ui",
       ].join("\n"),
       "Control UI",
     );

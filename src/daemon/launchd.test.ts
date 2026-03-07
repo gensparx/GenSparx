@@ -286,7 +286,7 @@ describe("launchd install", () => {
     }
     expect(message).toContain("logged-in macOS GUI session");
     expect(message).toContain("wrong user (including sudo)");
-    expect(message).toContain("https://docs.gensparx.ai/gateway");
+    expect(message).toContain("https://docs.gensparx.com/gateway");
   });
 
   it("surfaces generic bootstrap failures without GUI-specific guidance", async () => {

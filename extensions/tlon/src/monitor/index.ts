@@ -971,7 +971,7 @@ export async function monitorTlonProvider(opts: MonitorTlonOpts = {}): Promise<v
             `This can leak conversation context between users.\n\n` +
             `Fix: Add to your gensparx config:\n` +
             `session:\n  dmScope: "per-channel-peer"\n\n` +
-            `Docs: https://docs.gensparx.ai/concepts/session#secure-dm-mode`;
+            `Docs: https://docs.gensparx.com/concepts/session#secure-dm-mode`;
 
           // Send async, don't block message processing
           sendDm({

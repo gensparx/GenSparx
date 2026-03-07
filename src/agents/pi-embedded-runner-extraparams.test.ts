@@ -720,7 +720,7 @@ describe("applyExtraParamsToAgent", () => {
 
     expect(calls).toHaveLength(1);
     expect(calls[0]?.headers).toEqual({
-      "HTTP-Referer": "https://gensparx.ai",
+      "HTTP-Referer": "https://gensparx.com",
       "X-Title": "GenSparx",
       "X-Custom": "1",
     });

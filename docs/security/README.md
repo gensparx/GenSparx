@@ -1,6 +1,6 @@
 # gensparx Security & Trust
 
-**Live:** [trust.gensparx.ai](https://trust.gensparx.ai)
+**Live:** [trust.gensparx.com](https://trust.gensparx.com)
 
 ## Documents
 
@@ -9,7 +9,7 @@
 
 ## Reporting Vulnerabilities
 
-See the [Trust page](https://trust.gensparx.ai) for full reporting instructions covering all repos.
+See the [Trust page](https://trust.gensparx.com) for full reporting instructions covering all repos.
 
 ## Contact
 

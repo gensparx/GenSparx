@@ -241,7 +241,7 @@ describe("packNpmSpecToArchive", () => {
     if (!result.ok) {
       expect(result.error).toContain("Package not found on npm");
       expect(result.error).toContain("@gensparx/whatsapp");
-      expect(result.error).toContain("docs.gensparx.ai/tools/plugin");
+      expect(result.error).toContain("docs.gensparx.com/tools/plugin");
     }
   });
 

@@ -36,7 +36,7 @@
 <h3>Breaking</h3>
 <ul>
 <li><strong>BREAKING:</strong> Onboarding now defaults <code>tools.profile</code> to <code>messaging</code> for new local installs (interactive + non-interactive). New setups no longer start with broad coding/system tools unless explicitly configured.</li>
-<li><strong>BREAKING:</strong> ACP dispatch now defaults to enabled unless explicitly disabled (<code>acp.dispatch.enabled=false</code>). If you need to pause ACP turn routing while keeping <code>/acp</code> controls, set <code>acp.dispatch.enabled=false</code>. Docs: https://docs.gensparx.ai/tools/acp-agents</li>
+<li><strong>BREAKING:</strong> ACP dispatch now defaults to enabled unless explicitly disabled (<code>acp.dispatch.enabled=false</code>). If you need to pause ACP turn routing while keeping <code>/acp</code> controls, set <code>acp.dispatch.enabled=false</code>. Docs: https://docs.gensparx.com/tools/acp-agents</li>
 <li><strong>BREAKING:</strong> Plugin SDK removed <code>api.registerHttpHandler(...)</code>. Plugins must register explicit HTTP routes via <code>api.registerHttpRoute({ path, auth, match, handler })</code>, and dynamic webhook lifecycles should use <code>registerPluginHttpRoute(...)</code>.</li>
 <li><strong>BREAKING:</strong> Zalo Personal plugin (<code>@gensparx/zalouser</code>) no longer depends on external <code>zca</code>-compatible CLI binaries (<code>openzca</code>, <code>zca-cli</code>) for runtime send/listen/login; operators should use <code>gensparx channels login --channel zalouser</code> after upgrade to refresh sessions in the new JS-native path.</li>
 </ul>

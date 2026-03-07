@@ -76,5 +76,5 @@ If you only want to reset sessions, delete `agents/<agentId>/sessions/` and `age
 
 ## References
 
-- [https://docs.gensparx.ai/testing](https://docs.gensparx.ai/testing)
-- [https://docs.gensparx.ai/start/getting-started](https://docs.gensparx.ai/start/getting-started)
+- [https://docs.gensparx.com/testing](https://docs.gensparx.com/testing)
+- [https://docs.gensparx.com/start/getting-started](https://docs.gensparx.com/start/getting-started)

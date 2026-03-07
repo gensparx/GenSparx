@@ -194,7 +194,7 @@ export function buildGatewayConnectionDetails(
           ? undefined
           : "Break-glass (trusted private networks only): set GENSPARX_ALLOW_INSECURE_PRIVATE_WS=1",
         "Doctor: gensparx doctor --fix",
-        "Docs: https://docs.gensparx.ai/gateway/remote",
+        "Docs: https://docs.gensparx.com/gateway/remote",
       ].join("\n"),
     );
   }

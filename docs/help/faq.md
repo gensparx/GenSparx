@@ -23,7 +23,7 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
   - [It is stuck on "wake up my friend" / onboarding will not hatch. What now?](#it-is-stuck-on-wake-up-my-friend-onboarding-will-not-hatch-what-now)
   - [Can I migrate my setup to a new machine (Mac mini) without redoing onboarding?](#can-i-migrate-my-setup-to-a-new-machine-mac-mini-without-redoing-onboarding)
   - [Where do I see what is new in the latest version?](#where-do-i-see-what-is-new-in-the-latest-version)
-  - [I can't access docs.gensparx.ai (SSL error). What now?](#i-cant-access-docsgensparxai-ssl-error-what-now)
+  - [I can't access docs.gensparx.com (SSL error). What now?](#i-cant-access-docsgensparxai-ssl-error-what-now)
   - [What's the difference between stable and beta?](#whats-the-difference-between-stable-and-beta)
   - [How do I install the beta version, and what's the difference between beta and dev?](#how-do-i-install-the-beta-version-and-whats-the-difference-between-beta-and-dev)
   - [How do I try the latest bits?](#how-do-i-try-the-latest-bits)
@@ -281,7 +281,7 @@ setup (PATH, services, permissions, auth files). Give them the **full source che
 the hackable (git) install:
 
 ```bash
-curl -fsSL https://gensparx.ai/install.sh | bash -s -- --install-method git
+curl -fsSL https://gensparx.com/install.sh | bash -s -- --install-method git
 ```
 
 This installs gensparx **from a git checkout**, so the agent can read the code + docs and
@@ -320,7 +320,7 @@ Install docs: [Install](/install), [Installer flags](/install/installer), [Updat
 The repo recommends running from source and using the onboarding wizard:
 
 ```bash
-curl -fsSL https://gensparx.ai/install.sh | bash
+curl -fsSL https://gensparx.com/install.sh | bash
 gensparx onboard --install-daemon
 ```
 
@@ -445,10 +445,10 @@ Newest entries are at the top. If the top section is marked **Unreleased**, the 
 section is the latest shipped version. Entries are grouped by **Highlights**, **Changes**, and
 **Fixes** (plus docs/other sections when needed).
 
-### I can't access docs.gensparx.ai SSL error What now
+### I can't access docs.gensparx.com SSL error What now
 
-Some Comcast/Xfinity connections incorrectly block `docs.gensparx.ai` via Xfinity
-Advanced Security. Disable it or allowlist `docs.gensparx.ai`, then retry. More
+Some Comcast/Xfinity connections incorrectly block `docs.gensparx.com` via Xfinity
+Advanced Security. Disable it or allowlist `docs.gensparx.com`, then retry. More
 detail: [Troubleshooting](/help/troubleshooting#docsgensparxai-shows-an-ssl-error-comcastxfinity).
 Please help us unblock it by reporting here: [https://spa.xfinity.com/check_url_status](https://spa.xfinity.com/check_url_status).
 
@@ -477,15 +477,15 @@ See what changed:
 One-liners (macOS/Linux):
 
 ```bash
-curl -fsSL --proto '=https' --tlsv1.2 https://gensparx.ai/install.sh | bash -s -- --beta
+curl -fsSL --proto '=https' --tlsv1.2 https://gensparx.com/install.sh | bash -s -- --beta
 ```
 
 ```bash
-curl -fsSL --proto '=https' --tlsv1.2 https://gensparx.ai/install.sh | bash -s -- --install-method git
+curl -fsSL --proto '=https' --tlsv1.2 https://gensparx.com/install.sh | bash -s -- --install-method git
 ```
 
 Windows installer (PowerShell):
-[https://gensparx.ai/install.ps1](https://gensparx.ai/install.ps1)
+[https://gensparx.com/install.ps1](https://gensparx.com/install.ps1)
 
 More detail: [Development channels](/install/development-channels) and [Installer flags](/install/installer).
 
@@ -514,7 +514,7 @@ This switches to the `main` branch and updates from source.
 2. **Hackable install (from the installer site):**
 
 ```bash
-curl -fsSL https://gensparx.ai/install.sh | bash -s -- --install-method git
+curl -fsSL https://gensparx.com/install.sh | bash -s -- --install-method git
 ```
 
 That gives you a local repo you can edit, then update via git.
@@ -536,19 +536,19 @@ Docs: [Update](/cli/update), [Development channels](/install/development-channel
 Re-run the installer with **verbose output**:
 
 ```bash
-curl -fsSL https://gensparx.ai/install.sh | bash -s -- --verbose
+curl -fsSL https://gensparx.com/install.sh | bash -s -- --verbose
 ```
 
 Beta install with verbose:
 
 ```bash
-curl -fsSL https://gensparx.ai/install.sh | bash -s -- --beta --verbose
+curl -fsSL https://gensparx.com/install.sh | bash -s -- --beta --verbose
 ```
 
 For a hackable (git) install:
 
 ```bash
-curl -fsSL https://gensparx.ai/install.sh | bash -s -- --install-method git --verbose
+curl -fsSL https://gensparx.com/install.sh | bash -s -- --install-method git --verbose
 ```
 
 Windows (PowerShell) equivalent:
@@ -556,7 +556,7 @@ Windows (PowerShell) equivalent:
 ```powershell
 # install.ps1 has no dedicated -Verbose flag yet.
 Set-PSDebug -Trace 1
-& ([scriptblock]::Create((iwr -useb https://gensparx.ai/install.ps1))) -NoOnboard
+& ([scriptblock]::Create((iwr -useb https://gensparx.com/install.ps1))) -NoOnboard
 Set-PSDebug -Trace 0
 ```
 
@@ -620,7 +620,7 @@ Use the **hackable (git) install** so you have the full source and docs locally,
 your bot (or Claude/Codex) _from that folder_ so it can read the repo and answer precisely.
 
 ```bash
-curl -fsSL https://gensparx.ai/install.sh | bash -s -- --install-method git
+curl -fsSL https://gensparx.com/install.sh | bash -s -- --install-method git
 ```
 
 More detail: [Install](/install) and [Installer flags](/install/installer).
@@ -1051,7 +1051,7 @@ Advantages:
 - **Always-on Gateway** (run on a VPS, interact from anywhere)
 - **Nodes** for local browser/screen/camera/exec
 
-Showcase: [https://gensparx.ai/showcase](https://gensparx.ai/showcase)
+Showcase: [https://gensparx.com/showcase](https://gensparx.com/showcase)
 
 ## Skills and automation
 

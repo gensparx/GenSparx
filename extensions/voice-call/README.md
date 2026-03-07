@@ -9,8 +9,8 @@ Providers:
 - **Plivo** (Voice API + XML transfer + GetInput speech)
 - **Mock** (dev/no network)
 
-Docs: `https://docs.gensparx.ai/plugins/voice-call`
-Plugin system: `https://docs.gensparx.ai/plugin`
+Docs: `https://docs.gensparx.com/plugins/voice-call`
+Plugin system: `https://docs.gensparx.com/plugin`
 
 ## Install (local dev)
 

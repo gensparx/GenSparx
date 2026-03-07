@@ -106,7 +106,7 @@ tailscale status
 ## 5) 安装 Gensparx
 
 ```bash
-curl -fsSL https://gensparx.ai/install.sh | bash
+curl -fsSL https://gensparx.com/install.sh | bash
 source ~/.bashrc
 ```
 

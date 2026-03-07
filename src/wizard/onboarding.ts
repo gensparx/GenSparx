@@ -55,7 +55,7 @@ async function requireRiskAcknowledgement(params: {
       "gensparx security audit --deep",
       "gensparx security audit --fix",
       "",
-      "Must read: https://docs.gensparx.ai/gateway/security",
+      "Must read: https://docs.gensparx.com/gateway/security",
     ].join("\n"),
     "Security",
   );
@@ -90,7 +90,7 @@ export async function runOnboardingWizard(
         [
           ...snapshot.issues.map((iss) => `- ${iss.path}: ${iss.message}`),
           "",
-          "Docs: https://docs.gensparx.ai/gateway/configuration",
+          "Docs: https://docs.gensparx.com/gateway/configuration",
         ].join("\n"),
         "Config issues",
       );

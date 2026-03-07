@@ -175,7 +175,7 @@ function buildDocsSection(params: { docsPath?: string; isMinimal: boolean; readT
   return [
     "## Documentation",
     `gensparx docs: ${docsPath}`,
-    "Mirror: https://docs.gensparx.ai",
+    "Mirror: https://docs.gensparx.com",
     "Source: https://github.com/gensparx/gensparx",
     "Community: https://discord.com/invite/clawd",
     "Find new skills: https://clawhub.com",

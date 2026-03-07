@@ -56,7 +56,7 @@ gensparx browser --browser-profile work tabs
 
 ```bash
 gensparx browser tabs
-gensparx browser open https://docs.gensparx.ai
+gensparx browser open https://docs.gensparx.com
 gensparx browser focus <targetId>
 gensparx browser close <targetId>
 ```

@@ -122,7 +122,7 @@ If you're an experienced contributor who wants to help shape Gensparx's directio
 
 Being a maintainer is a responsibility, not an honorary title. We expect active, consistent involvement — triaging issues, reviewing PRs, and helping move the project forward.
 
-Still interested? Email contributing@gensparx.ai with:
+Still interested? Email contributing@gensparx.com with:
 
 - Links to your PRs on gensparx (if you don't have any, start there first)
 - Links to open source projects you maintain or actively contribute to
@@ -146,7 +146,7 @@ We take security reports seriously. Report vulnerabilities directly to the repos
 - **ClawHub** — [gensparx/clawhub](https://github.com/gensparx/clawhub)
 - **Trust and threat model** — [gensparx/trust](https://github.com/gensparx/trust)
 
-For issues that don't fit a specific repo, or if you're unsure, email **security@gensparx.ai** and we'll route it.
+For issues that don't fit a specific repo, or if you're unsure, email **security@gensparx.com** and we'll route it.
 
 ### Required in Reports
 

@@ -1,7 +1,7 @@
 ---
 name: bootstrap-extra-files
 description: "Inject additional workspace bootstrap files via glob/path patterns"
-homepage: https://docs.gensparx.ai/automation/hooks#bootstrap-extra-files
+homepage: https://docs.gensparx.com/automation/hooks#bootstrap-extra-files
 metadata:
   {
     "gensparx":

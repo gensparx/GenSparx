@@ -112,7 +112,7 @@ sudo sysctl -p
 ### Option A: Standard Install (Recommended)
 
 ```bash
-curl -fsSL https://gensparx.ai/install.sh | bash
+curl -fsSL https://gensparx.com/install.sh | bash
 ```
 
 ### Option B: Hackable Install (For tinkering)

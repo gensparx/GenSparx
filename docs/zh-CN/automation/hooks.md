@@ -133,7 +133,7 @@ Hook 包可以附带依赖；它们将安装在 `~/.gensparx/hooks/<id>` 下。
 ---
 name: my-hook
 description: "Short description of what this hook does"
-homepage: https://docs.gensparx.ai/automation/hooks#my-hook
+homepage: https://docs.gensparx.com/automation/hooks#my-hook
 metadata:
   { "gensparx": { "emoji": "🔗", "events": ["command:new"], "requires": { "bins": ["node"] } } }
 ---

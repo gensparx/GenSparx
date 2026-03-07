@@ -81,7 +81,7 @@ session-memory/
 ---
 name: my-hook
 description: "Short description"
-homepage: https://docs.gensparx.ai/automation/hooks#my-hook
+homepage: https://docs.gensparx.com/automation/hooks#my-hook
 metadata:
   { "gensparx": { "emoji": "🔗", "events": ["command:new"], "requires": { "bins": ["node"] } } }
 ---
@@ -220,4 +220,4 @@ Test your hooks by:
 
 ## Documentation
 
-Full documentation: https://docs.gensparx.ai/automation/hooks
+Full documentation: https://docs.gensparx.com/automation/hooks

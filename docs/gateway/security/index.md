@@ -1190,6 +1190,6 @@ Commit the updated `.secrets.baseline` once it reflects the intended state.
 
 Found a vulnerability in Gensparx? Please report responsibly:
 
-1. Email: [security@gensparx.ai](mailto:security@gensparx.ai)
+1. Email: [security@gensparx.com](mailto:security@gensparx.com)
 2. Don't post publicly until fixed
 3. We'll credit you (unless you prefer anonymity)

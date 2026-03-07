@@ -96,7 +96,7 @@ Details:
   Source: gensparx-bundled
   Path: /path/to/gensparx/hooks/bundled/session-memory/HOOK.md
   Handler: /path/to/gensparx/hooks/bundled/session-memory/handler.ts
-  Homepage: https://docs.gensparx.ai/automation/hooks#session-memory
+  Homepage: https://docs.gensparx.com/automation/hooks#session-memory
   Events: command:new
 
 Requirements:

@@ -23,7 +23,7 @@ async function noteMattermostSetup(prompter: WizardPrompter): Promise<void> {
       "2) Create a bot + copy its token",
       "3) Use your server base URL (e.g., https://chat.example.com)",
       "Tip: the bot must be a member of any channel you want it to monitor.",
-      "Docs: https://docs.gensparx.ai/channels/mattermost",
+      "Docs: https://docs.gensparx.com/channels/mattermost",
     ].join("\n"),
     "Mattermost bot token",
   );

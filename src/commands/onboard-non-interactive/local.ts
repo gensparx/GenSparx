@@ -132,7 +132,7 @@ export async function runNonInteractiveOnboardingLocal(params: {
 
   if (!opts.json) {
     runtime.log(
-      `Tip: run \`${formatCliCommand("gensparx configure --section web")}\` to store your Brave API key for web_search. Docs: https://docs.gensparx.ai/tools/web`,
+      `Tip: run \`${formatCliCommand("gensparx configure --section web")}\` to store your Brave API key for web_search. Docs: https://docs.gensparx.com/tools/web`,
     );
   }
 }

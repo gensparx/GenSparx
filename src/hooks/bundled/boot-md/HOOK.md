@@ -1,7 +1,7 @@
 ---
 name: boot-md
 description: "Run BOOT.md on gateway startup"
-homepage: https://docs.gensparx.ai/automation/hooks#boot-md
+homepage: https://docs.gensparx.com/automation/hooks#boot-md
 metadata:
   {
     "gensparx":

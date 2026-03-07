@@ -1,7 +1,7 @@
 ---
 name: command-logger
 description: "Log all command events to a centralized audit file"
-homepage: https://docs.gensparx.ai/automation/hooks#command-logger
+homepage: https://docs.gensparx.com/automation/hooks#command-logger
 metadata:
   {
     "gensparx":

@@ -1136,13 +1136,13 @@ describe("registerSlackInteractionEvents", () => {
               email_block: {
                 email_input: {
                   type: "email_text_input",
-                  value: "team@gensparx.ai",
+                  value: "team@gensparx.com",
                 },
               },
               url_block: {
                 url_input: {
                   type: "url_text_input",
-                  value: "https://docs.gensparx.ai",
+                  value: "https://docs.gensparx.com",
                 },
               },
               richtext_block: {
@@ -1233,12 +1233,12 @@ describe("registerSlackInteractionEvents", () => {
         expect.objectContaining({
           actionId: "email_input",
           inputKind: "email",
-          inputEmail: "team@gensparx.ai",
+          inputEmail: "team@gensparx.com",
         }),
         expect.objectContaining({
           actionId: "url_input",
           inputKind: "url",
-          inputUrl: "https://docs.gensparx.ai/",
+          inputUrl: "https://docs.gensparx.com/",
         }),
         expect.objectContaining({
           actionId: "richtext_input",

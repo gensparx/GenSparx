@@ -234,8 +234,8 @@ export async function finalizeOnboardingWizard(
       await prompter.note(
         [
           "Docs:",
-          "https://docs.gensparx.ai/gateway/health",
-          "https://docs.gensparx.ai/gateway/troubleshooting",
+          "https://docs.gensparx.com/gateway/health",
+          "https://docs.gensparx.com/gateway/troubleshooting",
         ].join("\n"),
         "Health check help",
       );
@@ -319,7 +319,7 @@ export async function finalizeOnboardingWizard(
         : undefined,
       `Gateway WS: ${links.wsUrl}`,
       gatewayStatusLine,
-      "Docs: https://docs.gensparx.ai/web/control-ui",
+      "Docs: https://docs.gensparx.com/web/control-ui",
     ]
       .filter(Boolean)
       .join("\n"),
@@ -422,13 +422,13 @@ export async function finalizeOnboardingWizard(
   await prompter.note(
     [
       "Back up your agent workspace.",
-      "Docs: https://docs.gensparx.ai/concepts/agent-workspace",
+      "Docs: https://docs.gensparx.com/concepts/agent-workspace",
     ].join("\n"),
     "Workspace backup",
   );
 
   await prompter.note(
-    "Running agents on your computer is risky — harden your setup: https://docs.gensparx.ai/security",
+    "Running agents on your computer is risky — harden your setup: https://docs.gensparx.com/security",
     "Security",
   );
 
@@ -491,7 +491,7 @@ export async function finalizeOnboardingWizard(
           webSearchKey
             ? `API key: stored in config (tools.web.search.${webSearchProvider === "perplexity" ? "perplexity.apiKey" : "apiKey"}).`
             : `API key: provided via ${webSearchProvider === "perplexity" ? "PERPLEXITY_API_KEY" : "BRAVE_API_KEY"} env var (Gateway environment).`,
-          "Docs: https://docs.gensparx.ai/tools/web",
+          "Docs: https://docs.gensparx.com/tools/web",
         ].join("\n")
       : [
           "To enable web search, your agent will need an API key for either Perplexity Search or Brave Search.",
@@ -501,13 +501,13 @@ export async function finalizeOnboardingWizard(
           "- Choose a provider and paste your API key",
           "",
           "Alternative: set PERPLEXITY_API_KEY or BRAVE_API_KEY in the Gateway environment (no config changes).",
-          "Docs: https://docs.gensparx.ai/tools/web",
+          "Docs: https://docs.gensparx.com/tools/web",
         ].join("\n"),
     "Web search (optional)",
   );
 
   await prompter.note(
-    'What now: https://gensparx.ai/showcase ("What People Are Building").',
+    'What now: https://gensparx.com/showcase ("What People Are Building").',
     "What now",
   );
 

@@ -37,12 +37,12 @@ x-i18n:
     <Tabs>
       <Tab title="macOS/Linux">
         ```bash
-        curl -fsSL https://gensparx.ai/install.sh | bash
+        curl -fsSL https://gensparx.com/install.sh | bash
         ```
       </Tab>
       <Tab title="Windows (PowerShell)">
         ```powershell
-        iwr -useb https://gensparx.ai/install.ps1 | iex
+        iwr -useb https://gensparx.com/install.ps1 | iex
         ```
       </Tab>
     </Tabs>

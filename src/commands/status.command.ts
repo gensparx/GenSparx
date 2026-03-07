@@ -664,8 +664,8 @@ export async function statusCommand(
   }
 
   runtime.log("");
-  runtime.log("FAQ: https://docs.gensparx.ai/faq");
-  runtime.log("Troubleshooting: https://docs.gensparx.ai/troubleshooting");
+  runtime.log("FAQ: https://docs.gensparx.com/faq");
+  runtime.log("Troubleshooting: https://docs.gensparx.com/troubleshooting");
   runtime.log("");
   const updateHint = formatUpdateAvailableHint(update);
   if (updateHint) {

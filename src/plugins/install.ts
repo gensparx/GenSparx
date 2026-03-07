@@ -46,7 +46,7 @@ type PackageManifest = PluginPackageManifest & {
 };
 
 const MISSING_EXTENSIONS_ERROR =
-  'package.json missing gensparx.extensions; update the plugin package to include gensparx.extensions (for example ["./dist/index.js"]). See https://docs.gensparx.ai/help/troubleshooting#plugin-install-fails-with-missing-gensparx-extensions';
+  'package.json missing gensparx.extensions; update the plugin package to include gensparx.extensions (for example ["./dist/index.js"]). See https://docs.gensparx.com/help/troubleshooting#plugin-install-fails-with-missing-gensparx-extensions';
 
 export const PLUGIN_INSTALL_ERROR_CODE = {
   INVALID_NPM_SPEC: "invalid_npm_spec",

@@ -100,11 +100,13 @@ export function validateGatewayPasswordInput(value: unknown): string | undefined
 
 export function printWizardHeader(runtime: RuntimeEnv) {
   const header = [
-    "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄",
-    "██░▄▄▄░██░▄▄░██░▄▄▄██░▀██░██░▄▄▀██░████░▄▄▀██░███░██",
-    "██░███░██░▀▀░██░▄▄▄██░█░█░██░█████░████░▀▀░██░█░█░██",
-    "██░▀▀▀░██░█████░▀▀▀██░██▄░██░▀▀▄██░▀▀░█░██░██▄▀▄▀▄██",
-    "▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀",
+    "   ██████╗ ███████╗███╗   ██╗███████╗██████╗  █████╗ ██████╗ ██╗  ██╗",
+    "  ██╔════╝ ██╔════╝████╗  ██║██╔════╝██╔══██╗██╔══██╗██╔══██╗╚██╗██╔╝",
+    "  ██║  ███╗█████╗  ██╔██╗ ██║███████╗██████╔╝███████║██████╔╝ ╚███╔╝ ",
+    "  ██║   ██║██╔══╝  ██║╚██╗██║╚════██║██╔═══╝ ██╔══██║██╔══██╗ ██╔██╗ ",
+    "  ╚██████╔╝███████╗██║ ╚████║███████║██║     ██║  ██║██║  ██║██╔╝ ██╗",
+    "   ╚═════╝ ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝",
+
     "                  ⚡ gensparx ⚡                    ",
     " ",
   ].join("\n");
@@ -221,8 +223,8 @@ export function formatControlUiSshHint(params: {
     localUrl,
     authedUrl,
     "Docs:",
-    "https://docs.gensparx.ai/gateway/remote",
-    "https://docs.gensparx.ai/web/control-ui",
+    "https://docs.gensparx.com/gateway/remote",
+    "https://docs.gensparx.com/web/control-ui",
   ]
     .filter(Boolean)
     .join("\n");

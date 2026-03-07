@@ -1,6 +1,6 @@
 # gensparx Installer for Windows (PowerShell)
-# Usage: iwr -useb https://gensparx.ai/install.ps1 | iex
-# Or: & ([scriptblock]::Create((iwr -useb https://gensparx.ai/install.ps1))) -NoOnboard
+# Usage: iwr -useb https://gensparx.com/install.ps1 | iex
+# Or: & ([scriptblock]::Create((iwr -useb https://gensparx.com/install.ps1))) -NoOnboard
 
 param(
     [string]$InstallMethod = "npm",

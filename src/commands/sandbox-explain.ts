@@ -30,7 +30,7 @@ type SandboxExplainOptions = {
   json: boolean;
 };
 
-const SANDBOX_DOCS_URL = "https://docs.gensparx.ai/sandbox";
+const SANDBOX_DOCS_URL = "https://docs.gensparx.com/sandbox";
 
 function normalizeExplainSessionKey(params: {
   cfg: GensparxConfig;
@@ -331,7 +331,7 @@ export async function sandboxExplainCommand(
     lines.push(`  - ${key}`);
   }
   lines.push("");
-  lines.push(`${key("Docs:")} ${formatDocsLink("/sandbox", "docs.gensparx.ai/sandbox")}`);
+  lines.push(`${key("Docs:")} ${formatDocsLink("/sandbox", "docs.gensparx.com/sandbox")}`);
 
   runtime.log(`${lines.join("\n")}\n`);
 }

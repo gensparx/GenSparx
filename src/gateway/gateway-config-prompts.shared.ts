@@ -26,8 +26,8 @@ export const TAILSCALE_MISSING_BIN_NOTE_LINES = [
 
 export const TAILSCALE_DOCS_LINES = [
   "Docs:",
-  "https://docs.gensparx.ai/gateway/tailscale",
-  "https://docs.gensparx.ai/web",
+  "https://docs.gensparx.com/gateway/tailscale",
+  "https://docs.gensparx.com/web",
 ] as const;
 
 function normalizeTailnetHostForUrl(rawHost: string): string | null {

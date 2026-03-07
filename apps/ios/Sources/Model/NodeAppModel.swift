@@ -2162,7 +2162,7 @@ extension NodeAppModel {
 
         let payload = SharedContentPayload(
             title: "gensparx Share Self-Test",
-            url: URL(string: "https://gensparx.ai/share-self-test"),
+            url: URL(string: "https://gensparx.com/share-self-test"),
             text: "Validate iOS share->deep-link->gateway forwarding.")
         guard let deepLink = ShareToAgentDeepLink.buildURL(
             from: payload,

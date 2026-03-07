@@ -73,5 +73,5 @@ scripts/pi/run-tests.sh --live
 
 ## 参考资料
 
-- https://docs.gensparx.ai/testing
-- https://docs.gensparx.ai/start/getting-started
+- https://docs.gensparx.com/testing
+- https://docs.gensparx.com/start/getting-started

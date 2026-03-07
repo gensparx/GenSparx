@@ -230,11 +230,11 @@ const LOCAL_PROVIDER_HINTS: Record<string, string> = {
   ollama:
     "Ollama requires authentication to be registered as a provider. " +
     'Set OLLAMA_API_KEY="ollama-local" (any value works) or run "gensparx configure". ' +
-    "See: https://docs.gensparx.ai/providers/ollama",
+    "See: https://docs.gensparx.com/providers/ollama",
   vllm:
     "vLLM requires authentication to be registered as a provider. " +
     'Set VLLM_API_KEY (any value works) or run "gensparx configure". ' +
-    "See: https://docs.gensparx.ai/providers/vllm",
+    "See: https://docs.gensparx.com/providers/vllm",
 };
 
 function buildUnknownModelError(provider: string, modelId: string): string {
