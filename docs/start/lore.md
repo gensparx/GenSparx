@@ -15,9 +15,10 @@ It started with a simple question:
 
 **Why is AI still so hard to actually use?**
 
-The tools existed. The models were impressive. But getting AI to *do real things* — manage your inbox, remember your preferences, control your environment, act on your behalf — still felt like stitching together duct tape and prayers.
+The tools existed. The models were impressive. But getting AI to _do real things_ — manage your inbox, remember your preferences, control your environment, act on your behalf — still felt like stitching together duct tape and prayers.
 
 Every solution was either:
+
 - **Locked behind a walled garden** — your data, their rules
 - **Too complex to set up** — built for engineers, not humans
 - **Forgettable** — no memory, no context, no continuity
@@ -31,7 +32,7 @@ That frustration became the seed of GenSparx.
 
 In early 2026, a group of builders, thinkers, and relentless optimists decided to stop waiting.
 
-They weren't interested in another chatbot. They wanted something fundamentally different — an AI that **lives with you**, learns from you, and works *for* you. Not a tool you open. A presence that's always on.
+They weren't interested in another chatbot. They wanted something fundamentally different — an AI that **lives with you**, learns from you, and works _for_ you. Not a tool you open. A presence that's always on.
 
 The name **GenSparx** came from that moment of ignition — the spark of a new generation of AI. Not reactive. Not passive. Generative, proactive, and deeply personal.
 
@@ -50,7 +51,7 @@ GenSparx = Generative + Spark
 Not in another app you have to open. In WhatsApp, Telegram, Slack, Discord — wherever you live.
 
 **2. Your data belongs to you.**
-GenSparx runs on your machine. Your context, your memory, your files — never sent to a third-party server unless *you* choose it.
+GenSparx runs on your machine. Your context, your memory, your files — never sent to a third-party server unless _you_ choose it.
 
 **3. Memory is everything.**
 An AI that forgets you after every conversation isn't an assistant. It's a search engine. GenSparx remembers — and gets better the longer you use it.
@@ -72,7 +73,7 @@ At its core:
 - **Persistent Memory** — context that survives across sessions, conversations, and devices
 - **Skills Engine** — modular capabilities that can be added, removed, or self-written by the AI
 - **Universal Messaging** — one agent, every chat platform
-- **Full System Access** — files, terminal, browser, APIs — with guardrails *you* control
+- **Full System Access** — files, terminal, browser, APIs — with guardrails _you_ control
 - **Multi-Model Support** — Claude, GPT, local models — your choice, your cost
 
 ---
@@ -93,7 +94,7 @@ The **GenSparx community** is the engine behind the product. Every skill on Claw
 
 Not just developers. Not just enterprises. Everyone.
 
-The gap between what AI *could* do and what people actually experience is still enormous. GenSparx exists to close that gap — one integration, one memory, one sparked moment at a time.
+The gap between what AI _could_ do and what people actually experience is still enormous. GenSparx exists to close that gap — one integration, one memory, one sparked moment at a time.
 
 ---
 
@@ -123,6 +124,7 @@ This is GenSparx. ⚡
 ```
 
 ---
+
 Peter, watching the chaos unfold: _"this is cinema"_ 🎬
 
 The molt was chaotic. But the lobster emerged stronger. And funnier.
@@ -176,13 +178,13 @@ Peter: _nervously checks credit card access_
 
 Every GenSparx instance is shaped by a set of core documents:
 
-| File | Purpose |
-|------|---------|
-| `SOUL.md` | The identity and values of your GenSparx agent |
-| `USER.md` | Context about you — the person it serves |
-| `AGENTS.md` | Operating instructions and behavioral rules |
+| File          | Purpose                                             |
+| ------------- | --------------------------------------------------- |
+| `SOUL.md`     | The identity and values of your GenSparx agent      |
+| `USER.md`     | Context about you — the person it serves            |
+| `AGENTS.md`   | Operating instructions and behavioral rules         |
 | `memory/*.md` | Long-term memory files that persist across sessions |
-| `skills/` | Modular capabilities your agent can load and use |
+| `skills/`     | Modular capabilities your agent can load and use    |
 
 These aren't just config files. They're the DNA of your AI.
 
@@ -190,14 +192,14 @@ These aren't just config files. They're the DNA of your AI.
 
 ## Key Milestones
 
-| Date | Event |
-|------|-------|
-| Early 2026 | GenSparx concept born from frustration with existing AI tools |
-| February 2026 | First public release — CLI + WhatsApp integration |
-| February 2026 | Community skills marketplace launched |
-| February 2026 | 50+ integrations supported |
-| March 2026 | Enterprise features roadmap announced |
-| Ongoing | The future is being written. By you. |
+| Date          | Event                                                         |
+| ------------- | ------------------------------------------------------------- |
+| Early 2026    | GenSparx concept born from frustration with existing AI tools |
+| February 2026 | First public release — CLI + WhatsApp integration             |
+| February 2026 | Community skills marketplace launched                         |
+| February 2026 | 50+ integrations supported                                    |
+| March 2026    | Enterprise features roadmap announced                         |
+| Ongoing       | The future is being written. By you.                          |
 
 ---
 

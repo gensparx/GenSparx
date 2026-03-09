@@ -90,3 +90,109 @@
 - The current tree is buildable, lint/type safe, and test-suite clean on this machine.
 - Core CLI surfaces are starting correctly.
 - This does not prove every external integration end-to-end (for example live channel credentials, network providers, device-specific runtimes); those require live env checks.
+
+## Release + Publish Checkpoint (2026-03-08)
+
+- Local release commit created and pushed:
+  - `4d17668857` - `Release: bump version to 1.0.6-gensparx`
+- Rebrand/doc/banner commit already on main:
+  - `32fe0b3a0e` - `Rebrand: switch links to gensparx.com and sync GENSPARX ASCII banner`
+- npm publish status:
+  - `gensparx@1.0.6-gensparx` published to `latest`.
+  - Dist-tags now show:
+    - `latest: 1.0.6-gensparx`
+    - `beta: 1.0.4-beta.1`
+- Install verification from clean/global context:
+  - `npm install -g gensparx@latest` resolves to `1.0.6-gensparx`.
+  - `gensparx --version` shows `1.0.6-gensparx`.
+
+## Resume Point (Next Session)
+
+1. Continue targeted openclaw-trace cleanup in remaining intentional/legacy paths only.
+2. Keep compatibility shims where required for old config/plugin/runtime behavior.
+3. After each cleanup batch, run:
+   - `pnpm check`
+   - `pnpm build`
+   - `pnpm test`
+   - `node gensparx.mjs --help`
+4. Commit in small scoped batches and keep this report updated at the end of each batch.
+
+## Session Continuation Checkpoint (2026-03-09)
+
+### What Was Completed
+
+- Ran a full image-asset inventory for logo/rebrand planning.
+  - Full-folder raw image count (including dependency/build folders): `579`
+  - Project image count (excluding `.git`, `node_modules`, `dist`, build output): `108`
+  - Branding-related image candidates: `62`
+  - Legacy openclaw-named branding files identified: `6`
+- Pushed logo asset update to GitHub:
+  - `671c4c4f63` - `Assets: update pixel lobster logo`
+- Pushed second logo refinement to GitHub:
+  - `5fefe82000` - `Assets: refine pixel lobster logo`
+
+### Git Incident + Recovery (Handled)
+
+- During commit/push flow, git index entered a corrupted state (`index file smaller than expected`), and status briefly showed massive `D/??` churn.
+- Performed safe diagnosis first (read-only checks), then index rebuild:
+  - `git reset --mixed HEAD`
+- Result:
+  - Repository index restored to normal.
+  - Target commit (`5fefe82000`) pushed successfully.
+  - No mass file loss in tracked history.
+
+### Current Release/Distribution Status
+
+- Published npm `latest` is still correct:
+  - `gensparx@latest = 1.0.6-gensparx`
+- User install path for docs is now focused on:
+  - `iwr -useb https://gensparx.com/install.ps1 | iex`
+
+### Immediate Next Task (Requested)
+
+1. Validate production installer flow end-to-end:
+   - `iwr -useb https://gensparx.com/install.ps1 | iex`
+   - `gensparx --version`
+2. If installed version is not expected, fix in website/install repo (`public/install.ps1`) and re-verify.
+3. Keep docs command aligned with live installer URL and behavior.
+
+## Installer Rollout Validation (2026-03-09)
+
+### PowerShell Installer (`install.ps1`) Status
+
+- Live command validated:
+  - `iwr -useb https://gensparx.com/install.ps1 | iex`
+- Observed result:
+  - Installer completed successfully.
+  - `gensparx --version` reported `1.0.6-gensparx`.
+  - `gensparx onboard` launched correctly after install.
+- Outcome: Windows one-command install path is operational.
+
+### Bash Installer (`install.sh`) Status
+
+- Live command validated:
+  - `curl -fsSL https://gensparx.com/install.sh | bash`
+- WSL guard behavior validated:
+  - When WSL shell resolved Windows npm (`/mnt/c/...`), installer correctly blocked execution and printed actionable fix guidance.
+  - This prevented the previous `EBUSY` copyfile failure mode.
+- Post-fix validation:
+  - After using Linux-native npm/node in WSL, installer completed successfully.
+  - Install output showed package install completion (`added ... packages`).
+- Outcome: Linux/macOS installer path is operational, and WSL mixed-environment safety guard works as intended.
+
+### Net Result
+
+- Both documented one-command installers are now functional:
+  - `iwr -useb https://gensparx.com/install.ps1 | iex`
+  - `curl -fsSL https://gensparx.com/install.sh | bash`
+- Installer UX is now safer in WSL and aligned with `latest` npm release (`1.0.6-gensparx`).
+
+## Next Phase Start Point
+
+1. Continue remaining visual/asset rebranding passes (logos, legacy naming in image assets, cross-platform icon consistency).
+2. Keep behavior-only compatibility shims where required, but remove avoidable legacy branding from user-facing assets/text.
+3. Validate each rebrand batch with:
+   - `pnpm check`
+   - `pnpm build`
+   - `pnpm test`
+   - installer smoke checks on Windows + WSL/Linux.
