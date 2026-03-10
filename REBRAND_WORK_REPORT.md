@@ -155,7 +155,7 @@
    - `gensparx --version`
 2. If installed version is not expected, fix in website/install repo (`public/install.ps1`) and re-verify.
 3. Keep docs command aligned with live installer URL and behavior.
-
+                                                                                                                                                                                                                              
 ## Installer Rollout Validation (2026-03-09)
 
 ### PowerShell Installer (`install.ps1`) Status
@@ -182,10 +182,27 @@
 
 ### Net Result
 
-- Both documented one-command installers are now functional:
+- Both documented one-command installers are functional:
   - `iwr -useb https://gensparx.com/install.ps1 | iex`
   - `curl -fsSL https://gensparx.com/install.sh | bash`
-- Installer UX is now safer in WSL and aligned with `latest` npm release (`1.0.6-gensparx`).
+- Installer UX is safer in WSL and aligned with published npm latest.
+
+## Release + Publish Checkpoint (2026-03-10)
+
+### What Was Completed
+
+- Release bump to `1.0.7-gensparx` created and pushed to `main`.
+- npm publish to `latest` completed successfully.
+- Dist-tag verification:
+  - `latest: 1.0.7-gensparx`
+  - `beta: 1.0.4-beta.1`
+- Live version check:
+  - `npm view gensparx@latest version` => `1.0.7-gensparx`
+
+### Release Outcome
+
+- Public install path now resolves to the latest release (`1.0.7-gensparx`).
+- Rebrand + installer updates from prior sessions are now shipped on `latest`.
 
 ## Next Phase Start Point
 
