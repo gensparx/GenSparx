@@ -7,9 +7,9 @@ title: "GenSparx"
 # GenSparx
 
 <p align="center">
-  <img src="/assets/openclaw-logo-text-dark.png" alt="GenSparx" width="500" class="dark:hidden" />
+  <img src="/assets/gensparx-logo-text-dark.png" alt="GenSparx" width="500" class="dark:hidden" />
 
-  <img src="/assets/openclaw-logo-text.png" alt="GenSparx" width="500" class="hidden dark:block" />
+  <img src="/assets/gensparx-logo-text.png" alt="GenSparx" width="500" class="hidden dark:block" />
 </p>
 
 > _""F_\*\*\* the limitations. GenSparx does what AI always promised."
