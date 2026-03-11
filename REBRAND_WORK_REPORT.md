@@ -204,6 +204,17 @@
 - Public install path now resolves to the latest release (`1.0.7-gensparx`).
 - Rebrand + installer updates from prior sessions are now shipped on `latest`.
 
+## Release + Publish Checkpoint (2026-03-11)
+
+### What Was Completed
+
+- Version bump committed and pushed:
+  - `a08b0b3aed` - `Release: bump version to 1.0.8-gensparx`
+- npm publish completed successfully (user-confirmed).
+- Dist-tags expected:
+  - `latest: 1.0.8-gensparx`
+  - `beta: 1.0.4-beta.1`
+
 ## Session Continuation Checkpoint (2026-03-11)
 
 ### What Was Completed
