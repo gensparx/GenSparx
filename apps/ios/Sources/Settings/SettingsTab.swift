@@ -387,7 +387,7 @@ struct SettingsTab: View {
                             .truncationMode(.middle)
                         LabeledContent("Device", value: DeviceInfoHelper.deviceFamily())
                         LabeledContent("Platform", value: DeviceInfoHelper.platformStringForDisplay())
-                        LabeledContent("Gensparx", value: DeviceInfoHelper.openClawVersionString())
+                        LabeledContent("Gensparx", value: DeviceInfoHelper.gensparxVersionString())
                     }
                 }
             }
