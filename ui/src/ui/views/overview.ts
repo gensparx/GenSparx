@@ -8,6 +8,12 @@ import { formatNextRun } from "../presenter.ts";
 import type { UiSettings } from "../storage.ts";
 import { shouldShowPairingHint } from "./overview-hints.ts";
 
+type QuickstartAction = {
+  label: string;
+  detail: string;
+  command: string;
+};
+
 export type OverviewProps = {
   connected: boolean;
   hello: GatewayHelloOk | null;
@@ -192,6 +198,24 @@ export function renderOverview(props: OverviewProps) {
   })();
 
   const currentLocale = i18n.getLocale();
+  const showQuickstart = props.connected && !props.lastError;
+  const quickstartActions: QuickstartAction[] = [
+    {
+      label: "Open the Control UI",
+      detail: "Run the dashboard for chat + config.",
+      command: "gensparx dashboard",
+    },
+    {
+      label: "Verify the Gateway",
+      detail: "Check the gateway status locally.",
+      command: "gensparx gateway status",
+    },
+    {
+      label: "Connect a channel",
+      detail: "Start WhatsApp pairing (optional).",
+      command: "gensparx channels login",
+    },
+  ];
 
   return html`
     <section class="grid grid-cols-2">
@@ -336,6 +360,28 @@ export function renderOverview(props: OverviewProps) {
         <div class="muted">${t("overview.stats.cronNext", { time: formatNextRun(props.cronNext) })}</div>
       </div>
     </section>
+
+    ${
+      showQuickstart
+        ? html`
+            <section class="card" style="margin-top: 18px;">
+              <div class="card-title">Start here</div>
+              <div class="card-sub">Next steps for a fresh install.</div>
+              <div class="note-grid" style="margin-top: 14px;">
+                ${quickstartActions.map(
+                  (action) => html`
+                    <div>
+                      <div class="note-title">${action.label}</div>
+                      <div class="muted">${action.detail}</div>
+                      <div class="mono" style="margin-top: 8px;">${action.command}</div>
+                    </div>
+                  `,
+                )}
+              </div>
+            </section>
+          `
+        : ""
+    }
 
     <section class="card" style="margin-top: 18px;">
       <div class="card-title">${t("overview.notes.title")}</div>
