@@ -12,6 +12,18 @@ import type { OnboardOptions, ResetScope } from "./onboard-types.js";
 
 const VALID_RESET_SCOPES = new Set<ResetScope>(["config", "config+creds+sessions", "full"]);
 
+function printOnboardingNextSteps(runtime: RuntimeEnv) {
+  runtime.log(
+    [
+      "",
+      "Next steps:",
+      `- ${formatCliCommand("gensparx dashboard")} (open the Control UI)`,
+      `- ${formatCliCommand("gensparx gateway status")} (verify the Gateway)`,
+      "Docs: https://docs.gensparx.com/start/getting-started",
+    ].join("\n"),
+  );
+}
+
 export async function onboardCommand(opts: OnboardOptions, runtime: RuntimeEnv = defaultRuntime) {
   assertSupportedRuntime(runtime);
   const originalAuthChoice = opts.authChoice;
@@ -87,10 +99,12 @@ export async function onboardCommand(opts: OnboardOptions, runtime: RuntimeEnv =
 
   if (normalizedOpts.nonInteractive) {
     await runNonInteractiveOnboarding(normalizedOpts, runtime);
+    printOnboardingNextSteps(runtime);
     return;
   }
 
   await runInteractiveOnboarding(normalizedOpts, runtime);
+  printOnboardingNextSteps(runtime);
 }
 
 export type { OnboardOptions } from "./onboard-types.js";
