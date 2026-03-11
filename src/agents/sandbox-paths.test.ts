@@ -30,7 +30,7 @@ function makeTmpProbePath(prefix: string): string {
 
 async function withOutsideHardlinkInGensparxTmp<T>(
   params: {
-    openClawTmpDir: string;
+    gensparxTmpDir: string;
     hardlinkPrefix: string;
     symlinkPrefix?: string;
   },
@@ -38,16 +38,16 @@ async function withOutsideHardlinkInGensparxTmp<T>(
 ): Promise<void> {
   const outsideDir = await fs.mkdtemp(path.join(process.cwd(), "sandbox-media-hardlink-outside-"));
   const outsideFile = path.join(outsideDir, "outside-secret.txt");
-  const hardlinkPath = path.join(params.openClawTmpDir, makeTmpProbePath(params.hardlinkPrefix));
+  const hardlinkPath = path.join(params.gensparxTmpDir, makeTmpProbePath(params.hardlinkPrefix));
   const symlinkPath = params.symlinkPrefix
-    ? path.join(params.openClawTmpDir, makeTmpProbePath(params.symlinkPrefix))
+    ? path.join(params.gensparxTmpDir, makeTmpProbePath(params.symlinkPrefix))
     : undefined;
   try {
-    if (isPathInside(params.openClawTmpDir, outsideFile)) {
+    if (isPathInside(params.gensparxTmpDir, outsideFile)) {
       return;
     }
     await fs.writeFile(outsideFile, "secret", "utf8");
-    await fs.mkdir(params.openClawTmpDir, { recursive: true });
+    await fs.mkdir(params.gensparxTmpDir, { recursive: true });
     try {
       await fs.link(outsideFile, hardlinkPath);
     } catch (err) {
@@ -70,24 +70,24 @@ async function withOutsideHardlinkInGensparxTmp<T>(
 }
 
 describe("resolveSandboxedMediaSource", () => {
-  const openClawTmpDir = resolvePreferredGensparxTmpDir();
+  const gensparxTmpDir = resolvePreferredGensparxTmpDir();
 
   // Group 1: /tmp paths (the bug fix)
   it.each([
     {
       name: "absolute paths under preferred gensparx tmp root",
-      media: path.join(openClawTmpDir, "image.png"),
-      expected: path.join(openClawTmpDir, "image.png"),
+      media: path.join(gensparxTmpDir, "image.png"),
+      expected: path.join(gensparxTmpDir, "image.png"),
     },
     {
       name: "file:// URLs pointing to preferred gensparx tmp root",
-      media: pathToFileURL(path.join(openClawTmpDir, "photo.png")).href,
-      expected: path.join(openClawTmpDir, "photo.png"),
+      media: pathToFileURL(path.join(gensparxTmpDir, "photo.png")).href,
+      expected: path.join(gensparxTmpDir, "photo.png"),
     },
     {
       name: "nested paths under preferred gensparx tmp root",
-      media: path.join(openClawTmpDir, "subdir", "deep", "file.png"),
-      expected: path.join(openClawTmpDir, "subdir", "deep", "file.png"),
+      media: path.join(gensparxTmpDir, "subdir", "deep", "file.png"),
+      expected: path.join(gensparxTmpDir, "subdir", "deep", "file.png"),
     },
   ])("allows $name", async ({ media, expected }) => {
     await withSandboxRoot(async (sandboxDir) => {
@@ -144,7 +144,7 @@ describe("resolveSandboxedMediaSource", () => {
     },
     {
       name: "path traversal through tmpdir",
-      media: path.join(openClawTmpDir, "..", "etc", "passwd"),
+      media: path.join(gensparxTmpDir, "..", "etc", "passwd"),
       expected: /sandbox/i,
     },
     {
@@ -178,14 +178,14 @@ describe("resolveSandboxedMediaSource", () => {
       return;
     }
     const outsideTmpTarget = path.resolve(process.cwd(), "package.json");
-    if (isPathInside(openClawTmpDir, outsideTmpTarget)) {
+    if (isPathInside(gensparxTmpDir, outsideTmpTarget)) {
       return;
     }
 
     await withSandboxRoot(async (sandboxDir) => {
       await fs.access(outsideTmpTarget);
-      await fs.mkdir(openClawTmpDir, { recursive: true });
-      const symlinkPath = path.join(openClawTmpDir, `tmp-link-escape-${process.pid}`);
+      await fs.mkdir(gensparxTmpDir, { recursive: true });
+      const symlinkPath = path.join(gensparxTmpDir, `tmp-link-escape-${process.pid}`);
       await fs.symlink(outsideTmpTarget, symlinkPath);
       try {
         await expectSandboxRejection(symlinkPath, sandboxDir, /symlink|sandbox/i);
@@ -221,7 +221,7 @@ describe("resolveSandboxedMediaSource", () => {
     }
     await withOutsideHardlinkInGensparxTmp(
       {
-        openClawTmpDir,
+        gensparxTmpDir,
         hardlinkPrefix: "sandbox-media-hardlink",
       },
       async ({ hardlinkPath }) => {
@@ -238,7 +238,7 @@ describe("resolveSandboxedMediaSource", () => {
     }
     await withOutsideHardlinkInGensparxTmp(
       {
-        openClawTmpDir,
+        gensparxTmpDir,
         hardlinkPrefix: "sandbox-media-hardlink-target",
         symlinkPrefix: "sandbox-media-hardlink-symlink",
       },

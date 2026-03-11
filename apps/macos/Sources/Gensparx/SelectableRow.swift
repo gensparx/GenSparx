@@ -17,14 +17,14 @@ struct SelectionStateIndicator: View {
 }
 
 extension View {
-    func openClawSelectableRowChrome(selected: Bool, hovered: Bool = false) -> some View {
+    func gensparxSelectableRowChrome(selected: Bool, hovered: Bool = false) -> some View {
         self
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(self.openClawRowBackground(selected: selected, hovered: hovered)))
+                    .fill(self.gensparxRowBackground(selected: selected, hovered: hovered)))
             .overlay(
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                     .strokeBorder(
@@ -32,7 +32,7 @@ extension View {
                         lineWidth: 1))
     }
 
-    private func openClawRowBackground(selected: Bool, hovered: Bool) -> Color {
+    private func gensparxRowBackground(selected: Bool, hovered: Bool) -> Color {
         if selected { return Color.accentColor.opacity(0.12) }
         if hovered { return Color.secondary.opacity(0.08) }
         return Color.clear

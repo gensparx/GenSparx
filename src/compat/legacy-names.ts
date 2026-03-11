@@ -11,6 +11,6 @@ export const LEGACY_PLUGIN_MANIFEST_FILENAMES = ["openclaw.plugin.json"] as cons
 export const LEGACY_CANVAS_HANDLER_NAMES = ["openclawCanvasA2UIAction"] as const;
 export const LEGACY_CANVAS_API_GLOBAL_NAMES = ["openclawA2UI"] as const;
 
-export const MACOS_APP_SOURCES_DIR = "apps/macos/Sources/OpenClaw" as const;
+export const MACOS_APP_SOURCES_DIR = "apps/macos/Sources/Gensparx" as const;
 
 export const LEGACY_MACOS_APP_SOURCES_DIRS = ["apps/macos/Sources/GenSparx"] as const;

@@ -296,7 +296,7 @@ async function gensparxCliJson<T>(params: { gensparxBin: string; args: string[] 
   return JSON.parse(stdout) as T;
 }
 
-async function readMessagesWithOpenclaw(params: {
+async function readMessagesWithGensparx(params: {
   gensparxBin: string;
   target: string;
   limit: number;
@@ -488,7 +488,7 @@ async function loadParentRecentMessages(params: {
   readAuthHeader: string;
 }): Promise<DiscordMessage[]> {
   if (params.args.driverMode === "gensparx") {
-    return await readMessagesWithOpenclaw({
+    return await readMessagesWithGensparx({
       gensparxBin: params.args.gensparxBin,
       target: params.args.channelId,
       limit: 20,
@@ -756,7 +756,7 @@ async function run(): Promise<SuccessResult | FailureResult> {
       try {
         const threadMessages =
           args.driverMode === "gensparx"
-            ? await readMessagesWithOpenclaw({
+            ? await readMessagesWithGensparx({
                 gensparxBin: args.gensparxBin,
                 target: threadId,
                 limit: 50,
