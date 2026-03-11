@@ -139,7 +139,7 @@ function resolveAssistantAvatarUrl(state: AppViewState): string | undefined {
 }
 
 export function renderApp(state: AppViewState) {
-  const openClawVersion =
+  const gensparxVersion =
     (typeof state.hello?.server?.version === "string" && state.hello.server.version.trim()) ||
     state.updateAvailable?.currentVersion ||
     t("common.na");
@@ -250,7 +250,7 @@ export function renderApp(state: AppViewState) {
           <div class="pill">
             <span class="statusDot ${versionStatusClass}"></span>
             <span>${t("common.version")}</span>
-            <span class="mono">${openClawVersion}</span>
+            <span class="mono">${gensparxVersion}</span>
           </div>
           <div class="pill">
             <span class="statusDot ${state.connected ? "ok" : ""}"></span>

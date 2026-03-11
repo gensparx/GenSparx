@@ -204,6 +204,28 @@
 - Public install path now resolves to the latest release (`1.0.7-gensparx`).
 - Rebrand + installer updates from prior sessions are now shipped on `latest`.
 
+## Session Continuation Checkpoint (2026-03-11)
+
+### What Was Completed
+
+- App rebrand directory rename batch committed and pushed:
+  - `d16d623f21` - `Rebrand: rename app kit paths and helpers`
+- Full test pass after the rename batch:
+  - `pnpm test` (low profile) => `826 passed | 7 skipped` files, `6776 passed | 93 skipped` tests.
+
+### Openclaw Trace Scan (excluding legacy constants + generated bundles)
+
+Excluded paths:
+- `src/compat/legacy-names.ts` (legacy compatibility constants)
+- `src/canvas-host/a2ui/*` (generated A2UI bundle)
+- `node_modules`, `dist`, `.git`, `REBRAND_WORK_REPORT.md`
+
+Remaining matches:
+- `pnpm-lock.yaml` (dependency graph references `openclaw@2026.3.2`)
+- `docs/zh-CN/reference/templates/IDENTITY.md` (generated i18n content; do not edit directly)
+- `test/fixtures/hooks-install/*` tar/zip fixtures include `openclaw` in embedded package.json metadata
+  - `tar-evil-id.tar`, `tar-hooks.tar`, `tar-reserved-id.tar`, `zip-hooks.zip`
+
 ## Next Phase Start Point
 
 1. Continue remaining visual/asset rebranding passes (logos, legacy naming in image assets, cross-platform icon consistency).
