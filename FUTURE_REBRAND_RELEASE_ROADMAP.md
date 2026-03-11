@@ -9,6 +9,7 @@ Deliverables:
 - Add a concise quickstart checklist in `docs/start/getting-started.md`.
 - Add a CLI nudge after `gensparx onboard` completes that points to `gensparx dashboard`.
 - Verify end-to-end path on Windows (PowerShell), macOS/Linux (bash), and WSL.
+- Control UI defaults to Chat when there are no configured channels (done).
 
 ## Phase 2: Control UI First-Run UX
 
@@ -26,4 +27,3 @@ Goal: remove remaining legacy labels from user-facing surfaces.
 Deliverables:
 - Re-scan docs/assets and confirm no OpenClaw branding in user-facing text.
 - Leave compatibility shims and test fixtures intact unless they block UX.
-

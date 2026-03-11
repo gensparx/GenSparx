@@ -248,3 +248,16 @@ Remaining matches:
    - `pnpm build`
    - `pnpm test`
    - installer smoke checks on Windows + WSL/Linux.
+
+## UI First-Run UX Checkpoint (2026-03-12)
+
+### What Was Completed
+
+- Control UI now defaults to Chat when there are zero configured channels:
+  - `46615a6984` - `UI: default to chat when no channels`
+
+### Test Results
+
+- `pnpm test`: PASS
+  - `826 passed | 7 skipped` files
+  - `6776 passed | 93 skipped` tests
