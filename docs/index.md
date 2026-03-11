@@ -75,25 +75,33 @@ The Gateway is the single source of truth for sessions, routing, and channel con
 ## Quick start
 
 <Steps>
-  <Step title="Install GenSparx">
-    ```bash
-    npm install -g gensparx@latest
-    ```
+  <Step title="Install GenSparx (recommended)">
+    <Tabs>
+      <Tab title="macOS/Linux">
+        ```bash
+        curl -fsSL https://gensparx.com/install.sh | bash
+        ```
+      </Tab>
+      <Tab title="Windows (PowerShell)">
+        ```powershell
+        iwr -useb https://gensparx.com/install.ps1 | iex
+        ```
+      </Tab>
+    </Tabs>
   </Step>
   <Step title="Onboard and install the service">
     ```bash
     gensparx onboard --install-daemon
     ```
   </Step>
-  <Step title="Pair WhatsApp and start the Gateway">
+  <Step title="Open the Control UI">
     ```bash
-    gensparx channels login
-    gensparx gateway --port 18789
+    gensparx dashboard
     ```
   </Step>
 </Steps>
 
-Need the full install and dev setup? See [Quick start](/start/quickstart).
+Need the full install and dev setup? See [Getting Started](/start/getting-started).
 
 ## Dashboard
 

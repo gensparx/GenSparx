@@ -80,6 +80,13 @@ Check your Node version with `node --version` if you are unsure.
 If the Control UI loads, your Gateway is ready for use.
 </Check>
 
+## Quickstart checklist
+
+- Install completes without errors.
+- `gensparx --version` returns a version.
+- `gensparx gateway status` shows the Gateway running.
+- `gensparx dashboard` opens the Control UI.
+
 ## Optional checks and extras
 
 <AccordionGroup>
