@@ -47,6 +47,13 @@ export function renderOverview(props: OverviewProps) {
     : t("common.na");
   const authMode = snapshot?.authMode;
   const isTrustedProxy = authMode === "trusted-proxy";
+  const isConnected = props.connected;
+  const isOffline = !isConnected;
+  const hasError = Boolean(props.lastError);
+  const statusTone = hasError ? "danger" : isOffline ? "warn" : "ok";
+  const hasToken = Boolean(props.settings.token.trim());
+  const hasPassword = Boolean(props.password.trim());
+  const needsAuthHint = isOffline && !isTrustedProxy && !hasToken && !hasPassword;
 
   const pairingHint = (() => {
     if (!shouldShowPairingHint(props.connected, props.lastError, props.lastErrorCode)) {
@@ -218,6 +225,28 @@ export function renderOverview(props: OverviewProps) {
   ];
 
   return html`
+    <section class="card" style="margin-bottom: 18px;">
+      <div class="card-title">Gateway status</div>
+      <div class="card-sub">Snapshot of connection health and next action.</div>
+      <div class="callout ${statusTone === "danger" ? "danger" : statusTone === "warn" ? "warn" : ""}" style="margin-top: 14px;">
+        <div>
+          Status: <span class="mono">${isConnected ? t("common.ok") : t("common.offline")}</span>
+        </div>
+        ${hasError ? html`<div style="margin-top: 6px;">${props.lastError}</div>` : ""}
+        ${
+          needsAuthHint
+            ? html`<div class="muted" style="margin-top: 6px;">
+                Missing token/password. Generate one with
+                <span class="mono">gensparx doctor --generate-gateway-token</span>.
+              </div>`
+            : ""
+        }
+        <div class="muted" style="margin-top: 6px;">
+          <span class="mono">gensparx gateway status</span> | <span class="mono">gensparx dashboard</span>
+        </div>
+      </div>
+    </section>
+
     <section class="grid grid-cols-2">
       <div class="card">
         <div class="card-title">${t("overview.access.title")}</div>
