@@ -155,7 +155,7 @@
    - `gensparx --version`
 2. If installed version is not expected, fix in website/install repo (`public/install.ps1`) and re-verify.
 3. Keep docs command aligned with live installer URL and behavior.
-                                                                                                                                                                                                                              
+
 ## Installer Rollout Validation (2026-03-09)
 
 ### PowerShell Installer (`install.ps1`) Status
@@ -216,11 +216,13 @@
 ### Openclaw Trace Scan (excluding legacy constants + generated bundles)
 
 Excluded paths:
+
 - `src/compat/legacy-names.ts` (legacy compatibility constants)
 - `src/canvas-host/a2ui/*` (generated A2UI bundle)
 - `node_modules`, `dist`, `.git`, `REBRAND_WORK_REPORT.md`
 
 Remaining matches:
+
 - `pnpm-lock.yaml` (dependency graph references `openclaw@2026.3.2`)
 - `docs/zh-CN/reference/templates/IDENTITY.md` (generated i18n content; do not edit directly)
 - `test/fixtures/hooks-install/*` tar/zip fixtures include `openclaw` in embedded package.json metadata
