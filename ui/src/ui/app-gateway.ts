@@ -363,7 +363,6 @@ function handleGatewayEventUnsafe(host: GatewayHost, evt: GatewayEventFrame) {
 export function applySnapshot(host: GatewayHost, hello: GatewayHelloOk) {
   const snapshot = hello.snapshot as
     | {
-        channelStats?: { configuredChannels?: number } | null;
         presence?: PresenceEntry[];
         health?: HealthSnapshot;
         sessionDefaults?: SessionDefaultsSnapshot;
@@ -380,12 +379,4 @@ export function applySnapshot(host: GatewayHost, hello: GatewayHelloOk) {
     applySessionDefaults(host, snapshot.sessionDefaults);
   }
   host.updateAvailable = snapshot?.updateAvailable ?? null;
-
-  if (
-    host.tab === "overview" &&
-    snapshot?.channelStats?.configuredChannels === 0 &&
-    (host.settings.sessionKey || "").trim()
-  ) {
-    host.tab = "chat";
-  }
 }

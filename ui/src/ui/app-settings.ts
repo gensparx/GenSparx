@@ -405,8 +405,25 @@ export function syncUrlWithSessionKey(host: SettingsHost, sessionKey: string, re
 }
 
 export async function loadOverview(host: SettingsHost) {
+  await loadChannels(host as unknown as GensparxApp, false);
+  const channelsSnapshot = host.channelsSnapshot;
+  const totalAccounts = channelsSnapshot
+    ? Object.values(channelsSnapshot.channelAccounts).reduce(
+        (sum, accounts) => sum + accounts.length,
+        0,
+      )
+    : null;
+  if (
+    host.connected &&
+    host.tab === "overview" &&
+    totalAccounts === 0 &&
+    !host.settings.autoChatFirstRunDone
+  ) {
+    applySettings(host, { ...host.settings, autoChatFirstRunDone: true });
+    setTab(host, "chat");
+  }
+
   await Promise.all([
-    loadChannels(host as unknown as GensparxApp, false),
     loadPresence(host as unknown as GensparxApp),
     loadSessions(host as unknown as GensparxApp),
     loadCronStatus(host as unknown as GensparxApp),

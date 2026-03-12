@@ -16,6 +16,7 @@ export type UiSettings = {
   navCollapsed: boolean; // Collapsible sidebar state
   navGroupsCollapsed: Record<string, boolean>; // Which nav groups are collapsed
   locale?: string;
+  autoChatFirstRunDone?: boolean;
 };
 
 export function loadSettings(): UiSettings {
@@ -88,6 +89,10 @@ export function loadSettings(): UiSettings {
           ? parsed.navGroupsCollapsed
           : defaults.navGroupsCollapsed,
       locale: isSupportedLocale(parsed.locale) ? parsed.locale : undefined,
+      autoChatFirstRunDone:
+        typeof parsed.autoChatFirstRunDone === "boolean"
+          ? parsed.autoChatFirstRunDone
+          : undefined,
     };
   } catch {
     return defaults;
