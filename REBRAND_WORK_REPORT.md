@@ -17,7 +17,7 @@
 - Ran `node gensparx.mjs --help`: PASS.
 - No code fixes were required in this run because all requested checks already passed.
 - Cleanup batch started:
-  - Introduced neutral core modules and converted legacy/openclaw-named modules into compatibility re-export shims.
+  - Introduced neutral core modules and converted legacy-named modules into compatibility re-export shims.
   - Updated gensparx-facing exports to target core modules instead of legacy module filenames.
   - Updated A2UI JS alias injection to use legacy API global names from compatibility constants (no direct legacy string in `a2ui.ts`).
 
@@ -31,7 +31,7 @@
 ## Rebrand Trace Snapshot (for next cleanup batch)
 
 - Search scope: `src ui apps docs test` (excluding `node_modules`, `dist`).
-- Remaining `openclaw/OpenClaw/OPENCLAW` traces: `105 matches` in `13 files`.
+- Remaining legacy-brand traces: `105 matches` in `13 files`.
 - Main buckets:
   - iOS file list references in `apps/ios/SwiftSources.input.xcfilelist`.
   - A2UI bundle legacy identifiers in `src/canvas-host/a2ui/a2ui.bundle.js`.
@@ -48,19 +48,9 @@
   - `src/agents/core-tools.subagents.test-harness.ts`
   - `src/agents/core-tools.subagents.sessions-spawn.test-harness.ts`
 - Updated:
-  - `src/infra/openclaw-root.ts`
-  - `src/infra/gensparx-root.ts`
-  - `src/infra/tmp-openclaw-dir.ts`
-  - `src/infra/tmp-gensparx-dir.ts`
-  - `src/config/types.ts`
-  - `src/config/types.openclaw.ts`
-  - `src/config/types.gensparx.ts`
-  - `src/agents/openclaw-tools.ts`
-  - `src/agents/gensparx-tools.ts`
-  - `src/agents/openclaw-tools.subagents.test-harness.ts`
-  - `src/agents/gensparx-tools.subagents.test-harness.ts`
-  - `src/agents/openclaw-tools.subagents.sessions-spawn.test-harness.ts`
-  - `src/agents/gensparx-tools.subagents.sessions-spawn.test-harness.ts`
+  - `src/infra/*` (legacy + gensparx path helpers)
+  - `src/config/*` (legacy + gensparx type helpers)
+  - `src/agents/*` (legacy + gensparx tool shims)
   - `src/compat/legacy-names.ts`
   - `src/canvas-host/a2ui.ts`
 
@@ -108,7 +98,7 @@
 
 ## Resume Point (Next Session)
 
-1. Continue targeted openclaw-trace cleanup in remaining intentional/legacy paths only.
+1. Continue targeted legacy-trace cleanup in remaining intentional/legacy paths only.
 2. Keep compatibility shims where required for old config/plugin/runtime behavior.
 3. After each cleanup batch, run:
    - `pnpm check`
@@ -125,7 +115,7 @@
   - Full-folder raw image count (including dependency/build folders): `579`
   - Project image count (excluding `.git`, `node_modules`, `dist`, build output): `108`
   - Branding-related image candidates: `62`
-  - Legacy openclaw-named branding files identified: `6`
+  - Legacy-named branding files identified: `6`
 - Pushed logo asset update to GitHub:
   - `671c4c4f63` - `Assets: update pixel lobster logo`
 - Pushed second logo refinement to GitHub:
@@ -224,7 +214,7 @@
 - Full test pass after the rename batch:
   - `pnpm test` (low profile) => `826 passed | 7 skipped` files, `6776 passed | 93 skipped` tests.
 
-### Openclaw Trace Scan (excluding legacy constants + generated bundles)
+### Legacy Trace Scan (excluding legacy constants + generated bundles)
 
 Excluded paths:
 
@@ -234,9 +224,9 @@ Excluded paths:
 
 Remaining matches:
 
-- `pnpm-lock.yaml` (dependency graph references `openclaw@2026.3.2`)
+- `pnpm-lock.yaml` (dependency graph references legacy package name)
 - `docs/zh-CN/reference/templates/IDENTITY.md` (generated i18n content; do not edit directly)
-- `test/fixtures/hooks-install/*` tar/zip fixtures include `openclaw` in embedded package.json metadata
+- `test/fixtures/hooks-install/*` tar/zip fixtures include legacy package name in embedded package.json metadata
   - `tar-evil-id.tar`, `tar-hooks.tar`, `tar-reserved-id.tar`, `zip-hooks.zip`
 
 ## Next Phase Start Point
@@ -275,5 +265,5 @@ Remaining matches:
 
 ## Rebrand Polish Scan (2026-03-12)
 
-- Scanned `docs/assets` for OpenClaw filenames: none found.
-- Scanned `docs/**` (excluding `docs/zh-CN/**`) for OpenClaw strings: none found.
+- Scanned `docs/assets` for legacy brand filenames: none found.
+- Scanned `docs/**` (excluding `docs/zh-CN/**`) for legacy brand strings: none found.

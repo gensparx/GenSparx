@@ -25,5 +25,5 @@ Deliverables:
 Goal: remove remaining legacy labels from user-facing surfaces.
 
 Deliverables:
-- Re-scan docs/assets and confirm no OpenClaw branding in user-facing text. (done)
+- Re-scan docs/assets and confirm no legacy branding in user-facing text. (done)
 - Leave compatibility shims and test fixtures intact unless they block UX.
