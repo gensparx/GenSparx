@@ -335,6 +335,7 @@ export function renderApp(state: AppViewState) {
             ? renderOverview({
                 connected: state.connected,
                 hello: state.hello,
+                health: state.debugHealth,
                 settings: state.settings,
                 password: state.password,
                 lastError: state.lastError,

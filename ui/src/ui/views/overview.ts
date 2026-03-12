@@ -17,6 +17,7 @@ type QuickstartAction = {
 export type OverviewProps = {
   connected: boolean;
   hello: GatewayHelloOk | null;
+  health: Record<string, unknown> | null;
   settings: UiSettings;
   password: string;
   lastError: string | null;
@@ -32,6 +33,61 @@ export type OverviewProps = {
   onConnect: () => void;
   onRefresh: () => void;
 };
+
+type HealthSummaryLike = {
+  ok?: boolean;
+  ts?: number;
+  durationMs?: number;
+  channels?: Record<string, unknown>;
+  agents?: Array<{ heartbeat?: { everyMs?: number | null } | null }>;
+  sessions?: { count?: number | null };
+};
+
+const asRecord = (value: unknown): Record<string, unknown> | null =>
+  value && typeof value === "object" ? (value as Record<string, unknown>) : null;
+
+function resolveHealthSummary(health: Record<string, unknown> | null) {
+  const summary = health as HealthSummaryLike | null;
+  const ok = summary?.ok === true;
+  const channels =
+    summary?.channels && typeof summary.channels === "object" ? summary.channels : {};
+  const channelEntries = Object.values(channels ?? {});
+  const channelCount = channelEntries.length;
+  const channelFailures = channelEntries.filter((entry) => {
+    const record = asRecord(entry);
+    const probe = asRecord(record?.probe);
+    if (probe && probe.ok === false) {
+      return true;
+    }
+    const accounts = asRecord(record?.accounts);
+    if (!accounts) {
+      return false;
+    }
+    return Object.values(accounts).some((account) => {
+      const accountRecord = asRecord(account);
+      const accountProbe = asRecord(accountRecord?.probe);
+      return accountProbe?.ok === false;
+    });
+  }).length;
+  const agents = Array.isArray(summary?.agents) ? (summary?.agents ?? []) : [];
+  const agentCount = agents.length;
+  const heartbeatMs =
+    typeof agents[0]?.heartbeat?.everyMs === "number" ? agents[0]?.heartbeat?.everyMs : null;
+  const sessionCount =
+    typeof summary?.sessions?.count === "number" ? summary?.sessions?.count : null;
+  const durationMs = typeof summary?.durationMs === "number" ? summary?.durationMs : null;
+  const ts = typeof summary?.ts === "number" ? summary?.ts : null;
+  return {
+    ok,
+    channelCount,
+    channelFailures,
+    agentCount,
+    heartbeatMs,
+    sessionCount,
+    durationMs,
+    ts,
+  };
+}
 
 export function renderOverview(props: OverviewProps) {
   const snapshot = props.hello?.snapshot as
@@ -206,6 +262,7 @@ export function renderOverview(props: OverviewProps) {
 
   const currentLocale = i18n.getLocale();
   const showQuickstart = props.connected && !props.lastError;
+  const healthSummary = resolveHealthSummary(props.health);
   const quickstartActions: QuickstartAction[] = [
     {
       label: "Open the Control UI",
@@ -389,6 +446,52 @@ export function renderOverview(props: OverviewProps) {
           ${props.cronEnabled == null ? t("common.na") : props.cronEnabled ? t("common.enabled") : t("common.disabled")}
         </div>
         <div class="muted">${t("overview.stats.cronNext", { time: formatNextRun(props.cronNext) })}</div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top: 18px;">
+      <div class="card-title">Health summary</div>
+      <div class="card-sub">Live gateway health snapshot and key counts.</div>
+      <div class="stat-grid" style="margin-top: 16px;">
+        <div class="stat">
+          <div class="stat-label">Gateway</div>
+          <div class="stat-value ${healthSummary.ok ? "ok" : "warn"}">
+            ${healthSummary.ok ? t("common.ok") : t("common.na")}
+          </div>
+          <div class="muted">
+            ${healthSummary.durationMs != null ? formatDurationHuman(healthSummary.durationMs) : t("common.na")} ·
+            ${healthSummary.ts != null ? formatRelativeTimestamp(healthSummary.ts) : t("common.na")}
+          </div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Channels</div>
+          <div class="stat-value ${healthSummary.channelFailures > 0 ? "warn" : "ok"}">
+            ${healthSummary.channelCount || 0}
+          </div>
+          <div class="muted">
+            ${
+              healthSummary.channelFailures > 0
+                ? `${healthSummary.channelFailures} failed`
+                : "No probe failures"
+            }
+          </div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Agents</div>
+          <div class="stat-value">${healthSummary.agentCount || 0}</div>
+          <div class="muted">
+            ${
+              healthSummary.heartbeatMs != null
+                ? `Heartbeat ${formatDurationHuman(healthSummary.heartbeatMs)}`
+                : "Heartbeat n/a"
+            }
+          </div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Sessions</div>
+          <div class="stat-value">${healthSummary.sessionCount ?? t("common.na")}</div>
+          <div class="muted">Stored conversations</div>
+        </div>
       </div>
     </section>
 
