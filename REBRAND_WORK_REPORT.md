@@ -262,6 +262,17 @@ Remaining matches:
   - `826 passed | 7 skipped` files
   - `6776 passed | 93 skipped` tests
 
+## Local-Only Chat Default (2026-03-12)
+
+### What Was Completed
+
+- Auto-switch Control UI to Chat once when zero channel accounts are configured:
+  - `66772a486b` - `UI: auto-open chat for first-time local users`
+
+### Test Results
+
+- `pnpm test`: PASS
+
 ## Rebrand Polish Scan (2026-03-12)
 
 - Scanned `docs/assets` for OpenClaw filenames: none found.
