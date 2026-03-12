@@ -20,6 +20,7 @@
   animation: dashboard-enter 0.4s var(--ease-out);
   transition: grid-template-columns var(--shell-focus-duration) var(--shell-focus-ease);
   overflow: hidden;
+  background: transparent;
 }
 
 @supports (height: 100dvh) {
@@ -84,7 +85,9 @@
   padding: 0 20px;
   height: var(--shell-topbar-height);
   border-bottom: 1px solid var(--border);
-  background: var(--bg);
+  background: var(--chrome);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-sm);
 }
 
 .topbar-left {
@@ -135,18 +138,20 @@
 }
 
 .brand-title {
-  font-size: 16px;
+  font-family: var(--font-display);
+  font-size: 14px;
   font-weight: 700;
-  letter-spacing: -0.03em;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
   line-height: 1.1;
   color: var(--text-strong);
 }
 
 .brand-sub {
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--muted);
-  letter-spacing: 0.05em;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   line-height: 1;
 }
@@ -199,7 +204,9 @@
   overflow-y: auto;
   overflow-x: hidden;
   padding: 16px 12px;
-  background: var(--bg);
+  background: var(--chrome);
+  backdrop-filter: blur(16px);
+  border-right: 1px solid var(--border);
   scrollbar-width: none; /* Firefox */
   transition:
     width var(--shell-focus-duration) var(--shell-focus-ease),
@@ -406,7 +413,9 @@
 
 .nav-item.active {
   color: var(--text-strong);
-  background: var(--accent-subtle);
+  background: linear-gradient(90deg, rgba(255, 87, 10, 0.18), rgba(255, 87, 10, 0.02));
+  border-color: rgba(255, 87, 10, 0.35);
+  box-shadow: inset 3px 0 0 var(--accent);
 }
 
 .nav-item.active .nav-item__icon {
@@ -425,6 +434,7 @@
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
+  background: transparent;
 }
 
 .content > * + * {
@@ -473,9 +483,10 @@
 }
 
 .page-title {
+  font-family: var(--font-display);
   font-size: 26px;
   font-weight: 700;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.02em;
   line-height: 1.15;
   color: var(--text-strong);
 }

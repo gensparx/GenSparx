@@ -225,7 +225,7 @@ export function renderOverview(props: OverviewProps) {
   ];
 
   return html`
-    <section class="card" style="margin-bottom: 18px;">
+    <section class="card overview-hero" style="margin-bottom: 18px;">
       <div class="card-title">Gateway status</div>
       <div class="card-sub">Snapshot of connection health and next action.</div>
       <div class="callout ${statusTone === "danger" ? "danger" : statusTone === "warn" ? "warn" : ""}" style="margin-top: 14px;">
@@ -235,10 +235,12 @@ export function renderOverview(props: OverviewProps) {
         ${hasError ? html`<div style="margin-top: 6px;">${props.lastError}</div>` : ""}
         ${
           needsAuthHint
-            ? html`<div class="muted" style="margin-top: 6px;">
-                Missing token/password. Generate one with
-                <span class="mono">gensparx doctor --generate-gateway-token</span>.
-              </div>`
+            ? html`
+                <div class="muted" style="margin-top: 6px">
+                  Missing token/password. Generate one with
+                  <span class="mono">gensparx doctor --generate-gateway-token</span>.
+                </div>
+              `
             : ""
         }
         <div class="muted" style="margin-top: 6px;">
@@ -248,7 +250,7 @@ export function renderOverview(props: OverviewProps) {
     </section>
 
     <section class="grid grid-cols-2">
-      <div class="card">
+      <div class="card overview-access">
         <div class="card-title">${t("overview.access.title")}</div>
         <div class="card-sub">${t("overview.access.subtitle")}</div>
         <div class="form-grid" style="margin-top: 16px;">
@@ -328,7 +330,7 @@ export function renderOverview(props: OverviewProps) {
         </div>
       </div>
 
-      <div class="card">
+      <div class="card overview-snapshot">
         <div class="card-title">${t("overview.snapshot.title")}</div>
         <div class="card-sub">${t("overview.snapshot.subtitle")}</div>
         <div class="stat-grid" style="margin-top: 16px;">

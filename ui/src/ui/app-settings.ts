@@ -37,7 +37,7 @@ import {
 import { saveSettings, type UiSettings } from "./storage.ts";
 import { startThemeTransition, type ThemeTransitionContext } from "./theme-transition.ts";
 import { resolveTheme, type ResolvedTheme, type ThemeMode } from "./theme.ts";
-import type { AgentsListResult } from "./types.ts";
+import type { AgentsListResult, ChannelsStatusSnapshot } from "./types.ts";
 
 type SettingsHost = {
   settings: UiSettings;
@@ -59,6 +59,7 @@ type SettingsHost = {
   themeMedia: MediaQueryList | null;
   themeMediaHandler: ((event: MediaQueryListEvent) => void) | null;
   pendingGatewayUrl?: string | null;
+  channelsSnapshot?: ChannelsStatusSnapshot | null;
 };
 
 export function applySettings(host: SettingsHost, next: UiSettings) {
