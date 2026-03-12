@@ -261,3 +261,8 @@ Remaining matches:
 - `pnpm test`: PASS
   - `826 passed | 7 skipped` files
   - `6776 passed | 93 skipped` tests
+
+## Rebrand Polish Scan (2026-03-12)
+
+- Scanned `docs/assets` for OpenClaw filenames: none found.
+- Scanned `docs/**` (excluding `docs/zh-CN/**`) for OpenClaw strings: none found.
