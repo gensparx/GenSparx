@@ -39,12 +39,19 @@ type HealthSummaryLike = {
   ts?: number;
   durationMs?: number;
   channels?: Record<string, unknown>;
+  channelLabels?: Record<string, string>;
   agents?: Array<{ heartbeat?: { everyMs?: number | null } | null }>;
   sessions?: { count?: number | null };
 };
 
 const asRecord = (value: unknown): Record<string, unknown> | null =>
   value && typeof value === "object" ? (value as Record<string, unknown>) : null;
+
+type ChannelFailure = {
+  channelId: string;
+  label: string;
+  error: string;
+};
 
 function resolveHealthSummary(health: Record<string, unknown> | null) {
   const summary = health as HealthSummaryLike | null;
@@ -53,22 +60,39 @@ function resolveHealthSummary(health: Record<string, unknown> | null) {
     summary?.channels && typeof summary.channels === "object" ? summary.channels : {};
   const channelEntries = Object.values(channels ?? {});
   const channelCount = channelEntries.length;
-  const channelFailures = channelEntries.filter((entry) => {
+  const channelLabels =
+    summary?.channelLabels && typeof summary.channelLabels === "object"
+      ? summary.channelLabels
+      : {};
+  const failures: ChannelFailure[] = [];
+  for (const [channelId, entry] of Object.entries(channels ?? {})) {
     const record = asRecord(entry);
-    const probe = asRecord(record?.probe);
+    if (!record) {
+      continue;
+    }
+    const label =
+      typeof channelLabels[channelId] === "string" ? channelLabels[channelId] : channelId;
+    const probe = asRecord(record.probe);
     if (probe && probe.ok === false) {
-      return true;
+      const error = typeof probe.error === "string" ? probe.error : "Probe failed";
+      failures.push({ channelId, label, error });
+      continue;
     }
-    const accounts = asRecord(record?.accounts);
+    const accounts = asRecord(record.accounts);
     if (!accounts) {
-      return false;
+      continue;
     }
-    return Object.values(accounts).some((account) => {
+    for (const account of Object.values(accounts)) {
       const accountRecord = asRecord(account);
       const accountProbe = asRecord(accountRecord?.probe);
-      return accountProbe?.ok === false;
-    });
-  }).length;
+      if (accountProbe?.ok === false) {
+        const error = typeof accountProbe.error === "string" ? accountProbe.error : "Probe failed";
+        failures.push({ channelId, label, error });
+        break;
+      }
+    }
+  }
+  const channelFailures = failures.length;
   const agents = Array.isArray(summary?.agents) ? (summary?.agents ?? []) : [];
   const agentCount = agents.length;
   const heartbeatMs =
@@ -81,6 +105,7 @@ function resolveHealthSummary(health: Record<string, unknown> | null) {
     ok,
     channelCount,
     channelFailures,
+    failures: failures.slice(0, 3),
     agentCount,
     heartbeatMs,
     sessionCount,
@@ -493,6 +518,33 @@ export function renderOverview(props: OverviewProps) {
           <div class="muted">Stored conversations</div>
         </div>
       </div>
+      ${
+        healthSummary.failures.length > 0
+          ? html`
+              <div class="callout warn" style="margin-top: 16px;">
+                <div class="card-title" style="font-size: 14px;">Top channel failures</div>
+                <div class="card-sub" style="margin-top: 4px;">
+                  Fix the channels below or run <span class="mono">gensparx channels status --probe</span>.
+                </div>
+                <div class="list" style="margin-top: 12px;">
+                  ${healthSummary.failures.map(
+                    (failure) => html`
+                      <div class="list-item">
+                        <div class="list-main">
+                          <div class="list-title">${failure.label}</div>
+                          <div class="list-sub">${failure.error}</div>
+                        </div>
+                        <div class="list-meta">
+                          <span class="mono">gensparx channels login</span>
+                        </div>
+                      </div>
+                    `,
+                  )}
+                </div>
+              </div>
+            `
+          : ""
+      }
     </section>
 
     ${
