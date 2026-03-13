@@ -242,7 +242,7 @@ export function renderApp(state: AppViewState) {
             </div>
             <div class="brand-text">
               <div class="brand-title">GENSPARX</div>
-              <div class="brand-sub">Gateway Dashboard</div>
+              <div class="brand-sub">Control Center</div>
             </div>
           </div>
         </div>

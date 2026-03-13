@@ -288,6 +288,9 @@ export function renderOverview(props: OverviewProps) {
   const currentLocale = i18n.getLocale();
   const showQuickstart = props.connected && !props.lastError;
   const healthSummary = resolveHealthSummary(props.health);
+  const heroTimestamp = props.lastChannelsRefresh ?? healthSummary.ts ?? null;
+  const heroUpdated =
+    heroTimestamp != null ? formatRelativeTimestamp(heroTimestamp) : t("common.na");
   const quickstartActions: QuickstartAction[] = [
     {
       label: "Open the Control UI",
@@ -308,25 +311,49 @@ export function renderOverview(props: OverviewProps) {
 
   return html`
     <section class="card overview-hero" style="margin-bottom: 18px;">
-      <div class="card-title">Gateway status</div>
-      <div class="card-sub">Snapshot of connection health and next action.</div>
-      <div class="callout ${statusTone === "danger" ? "danger" : statusTone === "warn" ? "warn" : ""}" style="margin-top: 14px;">
+      <div class="overview-hero__header">
         <div>
-          Status: <span class="mono">${isConnected ? t("common.ok") : t("common.offline")}</span>
+          <div class="card-title">Gateway status</div>
+          <div class="card-sub">Snapshot of connection health and next action.</div>
         </div>
-        ${hasError ? html`<div style="margin-top: 6px;">${props.lastError}</div>` : ""}
-        ${
-          needsAuthHint
-            ? html`
-                <div class="muted" style="margin-top: 6px">
-                  Missing token/password. Generate one with
-                  <span class="mono">gensparx doctor --generate-gateway-token</span>.
-                </div>
-              `
-            : ""
-        }
-        <div class="muted" style="margin-top: 6px;">
-          <span class="mono">gensparx gateway status</span> | <span class="mono">gensparx dashboard</span>
+        <div class="overview-hero__meta">
+          <div class="hero-chip ${statusTone}">
+            ${isConnected ? t("common.ok") : t("common.offline")}
+          </div>
+          <div class="hero-meta">Updated ${heroUpdated}</div>
+        </div>
+      </div>
+      <div class="overview-hero__grid">
+        <div class="callout ${statusTone === "danger" ? "danger" : statusTone === "warn" ? "warn" : ""}">
+          <div>
+            Status: <span class="mono">${isConnected ? t("common.ok") : t("common.offline")}</span>
+          </div>
+          ${hasError ? html`<div style="margin-top: 6px;">${props.lastError}</div>` : ""}
+          ${
+            needsAuthHint
+              ? html`
+                  <div class="muted" style="margin-top: 6px">
+                    Missing token/password. Generate one with
+                    <span class="mono">gensparx doctor --generate-gateway-token</span>.
+                  </div>
+                `
+              : ""
+          }
+          <div class="muted" style="margin-top: 6px;">
+            <span class="mono">gensparx gateway status</span> | <span class="mono">gensparx dashboard</span>
+          </div>
+        </div>
+        <div class="overview-hero__actions">
+          <div class="hero-action">
+            <div class="hero-action__title">Run diagnostics</div>
+            <div class="muted">Scan config + security checks.</div>
+            <div class="mono" style="margin-top: 8px;">gensparx doctor</div>
+          </div>
+          <div class="hero-action">
+            <div class="hero-action__title">Inspect channels</div>
+            <div class="muted">Probe channel connectivity now.</div>
+            <div class="mono" style="margin-top: 8px;">gensparx channels status --probe</div>
+          </div>
         </div>
       </div>
     </section>
