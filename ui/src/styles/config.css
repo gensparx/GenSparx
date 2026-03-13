@@ -37,7 +37,8 @@
 .config-sidebar {
   display: flex;
   flex-direction: column;
-  background: var(--bg-accent);
+  background:
+    linear-gradient(180deg, rgba(255, 87, 10, 0.08), rgba(255, 87, 10, 0) 40%), var(--bg-accent);
   border-right: 1px solid var(--border);
   min-height: 0;
   overflow: hidden;
@@ -53,6 +54,7 @@
   justify-content: space-between;
   padding: 18px 18px;
   border-bottom: 1px solid var(--border);
+  background: linear-gradient(90deg, rgba(255, 87, 10, 0.1), transparent);
 }
 
 .config-sidebar__title {
@@ -282,6 +284,7 @@
 }
 
 .config-nav__item {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -300,6 +303,18 @@
     color var(--duration-fast) ease;
 }
 
+.config-nav__item::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  border-radius: var(--radius-full);
+  background: transparent;
+  transition: background var(--duration-fast) ease;
+}
+
 .config-nav__item:hover {
   background: var(--bg-hover);
   color: var(--text);
@@ -310,8 +325,12 @@
 }
 
 .config-nav__item.active {
-  background: var(--accent-subtle);
-  color: var(--accent);
+  background: linear-gradient(90deg, rgba(255, 87, 10, 0.18), rgba(255, 87, 10, 0.04));
+  color: var(--text-strong);
+}
+
+.config-nav__item.active::before {
+  background: var(--accent);
 }
 
 .config-nav__icon {
@@ -403,7 +422,7 @@
   justify-content: space-between;
   gap: 14px;
   padding: 14px 22px;
-  background: var(--bg-accent);
+  background: linear-gradient(90deg, rgba(255, 87, 10, 0.08), rgba(255, 87, 10, 0));
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
   position: relative;
