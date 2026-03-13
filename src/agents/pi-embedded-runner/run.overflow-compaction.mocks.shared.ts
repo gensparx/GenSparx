@@ -156,28 +156,19 @@ vi.mock("../defaults.js", () => ({
 }));
 
 export const mockedCoerceToFailoverError = vi.fn();
-type MockFailoverErrorDescription = {
-  message: string;
-  reason: string | undefined;
-  status: number | undefined;
-  code: string | undefined;
-};
-
-export const mockedDescribeFailoverError = vi.fn(
-  (err: unknown): MockFailoverErrorDescription => ({
-    message: err instanceof Error ? err.message : String(err),
-    reason: undefined,
-    status: undefined,
-    code: undefined,
-  }),
-);
+export const mockedDescribeFailoverError = vi.fn((err: unknown) => ({
+  message: err instanceof Error ? err.message : String(err),
+  reason: undefined,
+  status: undefined,
+  code: undefined,
+}));
 export const mockedResolveFailoverStatus = vi.fn();
 
 vi.mock("../failover-error.js", () => ({
   FailoverError: class extends Error {},
-  resolveFailoverStatus: mockedResolveFailoverStatus,
-  describeFailoverError: mockedDescribeFailoverError,
   coerceToFailoverError: mockedCoerceToFailoverError,
+  describeFailoverError: mockedDescribeFailoverError,
+  resolveFailoverStatus: mockedResolveFailoverStatus,
 }));
 
 vi.mock("./lanes.js", () => ({
