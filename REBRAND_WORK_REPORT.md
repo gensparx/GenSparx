@@ -267,3 +267,22 @@ Remaining matches:
 
 - Scanned `docs/assets` for legacy brand filenames: none found.
 - Scanned `docs/**` (excluding `docs/zh-CN/**`) for legacy brand strings: none found.
+
+## Legacy Trace Scan (2026-03-13)
+
+Scope (excluded):
+
+- `node_modules`, `dist`, `.git`, `pnpm-lock.yaml`
+- `docs/zh-CN/**` (generated i18n)
+- Generated bundles (`src/canvas-host/a2ui/*`)
+- Legacy compatibility constants (expected): `src/compat/legacy-names.ts`
+
+Remaining matches:
+
+- Only legacy compatibility constants in `src/compat/legacy-names.ts`.
+
+## Full Test Pass (2026-03-13)
+
+- `pnpm check`: PASS (user-confirmed)
+- `pnpm build`: PASS (user-confirmed)
+- `pnpm test`: PASS (user-confirmed)
