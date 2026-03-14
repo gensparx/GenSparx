@@ -311,3 +311,18 @@ Remaining matches:
 - `pnpm build`: PASS (user-confirmed)
 - `pnpm check`: PASS (user-confirmed)
 - `pnpm test`: PASS (user-confirmed)
+
+## Verification + Release (2026-03-15)
+
+### What Was Completed
+
+- Release `1.0.11-gensparx` published (user-confirmed).
+- Full test suite executed and passing (user-confirmed).
+- Local gateway health check: `gensparx health` PASS (user-confirmed).
+
+### Notes
+
+- WhatsApp send test is still blocked by a gateway/service mismatch reporting
+  `invalid send params: ... forceDocument`. Requires killing the old gateway PID
+  and reinstalling the service with `gensparx gateway install --force`, then
+  re-running the send command.
