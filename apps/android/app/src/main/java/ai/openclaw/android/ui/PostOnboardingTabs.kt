@@ -134,16 +134,24 @@ fun PostOnboardingTabs(viewModel: MainViewModel, modifier: Modifier = Modifier) 
 @Composable
 private fun ScreenTabScreen(viewModel: MainViewModel) {
   val isConnected by viewModel.isConnected.collectAsState()
+  LaunchedEffect(isConnected) {
+    if (isConnected) {
+      viewModel.refreshHomeCanvasOverviewIfConnected()
+    }
+  }
   val isNodeConnected by viewModel.isNodeConnected.collectAsState()
   val canvasUrl by viewModel.canvasCurrentUrl.collectAsState()
   val canvasA2uiHydrated by viewModel.canvasA2uiHydrated.collectAsState()
   val canvasRehydratePending by viewModel.canvasRehydratePending.collectAsState()
   val canvasRehydrateErrorText by viewModel.canvasRehydrateErrorText.collectAsState()
   val isA2uiUrl = canvasUrl?.contains("/__gensparx__/a2ui/") == true
-  val showRestoreCta = isConnected && isNodeConnected && (canvasUrl.isNullOrBlank() || (isA2uiUrl && !canvasA2uiHydrated))
+  val showRestoreCta =
+    isConnected &&
+      isNodeConnected &&
+      (canvasUrl.isNullOrBlank() || (isA2uiUrl && !canvasA2uiHydrated))
   val restoreCtaText =
     when {
-      canvasRehydratePending -> "Restore requested. Waiting for agentâ€¦"
+      canvasRehydratePending -> "Restore requested. Waiting for agent…"
       !canvasRehydrateErrorText.isNullOrBlank() -> canvasRehydrateErrorText!!
       else -> "Canvas reset. Tap to restore dashboard."
     }
@@ -324,3 +332,5 @@ private fun BottomTabBar(
     }
   }
 }
+
+
