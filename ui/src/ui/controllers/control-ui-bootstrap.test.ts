@@ -9,17 +9,17 @@ describe("loadControlUiBootstrapConfig", () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({
-        basePath: "/gensparx",
+        basePath: "/openclaw",
         assistantName: "Ops",
         assistantAvatar: "O",
         assistantAgentId: "main",
-        serverVersion: "2026.3.2",
+        serverVersion: "2026.3.7",
       }),
     });
     vi.stubGlobal("fetch", fetchMock as unknown as typeof fetch);
 
     const state = {
-      basePath: "/gensparx",
+      basePath: "/openclaw",
       assistantName: "Assistant",
       assistantAvatar: null,
       assistantAgentId: null,
@@ -29,13 +29,13 @@ describe("loadControlUiBootstrapConfig", () => {
     await loadControlUiBootstrapConfig(state);
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `/gensparx${CONTROL_UI_BOOTSTRAP_CONFIG_PATH}`,
+      `/openclaw${CONTROL_UI_BOOTSTRAP_CONFIG_PATH}`,
       expect.objectContaining({ method: "GET" }),
     );
     expect(state.assistantName).toBe("Ops");
     expect(state.assistantAvatar).toBe("O");
     expect(state.assistantAgentId).toBe("main");
-    expect(state.serverVersion).toBe("2026.3.2");
+    expect(state.serverVersion).toBe("2026.3.7");
 
     vi.unstubAllGlobals();
   });
@@ -68,7 +68,7 @@ describe("loadControlUiBootstrapConfig", () => {
     vi.stubGlobal("fetch", fetchMock as unknown as typeof fetch);
 
     const state = {
-      basePath: "/gensparx/",
+      basePath: "/openclaw/",
       assistantName: "Assistant",
       assistantAvatar: null,
       assistantAgentId: null,
@@ -78,7 +78,7 @@ describe("loadControlUiBootstrapConfig", () => {
     await loadControlUiBootstrapConfig(state);
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `/gensparx${CONTROL_UI_BOOTSTRAP_CONFIG_PATH}`,
+      `/openclaw${CONTROL_UI_BOOTSTRAP_CONFIG_PATH}`,
       expect.objectContaining({ method: "GET" }),
     );
 

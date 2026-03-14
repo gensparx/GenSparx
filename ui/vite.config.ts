@@ -19,7 +19,7 @@ function normalizeBase(input: string): string {
 }
 
 export default defineConfig(() => {
-  const envBase = process.env.GENSPARX_CONTROL_UI_BASE_PATH?.trim();
+  const envBase = process.env.OPENCLAW_CONTROL_UI_BASE_PATH?.trim();
   const base = envBase ? normalizeBase(envBase) : "./";
   return {
     base,
@@ -39,5 +39,23 @@ export default defineConfig(() => {
       port: 5173,
       strictPort: true,
     },
+    plugins: [
+      {
+        name: "control-ui-dev-stubs",
+        configureServer(server) {
+          server.middlewares.use("/__openclaw/control-ui-config.json", (_req, res) => {
+            res.setHeader("Content-Type", "application/json");
+            res.end(
+              JSON.stringify({
+                basePath: "/",
+                assistantName: "",
+                assistantAvatar: "",
+                assistantAgentId: "",
+              }),
+            );
+          });
+        },
+      },
+    ],
   };
 });

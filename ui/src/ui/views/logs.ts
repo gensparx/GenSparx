@@ -51,25 +51,22 @@ export function renderLogs(props: LogsProps) {
     }
     return matchesFilter(entry, needle);
   });
-  const totalCount = props.entries.length;
-  const filteredCount = filtered.length;
-  const activeLevels = LEVELS.filter((level) => props.levelFilters[level]);
   const exportLabel = needle || levelFiltered ? "filtered" : "visible";
 
   return html`
     <section class="card">
-      <div class="log-toolbar">
+      <div class="row" style="justify-content: space-between;">
         <div>
           <div class="card-title">Logs</div>
           <div class="card-sub">Gateway file logs (JSONL).</div>
         </div>
-        <div class="log-toolbar__actions">
+        <div class="row" style="gap: 8px;">
           <button class="btn" ?disabled=${props.loading} @click=${props.onRefresh}>
             ${props.loading ? "Loading…" : "Refresh"}
           </button>
           <button
             class="btn"
-            ?disabled=${filteredCount === 0}
+            ?disabled=${filtered.length === 0}
             @click=${() =>
               props.onExport(
                 filtered.map((entry) => entry.raw),
@@ -79,23 +76,6 @@ export function renderLogs(props: LogsProps) {
             Export ${exportLabel}
           </button>
         </div>
-      </div>
-
-      <div class="log-summary" style="margin-top: 12px;">
-        <div class="log-summary__left">
-          <div class="log-pill">Total <span class="mono">${totalCount}</span></div>
-          <div class="log-pill ${filteredCount === totalCount ? "" : "warn"}">
-            Visible <span class="mono">${filteredCount}</span>
-          </div>
-          ${levelFiltered ? html`<div class="log-pill">Levels: ${activeLevels.join(", ")}</div>` : nothing}
-        </div>
-        ${
-          props.autoFollow
-            ? html`
-                <div class="log-pill ok">Auto-follow on</div>
-              `
-            : nothing
-        }
       </div>
 
       <div class="filters" style="margin-top: 14px;">
@@ -154,28 +134,20 @@ export function renderLogs(props: LogsProps) {
 
       <div class="log-stream" style="margin-top: 12px;" @scroll=${props.onScroll}>
         ${
-          filteredCount === 0
+          filtered.length === 0
             ? html`
                 <div class="muted" style="padding: 12px">No log entries.</div>
               `
-            : html`
-                <div class="log-row log-row--head">
-                  <div>Time</div>
-                  <div>Level</div>
-                  <div>Subsystem</div>
-                  <div>Message</div>
+            : filtered.map(
+                (entry) => html`
+                <div class="log-row">
+                  <div class="log-time mono">${formatTime(entry.time)}</div>
+                  <div class="log-level ${entry.level ?? ""}">${entry.level ?? ""}</div>
+                  <div class="log-subsystem mono">${entry.subsystem ?? ""}</div>
+                  <div class="log-message mono">${entry.message ?? entry.raw}</div>
                 </div>
-                ${filtered.map(
-                  (entry) => html`
-                    <div class="log-row">
-                      <div class="log-time mono">${formatTime(entry.time)}</div>
-                      <div class="log-level ${entry.level ?? ""}">${entry.level ?? ""}</div>
-                      <div class="log-subsystem mono">${entry.subsystem ?? ""}</div>
-                      <div class="log-message mono">${entry.message ?? entry.raw}</div>
-                    </div>
-                  `,
-                )}
-              `
+              `,
+              )
         }
       </div>
     </section>
