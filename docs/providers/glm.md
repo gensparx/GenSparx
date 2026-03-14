@@ -14,6 +14,19 @@ models are accessed via the `zai` provider and model IDs like `zai/glm-5`.
 ## CLI setup
 
 ```bash
+# Coding Plan Global, recommended for Coding Plan users
+gensparx onboard --auth-choice zai-coding-global
+
+# Coding Plan CN (China region), recommended for Coding Plan users
+gensparx onboard --auth-choice zai-coding-cn
+
+# General API
+gensparx onboard --auth-choice zai-global
+
+# General API CN (China region)
+gensparx onboard --auth-choice zai-cn
+
+# Or let Gensparx auto-detect from your API key
 gensparx onboard --auth-choice zai-api-key
 ```
 
