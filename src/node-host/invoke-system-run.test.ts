@@ -201,6 +201,15 @@ describe("handleSystemRunInvoke mac app exec host routing", () => {
     return path.resolve(String(target));
   }
 
+  function ensureDifferentIdentity(baseline: fs.Stats, drift: fs.Stats): fs.Stats {
+    if (baseline.ino !== drift.ino) {
+      return drift;
+    }
+    const bumpedIno = typeof drift.ino === "bigint" ? drift.ino + 1n : drift.ino + 1;
+    const adjusted = Object.create(Object.getPrototypeOf(drift)) as fs.Stats;
+    return Object.assign(adjusted, drift, { ino: bumpedIno });
+  }
+
   async function withMockedCwdIdentityDrift<T>(params: {
     canonicalCwd: string;
     driftDir: string;
@@ -210,7 +219,7 @@ describe("handleSystemRunInvoke mac app exec host routing", () => {
     const stableHitsBeforeDrift = params.stableHitsBeforeDrift ?? 2;
     const realStatSync = fs.statSync.bind(fs);
     const baselineStat = realStatSync(params.canonicalCwd);
-    const driftStat = realStatSync(params.driftDir);
+    const driftStat = ensureDifferentIdentity(baselineStat, realStatSync(params.driftDir));
     let canonicalHits = 0;
     const statSpy = vi.spyOn(fs, "statSync").mockImplementation((...args) => {
       const resolvedTarget = resolveStatTargetPath(args[0]);
