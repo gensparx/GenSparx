@@ -59,6 +59,8 @@ type TelegramSendOpts = {
   asVideoNote?: boolean;
   /** Send message silently (no notification). Defaults to false. */
   silent?: boolean;
+  /** Force media to send as document (bypass image compression). Defaults to false. */
+  forceDocument?: boolean;
   /** Message ID to reply to (for threading) */
   replyToMessageId?: number;
   /** Quote text for Telegram reply_parameters. */
@@ -476,6 +478,7 @@ export async function sendMessageTelegram(
   const mediaMaxBytes =
     opts.maxBytes ??
     (typeof account.config.mediaMaxMb === "number" ? account.config.mediaMaxMb : 100) * 1024 * 1024;
+  const forceDocument = opts.forceDocument === true;
   const replyMarkup = buildInlineKeyboard(opts.buttons);
 
   const threadParams = buildTelegramThreadReplyParams({
@@ -568,6 +571,7 @@ export async function sendMessageTelegram(
       buildOutboundMediaLoadOptions({
         maxBytes: mediaMaxBytes,
         mediaLocalRoots: opts.mediaLocalRoots,
+        optimizeImages: forceDocument ? false : undefined,
       }),
     );
     const kind = kindFromMime(media.contentType ?? undefined);
@@ -619,6 +623,19 @@ export async function sendMessageTelegram(
       );
 
     const mediaSender = (() => {
+      if (forceDocument) {
+        return {
+          label: "document",
+          sender: (effectiveParams: Record<string, unknown> | undefined) =>
+            api.sendDocument(
+              chatId,
+              file,
+              effectiveParams
+                ? { ...effectiveParams, disable_content_type_detection: true }
+                : { disable_content_type_detection: true },
+            ) as Promise<TelegramMessageLike>,
+        };
+      }
       if (isGif) {
         return {
           label: "animation",

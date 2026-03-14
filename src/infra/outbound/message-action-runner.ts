@@ -480,6 +480,7 @@ async function handleSendAction(ctx: ResolvedActionContext): Promise<MessageActi
   const gifPlayback = readBooleanParam(params, "gifPlayback") ?? false;
   const bestEffort = readBooleanParam(params, "bestEffort");
   const silent = readBooleanParam(params, "silent");
+  const forceDocument = readBooleanParam(params, "forceDocument");
 
   const replyToId = readStringParam(params, "replyTo");
   const resolvedThreadId = resolveAndApplyOutboundThreadId(params, {
@@ -547,6 +548,7 @@ async function handleSendAction(ctx: ResolvedActionContext): Promise<MessageActi
     mediaUrl: mediaUrl || undefined,
     mediaUrls: mergedMediaUrls.length ? mergedMediaUrls : undefined,
     gifPlayback,
+    forceDocument: forceDocument ?? undefined,
     bestEffort: bestEffort ?? undefined,
     replyToId: replyToId ?? undefined,
     threadId: resolvedThreadId ?? undefined,

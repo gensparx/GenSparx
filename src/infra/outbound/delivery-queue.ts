@@ -39,6 +39,7 @@ type QueuedDeliveryPayload = {
   replyToId?: string | null;
   bestEffort?: boolean;
   gifPlayback?: boolean;
+  forceDocument?: boolean;
   silent?: boolean;
   mirror?: DeliveryMirrorPayload;
 };
@@ -95,6 +96,7 @@ export async function enqueueDelivery(
     replyToId: params.replyToId,
     bestEffort: params.bestEffort,
     gifPlayback: params.gifPlayback,
+    forceDocument: params.forceDocument,
     silent: params.silent,
     mirror: params.mirror,
     retryCount: 0,
@@ -342,6 +344,7 @@ export async function recoverPendingDeliveries(opts: {
         gifPlayback: entry.gifPlayback,
         silent: entry.silent,
         mirror: entry.mirror,
+        forceDocument: entry.forceDocument,
         skipQueue: true, // Prevent re-enqueueing during recovery
       });
       await ackDelivery(entry.id, opts.stateDir);

@@ -22,4 +22,16 @@ describe("media load options", () => {
       localRoots: ["/tmp/workspace"],
     });
   });
+
+  it("preserves optimizeImages override", () => {
+    expect(
+      buildOutboundMediaLoadOptions({
+        maxBytes: 2048,
+        optimizeImages: false,
+      }),
+    ).toEqual({
+      maxBytes: 2048,
+      optimizeImages: false,
+    });
+  });
 });

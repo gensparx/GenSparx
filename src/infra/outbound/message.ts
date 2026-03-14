@@ -38,6 +38,7 @@ type MessageSendParams = {
   mediaUrl?: string;
   mediaUrls?: string[];
   gifPlayback?: boolean;
+  forceDocument?: boolean;
   accountId?: string;
   replyToId?: string;
   threadId?: string | number;
@@ -223,6 +224,7 @@ export async function sendMessage(params: MessageSendParams): Promise<MessageSen
       replyToId: params.replyToId,
       threadId: params.threadId,
       gifPlayback: params.gifPlayback,
+      forceDocument: params.forceDocument,
       deps: params.deps,
       bestEffort: params.bestEffort,
       abortSignal: params.abortSignal,
@@ -255,6 +257,7 @@ export async function sendMessage(params: MessageSendParams): Promise<MessageSen
       mediaUrl: params.mediaUrl,
       mediaUrls: mirrorMediaUrls.length ? mirrorMediaUrls : params.mediaUrls,
       gifPlayback: params.gifPlayback,
+      forceDocument: params.forceDocument,
       accountId: params.accountId,
       agentId: params.agentId,
       channel,

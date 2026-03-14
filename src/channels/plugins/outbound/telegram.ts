@@ -14,6 +14,7 @@ function resolveTelegramSendContext(params: {
   accountId?: string | null;
   replyToId?: string | null;
   threadId?: string | number | null;
+  forceDocument?: boolean;
 }): {
   send: typeof sendMessageTelegram;
   baseOpts: {
@@ -23,6 +24,7 @@ function resolveTelegramSendContext(params: {
     messageThreadId?: number;
     replyToMessageId?: number;
     accountId?: string;
+    forceDocument?: boolean;
   };
 } {
   const send = params.deps?.sendTelegram ?? sendMessageTelegram;
@@ -35,6 +37,7 @@ function resolveTelegramSendContext(params: {
       messageThreadId: parseTelegramThreadId(params.threadId),
       replyToMessageId: parseTelegramReplyToMessageId(params.replyToId),
       accountId: params.accountId ?? undefined,
+      forceDocument: params.forceDocument ?? undefined,
     },
   };
 }
@@ -67,6 +70,7 @@ export const telegramOutbound: ChannelOutboundAdapter = {
     deps,
     replyToId,
     threadId,
+    forceDocument,
   }) => {
     const { send, baseOpts } = resolveTelegramSendContext({
       cfg,
@@ -74,6 +78,7 @@ export const telegramOutbound: ChannelOutboundAdapter = {
       accountId,
       replyToId,
       threadId,
+      forceDocument,
     });
     const result = await send(to, text, {
       ...baseOpts,
@@ -91,6 +96,7 @@ export const telegramOutbound: ChannelOutboundAdapter = {
     deps,
     replyToId,
     threadId,
+    forceDocument,
   }) => {
     const { send, baseOpts: contextOpts } = resolveTelegramSendContext({
       cfg,
@@ -98,6 +104,7 @@ export const telegramOutbound: ChannelOutboundAdapter = {
       accountId,
       replyToId,
       threadId,
+      forceDocument,
     });
     const telegramData = payload.channelData?.telegram as
       | { buttons?: TelegramInlineButtons; quoteText?: string }

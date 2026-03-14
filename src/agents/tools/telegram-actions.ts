@@ -230,6 +230,7 @@ export async function handleTelegramAction(
       integer: true,
     });
     const quoteText = readStringParam(params, "quoteText");
+    const forceDocument = readBooleanParam(params, "forceDocument");
     const token = resolveTelegramToken(cfg, { accountId }).token;
     if (!token) {
       throw new Error(
@@ -247,6 +248,7 @@ export async function handleTelegramAction(
       quoteText: quoteText ?? undefined,
       asVoice: readBooleanParam(params, "asVoice"),
       silent: readBooleanParam(params, "silent"),
+      forceDocument: forceDocument ?? undefined,
     });
     return jsonResult({
       ok: true,

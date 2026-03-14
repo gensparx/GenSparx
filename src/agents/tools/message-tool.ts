@@ -196,6 +196,11 @@ function buildSendSchema(options: {
     threadId: Type.Optional(Type.String()),
     asVoice: Type.Optional(Type.Boolean()),
     silent: Type.Optional(Type.Boolean()),
+    forceDocument: Type.Optional(
+      Type.Boolean({
+        description: "Telegram only: send media as a document to bypass image compression.",
+      }),
+    ),
     quoteText: Type.Optional(
       Type.String({ description: "Quote text for Telegram reply_parameters" }),
     ),
