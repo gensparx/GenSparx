@@ -286,3 +286,28 @@ Remaining matches:
 - `pnpm check`: PASS (user-confirmed)
 - `pnpm build`: PASS (user-confirmed)
 - `pnpm test`: PASS (user-confirmed)
+
+## Dashboard UI v2.1.3 + Telegram Force-Document (2026-03-14)
+
+### What Was Completed
+
+- Replaced the Control UI with upstream dashboard v2.1.3.
+- Rebranded the dashboard UI to Gensparx:
+  - Titles, labels, commands, and docs links updated to `gensparx`.
+  - Export filenames updated to `gensparx-*`.
+  - Theme label updated to avoid legacy naming.
+- Fixed UI integration gaps for this repo:
+  - Adjusted tool display JSON path to `GensparxKit`.
+  - Removed references to gateway helpers not present in this codebase.
+- Added Telegram `forceDocument` delivery support end-to-end:
+  - New option routes through outbound pipeline and delivery queue.
+  - Media optimization is disabled when forced to document.
+  - CLI flag added for `message send`.
+- Fixed Windows-only approval test by ensuring cwd identity drift is guaranteed during the test.
+
+### Test Results
+
+- `pnpm dev`: PASS (user-confirmed)
+- `pnpm build`: PASS (user-confirmed)
+- `pnpm check`: PASS (user-confirmed)
+- `pnpm test`: PASS (user-confirmed)
