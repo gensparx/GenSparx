@@ -55,6 +55,9 @@ export function renderExecApprovalPrompt(state: AppViewState) {
           ${renderMetaRow("Security", request.security)}
           ${renderMetaRow("Ask", request.ask)}
         </div>
+        <div class="exec-approval-warning">
+          Review the command carefully. Approving allows the agent to execute it on your host.
+        </div>
         ${
           state.execApprovalError
             ? html`<div class="exec-approval-error">${state.execApprovalError}</div>`
