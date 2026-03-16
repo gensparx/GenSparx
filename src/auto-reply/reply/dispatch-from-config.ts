@@ -1,7 +1,7 @@
 import { resolveSessionAgentId } from "../../agents/agent-scope.js";
 import type { GensparxConfig } from "../../config/config.js";
-import { parseSessionThreadInfo } from "../../config/sessions/delivery-info.js";
 import { loadSessionStore, resolveStorePath, type SessionEntry } from "../../config/sessions.js";
+import { parseSessionThreadInfo } from "../../config/sessions/delivery-info.js";
 import { logVerbose } from "../../globals.js";
 import { fireAndForgetHook } from "../../hooks/fire-and-forget.js";
 import { createInternalHookEvent, triggerInternalHook } from "../../hooks/internal-hooks.js";
