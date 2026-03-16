@@ -36,7 +36,10 @@ type HookPackageManifest = {
   version?: string;
   dependencies?: Record<string, string>;
 } & Partial<
-  Record<typeof MANIFEST_KEY | (typeof LEGACY_MANIFEST_KEYS)[number], { hooks?: string[] }>
+  Record<
+    typeof MANIFEST_KEY | Exclude<(typeof LEGACY_MANIFEST_KEYS)[number], typeof MANIFEST_KEY>,
+    { hooks?: string[] }
+  >
 >;
 
 export type InstallHooksResult =
