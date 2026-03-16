@@ -349,3 +349,12 @@ Remaining matches:
 ### Notes
 
 - Any upstream feature drops must be re-reviewed for missing local dependencies before reapplying.
+
+## Onboarding Header + Release (2026-03-16)
+
+### What Was Completed
+
+- Added a branded onboarding header panel at the top of `gensparx onboard`.
+- Header now uses the local machine name for the welcome line.
+- Small orange `gensparx` logo text added in the header panel.
+- Version bump to `1.0.13-gensparx` and published to npm `latest` (user-confirmed).
