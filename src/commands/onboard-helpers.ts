@@ -16,7 +16,9 @@ import { pickPrimaryTailnetIPv4 } from "../infra/tailnet.js";
 import { isWSL } from "../infra/wsl.js";
 import { runCommandWithTimeout } from "../process/exec.js";
 import type { RuntimeEnv } from "../runtime.js";
+import { visibleWidth } from "../terminal/ansi.js";
 import { stylePromptTitle } from "../terminal/prompt-style.js";
+import { colorize, isRich, theme } from "../terminal/theme.js";
 import {
   CONFIG_DIR,
   resolveUserPath,
@@ -111,6 +113,111 @@ export function printWizardHeader(runtime: RuntimeEnv) {
     " ",
   ].join("\n");
   runtime.log(header);
+}
+
+export function printOnboardHero(runtime: RuntimeEnv) {
+  const rich = isRich();
+  if (!process.stdout.isTTY) {
+    runtime.log(`Gensparx v${VERSION}\nWelcome back!`);
+    return;
+  }
+
+  const columns = process.stdout.columns ?? 120;
+  if (columns < 90) {
+    const compact = [
+      `${colorize(rich, theme.heading, "Gensparx")} ${colorize(rich, theme.info, `v${VERSION}`)}`,
+      "Welcome back! Let's get you set up.",
+      "Docs: https://docs.gensparx.com/start/getting-started",
+      "",
+    ].join("\n");
+    runtime.log(compact);
+    return;
+  }
+
+  const width = Math.min(columns, 110);
+  const innerWidth = width - 2;
+  const leftWidth = Math.max(38, Math.floor(innerWidth * 0.45));
+  const rightWidth = innerWidth - leftWidth - 1;
+  const border = `+${"-".repeat(innerWidth)}+`;
+  const divider = "|";
+  const title = `Gensparx v${VERSION}`;
+
+  const user =
+    process.env.COMPUTERNAME ||
+    process.env.HOSTNAME ||
+    process.env.USERNAME ||
+    process.env.USER ||
+    "there";
+  const workspace = shortenHomePath(DEFAULT_WORKSPACE);
+
+  const leftLines = [
+    title,
+    `Welcome back ${user}!`,
+    "",
+    colorize(rich, theme.accent, "gensparx ai assistant is ready to serve you."),
+    "",
+    "Model: default - Gateway: local",
+    `Workspace: ${workspace}`,
+  ];
+
+  const rightLines = [
+    "Tips for getting started",
+    "Run `gensparx dashboard` after setup.",
+    "Use Up/Down to move, Enter to select.",
+    "Docs: https://docs.gensparx.com/start/getting-started",
+    "",
+    "Recent activity",
+    "No recent activity",
+  ];
+
+  const rowCount = Math.max(leftLines.length, rightLines.length);
+  const rows = [];
+  for (let i = 0; i < rowCount; i += 1) {
+    const left = leftLines[i] ?? "";
+    const right = rightLines[i] ?? "";
+    const leftCell = padCell(` ${left}`, leftWidth);
+    const rightCell = padCell(` ${right}`, rightWidth);
+    rows.push(`${divider}${leftCell}${divider}${rightCell}${divider}`);
+  }
+
+  const headerLines = [border, ...rows, border].map((line) =>
+    line
+      .replace(title, colorize(rich, theme.heading, title))
+      .replace(
+        "Tips for getting started",
+        colorize(rich, theme.heading, "Tips for getting started"),
+      )
+      .replace("Recent activity", colorize(rich, theme.heading, "Recent activity")),
+  );
+
+  const colored = headerLines.map((line, index) =>
+    index === 0 || index === headerLines.length - 1 ? colorize(rich, theme.accent, line) : line,
+  );
+
+  runtime.log(colored.join("\n"));
+  runtime.log("");
+}
+
+function padCell(value: string, width: number): string {
+  const trimmed = trimToWidth(value, width);
+  const padding = Math.max(0, width - visibleWidth(trimmed));
+  return `${trimmed}${" ".repeat(padding)}`;
+}
+
+function trimToWidth(value: string, width: number): string {
+  if (visibleWidth(value) <= width) {
+    return value;
+  }
+  const chars = Array.from(value);
+  let out = "";
+  for (const ch of chars) {
+    const next = out + ch;
+    if (visibleWidth(next) > width) {
+      break;
+    }
+    out = next;
+  }
+  return out;
 }
 
 export function applyWizardMetadata(
