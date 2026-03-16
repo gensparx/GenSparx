@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { GensparxConfig } from "../config/config.js";import type { AuthProfileStore } from "./auth-profiles.js";
-import { registerLogTransport, resetLogger, setLoggerOverride } from "../logging/logger.js";
+import type { GensparxConfig } from "../config/config.js";
+import type { AuthProfileStore } from "./auth-profiles.js";
 import { makeModelFallbackCfg } from "./test-helpers/model-fallback-config-fixture.js";
 
 // Mock auth-profiles module — must be before importing model-fallback
@@ -190,21 +190,21 @@ describe("runWithModelFallback – probe logic", () => {
       .mockRejectedValueOnce(Object.assign(new Error("rate limited"), { status: 429 }))
       .mockResolvedValue("fallback-ok");
 
-    await expect(
-      runWithModelFallback({
-        cfg,
-        provider: "google",
-        model: "gemini-3-flash-preview",
-        run,
-      }),
-    ).rejects.toThrow(/All models failed \(3\)/);
+    const result = await runWithModelFallback({
+      cfg,
+      provider: "openai",
+      model: "gpt-4.1-mini",
+      run,
+    });
 
-    // All three candidates must be attempted - the abort must not short-circuit
-    expect(run).toHaveBeenCalledTimes(3);
-
-    expect(run).toHaveBeenNthCalledWith(1, "google", "gemini-3-flash-preview", {
-      allowTransientCooldownProbe: true,
-    });    });
+    expect(result.result).toBe("fallback-ok");
+    expect(run).toHaveBeenCalledTimes(2);
+    expect(run).toHaveBeenNthCalledWith(1, "openai", "gpt-4.1-mini", {
+      allowRateLimitCooldownProbe: true,
+    });
+    expect(run).toHaveBeenNthCalledWith(2, "anthropic", "claude-haiku-3-5", {
+      allowRateLimitCooldownProbe: true,
+    });
   });
 
   it("throttles probe when called within 30s interval", async () => {
@@ -333,4 +333,3 @@ describe("runWithModelFallback – probe logic", () => {
     });
   });
 });
-
