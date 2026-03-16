@@ -7,6 +7,8 @@ import {
   promptAndConfigureOllama,
 } from "./ollama-setup.js";
 
+type OllamaModelSummary = { id: string };
+
 const upsertAuthProfileWithLock = vi.hoisted(() => vi.fn(async () => {}));
 vi.mock("../agents/auth-profiles.js", () => ({
   upsertAuthProfileWithLock,
@@ -90,7 +92,9 @@ describe("ollama setup", () => {
     const result = await promptAndConfigureOllama({ cfg: {}, prompter });
 
     expect(result.defaultModelId).toBe("glm-4.7-flash");
-    const modelIds = result.config.models?.providers?.ollama?.models?.map((m) => m.id);
+    const modelIds = result.config.models?.providers?.ollama?.models?.map(
+      (m: OllamaModelSummary) => m.id,
+    );
     expect(modelIds?.[0]).toBe("glm-4.7-flash");
     expect(modelIds).toContain("llama3:8b");
   });
@@ -177,7 +181,9 @@ describe("ollama setup", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     const result = await promptAndConfigureOllama({ cfg: {}, prompter });
-    const modelIds = result.config.models?.providers?.ollama?.models?.map((m) => m.id);
+    const modelIds = result.config.models?.providers?.ollama?.models?.map(
+      (m: OllamaModelSummary) => m.id,
+    );
 
     expect(modelIds).toEqual([
       "kimi-k2.5:cloud",
@@ -354,9 +360,9 @@ describe("ollama setup", () => {
     });
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(result.models?.providers?.ollama?.models?.map((model) => model.id)).toContain(
-      "kimi-k2.5:cloud",
-    );
+    expect(
+      result.models?.providers?.ollama?.models?.map((model: OllamaModelSummary) => model.id),
+    ).toContain("kimi-k2.5:cloud");
     expect(result.agents?.defaults?.model).toEqual(
       expect.objectContaining({ primary: "ollama/kimi-k2.5:cloud" }),
     );

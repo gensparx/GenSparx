@@ -5,7 +5,7 @@ import {
   fetchOllamaModels,
   resolveOllamaApiBase,
 } from "../agents/ollama-models.js";
-import type { OpenClawConfig } from "../config/config.js";
+import type { GensparxConfig } from "../config/config.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { WizardCancelledError, type WizardPrompter } from "../wizard/prompts.js";
 import { isRemoteEnvironment } from "./oauth-env.js";
@@ -17,11 +17,7 @@ export { OLLAMA_DEFAULT_BASE_URL } from "../agents/ollama-models.js";
 export const OLLAMA_DEFAULT_MODEL = "glm-4.7-flash";
 
 const OLLAMA_SUGGESTED_MODELS_LOCAL = ["glm-4.7-flash"];
-const OLLAMA_SUGGESTED_MODELS_CLOUD = [
-  "kimi-k2.5:cloud",
-  "minimax-m2.5:cloud",
-  "glm-5:cloud",
-];
+const OLLAMA_SUGGESTED_MODELS_CLOUD = ["kimi-k2.5:cloud", "minimax-m2.5:cloud", "glm-5:cloud"];
 
 function normalizeOllamaModelName(value: string | undefined): string | undefined {
   const trimmed = value?.trim();
@@ -248,10 +244,10 @@ function buildOllamaModelsConfig(modelNames: string[]) {
 }
 
 function applyOllamaProviderConfig(
-  cfg: OpenClawConfig,
+  cfg: GensparxConfig,
   baseUrl: string,
   modelNames: string[],
-): OpenClawConfig {
+): GensparxConfig {
   return {
     ...cfg,
     models: {
@@ -283,10 +279,10 @@ async function storeOllamaCredential(agentDir?: string): Promise<void> {
  * Model selection is handled by the standard model picker downstream.
  */
 export async function promptAndConfigureOllama(params: {
-  cfg: OpenClawConfig;
+  cfg: GensparxConfig;
   prompter: WizardPrompter;
   agentDir?: string;
-}): Promise<{ config: OpenClawConfig; defaultModelId: string }> {
+}): Promise<{ config: GensparxConfig; defaultModelId: string }> {
   const { prompter } = params;
 
   // 1. Prompt base URL
@@ -397,10 +393,10 @@ export async function promptAndConfigureOllama(params: {
 
 /** Non-interactive: auto-discover models and configure provider. */
 export async function configureOllamaNonInteractive(params: {
-  nextConfig: OpenClawConfig;
+  nextConfig: GensparxConfig;
   opts: OnboardOptions;
   runtime: RuntimeEnv;
-}): Promise<OpenClawConfig> {
+}): Promise<GensparxConfig> {
   const { opts, runtime } = params;
   const configuredBaseUrl = (opts.customBaseUrl?.trim() || OLLAMA_DEFAULT_BASE_URL).replace(
     /\/+$/,
@@ -455,7 +451,10 @@ export async function configureOllamaNonInteractive(params: {
 
   let allModelNames = orderedModelNames;
   let defaultModelId = requestedDefaultModelId;
-  if ((pulledRequestedModel || requestedCloudModel) && !allModelNames.includes(requestedDefaultModelId)) {
+  if (
+    (pulledRequestedModel || requestedCloudModel) &&
+    !allModelNames.includes(requestedDefaultModelId)
+  ) {
     allModelNames = [...allModelNames, requestedDefaultModelId];
   }
   if (!availableModelNames.has(requestedDefaultModelId)) {
@@ -487,7 +486,7 @@ export async function configureOllamaNonInteractive(params: {
 
 /** Pull the configured default Ollama model if it isn't already available locally. */
 export async function ensureOllamaModelPulled(params: {
-  config: OpenClawConfig;
+  config: GensparxConfig;
   prompter: WizardPrompter;
 }): Promise<void> {
   const modelCfg = params.config.agents?.defaults?.model;
