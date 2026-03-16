@@ -89,14 +89,6 @@ function findErrorProperty<T>(
   );
 }
 
-function getErrorCause(err: unknown): unknown | undefined {
-  if (!err || typeof err !== "object") {
-    return undefined;
-  }
-  const candidate = err as { cause?: unknown; error?: unknown };
-  return candidate.cause ?? candidate.error;
-}
-
 function readDirectStatusCode(err: unknown): number | undefined {
   if (!err || typeof err !== "object") {
     return undefined;
@@ -221,16 +213,6 @@ export function resolveFailoverReasonFromError(err: unknown): FailoverReason | n
     ].includes(code)
   ) {
     return "timeout";
-  }
-  // Walk into error cause chain *before* timeout heuristics so that a specific
-  // cause (e.g. RESOURCE_EXHAUSTED wrapped in AbortError) overrides a parent
-  // message-based "timeout" guess from isTimeoutError.
-  const cause = getErrorCause(err);
-  if (cause && cause !== err) {
-    const causeReason = resolveFailoverReasonFromError(cause);
-    if (causeReason) {
-      return causeReason;
-    }
   }
   if (isTimeoutError(err)) {
     return "timeout";
