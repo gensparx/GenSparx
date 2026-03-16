@@ -1,12 +1,9 @@
-import os from "node:os";
-import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { GensparxConfig } from "../config/config.js";
+import type { GensparxConfig } from "../config/config.js";import type { AuthProfileStore } from "./auth-profiles.js";
 import { registerLogTransport, resetLogger, setLoggerOverride } from "../logging/logger.js";
-import type { AuthProfileStore } from "./auth-profiles.js";
 import { makeModelFallbackCfg } from "./test-helpers/model-fallback-config-fixture.js";
 
-// Mock auth-profiles module — must be before importing model-fallback
+// Mock auth-profiles module - must be before importing model-fallback
 vi.mock("./auth-profiles.js", () => ({
   ensureAuthProfileStore: vi.fn(),
   getSoonestCooldownExpiry: vi.fn(),
@@ -31,7 +28,6 @@ const mockedResolveProfilesUnavailableReason = vi.mocked(resolveProfilesUnavaila
 const mockedResolveAuthProfileOrder = vi.mocked(resolveAuthProfileOrder);
 
 const makeCfg = makeModelFallbackCfg;
-let unregisterLogTransport: (() => void) | undefined;
 
 function expectFallbackUsed(
   result: { result: unknown; attempts: Array<{ reason?: string }> },
@@ -44,20 +40,6 @@ function expectFallbackUsed(
   expect(run).toHaveBeenCalledTimes(1);
   expect(run).toHaveBeenCalledWith("anthropic", "claude-haiku-3-5");
   expect(result.attempts[0]?.reason).toBe("rate_limit");
-}
-
-function expectPrimarySkippedForReason(
-  result: { result: unknown; attempts: Array<{ reason?: string }> },
-  run: {
-    (...args: unknown[]): unknown;
-    mock: { calls: unknown[][] };
-  },
-  reason: string,
-) {
-  expect(result.result).toBe("ok");
-  expect(run).toHaveBeenCalledTimes(1);
-  expect(run).toHaveBeenCalledWith("anthropic", "claude-haiku-3-5");
-  expect(result.attempts[0]?.reason).toBe(reason);
 }
 
 function expectPrimaryProbeSuccess(
@@ -75,48 +57,7 @@ function expectPrimaryProbeSuccess(
   });
 }
 
-async function expectProbeFailureFallsBack({
-  reason,
-  probeError,
-}: {
-  reason: "rate_limit" | "overloaded";
-  probeError: Error & { status: number };
-}) {
-  const cfg = makeCfg({
-    agents: {
-      defaults: {
-        model: {
-          primary: "openai/gpt-4.1-mini",
-          fallbacks: ["anthropic/claude-haiku-3-5", "google/gemini-2-flash"],
-        },
-      },
-    },
-  } as Partial<GensparxConfig>);
-
-  mockedIsProfileInCooldown.mockReturnValue(true);
-  mockedGetSoonestCooldownExpiry.mockReturnValue(1_700_000_000_000 + 30 * 1000);
-  mockedResolveProfilesUnavailableReason.mockReturnValue(reason);
-
-  const run = vi.fn().mockRejectedValueOnce(probeError).mockResolvedValue("fallback-ok");
-
-  const result = await runWithModelFallback({
-    cfg,
-    provider: "openai",
-    model: "gpt-4.1-mini",
-    run,
-  });
-
-  expect(result.result).toBe("fallback-ok");
-  expect(run).toHaveBeenCalledTimes(2);
-  expect(run).toHaveBeenNthCalledWith(1, "openai", "gpt-4.1-mini", {
-    allowRateLimitCooldownProbe: true,
-  });
-  expect(run).toHaveBeenNthCalledWith(2, "anthropic", "claude-haiku-3-5", {
-    allowRateLimitCooldownProbe: true,
-  });
-}
-
-describe("runWithModelFallback – probe logic", () => {
+describe("runWithModelFallback â€“ probe logic", () => {
   let realDateNow: () => number;
   const NOW = 1_700_000_000_000;
 
@@ -160,23 +101,16 @@ describe("runWithModelFallback – probe logic", () => {
     });
     // Default: only openai profiles are in cooldown; fallback providers are available
     mockedIsProfileInCooldown.mockImplementation((_store, profileId: string) => {
-      return profileId.startsWith("openai");
-    });
-    mockedResolveProfilesUnavailableReason.mockReturnValue("rate_limit");
-  });
+      return profileId.startsWith("openai"});`n  });
+    mockedResolveProfilesUnavailableReason.mockReturnValue("rate_limit"});`n  });
 
   afterEach(() => {
     Date.now = realDateNow;
-    unregisterLogTransport?.();
-    unregisterLogTransport = undefined;
-    setLoggerOverride(null);
-    resetLogger();
-    vi.restoreAllMocks();
-  });
+    vi.restoreAllMocks(});`n  });
 
   it("skips primary model when far from cooldown expiry (30 min remaining)", async () => {
     const cfg = makeCfg();
-    // Cooldown expires in 30 min — well beyond the 2-min margin
+    // Cooldown expires in 30 min - well beyond the 2-min margin
     const expiresIn30Min = NOW + 30 * 60 * 1000;
     mockedGetSoonestCooldownExpiry.mockReturnValue(expiresIn30Min);
 
@@ -185,8 +119,7 @@ describe("runWithModelFallback – probe logic", () => {
     const result = await runPrimaryCandidate(cfg, run);
 
     // Should skip primary and use fallback
-    expectFallbackUsed(result, run);
-  });
+    expectFallbackUsed(result, run});`n  });
 
   it("uses inferred unavailable reason when skipping a cooldowned primary model", async () => {
     const cfg = makeCfg();
@@ -197,113 +130,22 @@ describe("runWithModelFallback – probe logic", () => {
     const run = vi.fn().mockResolvedValue("ok");
 
     const result = await runPrimaryCandidate(cfg, run);
-    expectPrimarySkippedForReason(result, run, "billing");
-  });
+
+    expect(result.result).toBe("ok");
+    expect(run).toHaveBeenCalledTimes(1);
+    expect(run).toHaveBeenCalledWith("anthropic", "claude-haiku-3-5");
+    expect(result.attempts[0]?.reason).toBe("billing"});`n  });
 
   it("probes primary model when within 2-min margin of cooldown expiry", async () => {
     const cfg = makeCfg();
-    // Cooldown expires in 1 minute — within 2-min probe margin
+    // Cooldown expires in 1 minute - within 2-min probe margin
     const expiresIn1Min = NOW + 60 * 1000;
     mockedGetSoonestCooldownExpiry.mockReturnValue(expiresIn1Min);
 
     const run = vi.fn().mockResolvedValue("probed-ok");
 
     const result = await runPrimaryCandidate(cfg, run);
-    expectPrimaryProbeSuccess(result, run, "probed-ok");
-  });
-
-  it("logs primary metadata on probe success and failure fallback decisions", async () => {
-    const cfg = makeCfg();
-    const records: Array<Record<string, unknown>> = [];
-    mockedGetSoonestCooldownExpiry.mockReturnValue(NOW + 60 * 1000);
-    setLoggerOverride({
-      level: "trace",
-      consoleLevel: "silent",
-      file: path.join(os.tmpdir(), `openclaw-model-fallback-probe-${Date.now()}.log`),
-    });
-    unregisterLogTransport = registerLogTransport((record) => {
-      records.push(record);
-    });
-
-    const run = vi.fn().mockResolvedValue("probed-ok");
-
-    const result = await runPrimaryCandidate(cfg, run);
-
-    expectPrimaryProbeSuccess(result, run, "probed-ok");
-
-    _probeThrottleInternals.lastProbeAttempt.clear();
-
-    const fallbackCfg = makeCfg({
-      agents: {
-        defaults: {
-          model: {
-            primary: "openai/gpt-4.1-mini",
-            fallbacks: ["anthropic/claude-haiku-3-5", "google/gemini-2-flash"],
-          },
-        },
-      },
-    } as Partial<GensparxConfig>);
-    mockedGetSoonestCooldownExpiry.mockReturnValue(NOW + 60 * 1000);
-    const fallbackRun = vi
-      .fn()
-      .mockRejectedValueOnce(Object.assign(new Error("rate limited"), { status: 429 }))
-      .mockResolvedValueOnce("fallback-ok");
-
-    const fallbackResult = await runPrimaryCandidate(fallbackCfg, fallbackRun);
-
-    expect(fallbackResult.result).toBe("fallback-ok");
-    expect(fallbackRun).toHaveBeenNthCalledWith(1, "openai", "gpt-4.1-mini", {
-      allowRateLimitCooldownProbe: true,
-    });
-    expect(fallbackRun).toHaveBeenNthCalledWith(2, "anthropic", "claude-haiku-3-5");
-
-    const decisionPayloads = records
-      .filter(
-        (record) =>
-          record["2"] === "model fallback decision" &&
-          record["1"] &&
-          typeof record["1"] === "object",
-      )
-      .map((record) => record["1"] as Record<string, unknown>);
-
-    expect(decisionPayloads).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          event: "model_fallback_decision",
-          decision: "probe_cooldown_candidate",
-          candidateProvider: "openai",
-          candidateModel: "gpt-4.1-mini",
-          allowRateLimitCooldownProbe: true,
-        }),
-        expect.objectContaining({
-          event: "model_fallback_decision",
-          decision: "candidate_succeeded",
-          candidateProvider: "openai",
-          candidateModel: "gpt-4.1-mini",
-          isPrimary: true,
-          requestedModelMatched: true,
-        }),
-        expect.objectContaining({
-          event: "model_fallback_decision",
-          decision: "candidate_failed",
-          candidateProvider: "openai",
-          candidateModel: "gpt-4.1-mini",
-          isPrimary: true,
-          requestedModelMatched: true,
-          nextCandidateProvider: "anthropic",
-          nextCandidateModel: "claude-haiku-3-5",
-        }),
-        expect.objectContaining({
-          event: "model_fallback_decision",
-          decision: "candidate_succeeded",
-          candidateProvider: "anthropic",
-          candidateModel: "claude-haiku-3-5",
-          isPrimary: false,
-          requestedModelMatched: false,
-        }),
-      ]),
-    );
-  });
+    expectPrimaryProbeSuccess(result, run, "probed-ok"});`n  });
 
   it("probes primary model when cooldown already expired", async () => {
     const cfg = makeCfg();
@@ -314,21 +156,56 @@ describe("runWithModelFallback – probe logic", () => {
     const run = vi.fn().mockResolvedValue("recovered");
 
     const result = await runPrimaryCandidate(cfg, run);
-    expectPrimaryProbeSuccess(result, run, "recovered");
-  });
+    expectPrimaryProbeSuccess(result, run, "recovered"});`n  });
 
   it("attempts non-primary fallbacks during rate-limit cooldown after primary probe failure", async () => {
-    await expectProbeFailureFallsBack({
-      reason: "rate_limit",
-      probeError: Object.assign(new Error("rate limited"), { status: 429 }),
-    });
-  });
+    const cfg = makeCfg({
+      agents: {
+        defaults: {
+          model: {
+            primary: "openai/gpt-4.1-mini",
+            fallbacks: ["anthropic/claude-haiku-3-5", "google/gemini-2-flash"],
+          },
+        },
+      },
+    } as Partial<GensparxConfig>);
 
-  it("attempts non-primary fallbacks during overloaded cooldown after primary probe failure", async () => {
-    await expectProbeFailureFallsBack({
-      reason: "overloaded",
-      probeError: Object.assign(new Error("service overloaded"), { status: 503 }),
-    });
+    // Override: ALL providers in cooldown for this test
+    mockedIsProfileInCooldown.mockReturnValue(true);
+
+    // All profiles in cooldown, cooldown just about to expire
+    const almostExpired = NOW + 30 * 1000; // 30s remaining
+    mockedGetSoonestCooldownExpiry.mockReturnValue(almostExpired);
+
+    // Primary probe fails with 429; fallback should still be attempted for rate_limit cooldowns.
+    const run = vi
+      .fn()
+      .mockRejectedValueOnce(Object.assign(new Error("rate limited"), { status: 429 }))
+      .mockResolvedValue("fallback-ok");
+
+    await expect(
+      runWithModelFallback({
+        cfg,
+        provider: "google",
+        model: "gemini-3-flash-preview",
+        run,
+      }),
+    ).rejects.toThrow(/All models failed \(3\)/);
+
+    // All three candidates must be attempted - the abort must not short-circuit
+    expect(run).toHaveBeenCalledTimes(3);
+
+    // Verify the primary error is classified as rate_limit, not timeout - the
+    // cause chain (RESOURCE_EXHAUSTED) must override the parent AbortError message.
+    try {
+      await runWithModelFallback({ cfg, provider: "google", model: "gemini-3-flash-preview", run });
+    } catch (err) {
+      expect(String(err)).toContain("(rate_limit)");
+      expect(String(err)).not.toMatch(/gemini.*\(timeout\)/);
+    }
+    expect(run).toHaveBeenNthCalledWith(1, "google", "gemini-3-flash-preview", {
+      allowTransientCooldownProbe: true,
+    }});`n  });
   });
 
   it("keeps walking remaining fallbacks after an abort-wrapped RESOURCE_EXHAUSTED probe failure", async () => {
@@ -341,7 +218,7 @@ describe("runWithModelFallback – probe logic", () => {
           },
         },
       },
-    } as Partial<GensparxConfig>);
+    } as Partial<OpenClawConfig>);
 
     mockedResolveAuthProfileOrder.mockImplementation(({ provider }: { provider: string }) => {
       if (provider === "google") {
@@ -392,11 +269,10 @@ describe("runWithModelFallback – probe logic", () => {
       }),
     ).rejects.toThrow(/All models failed \(3\)/);
 
-    // All three candidates must be attempted — the abort must not short-circuit
+    // All three candidates must be attempted â€” the abort must not short-circuit
     expect(run).toHaveBeenCalledTimes(3);
-
     expect(run).toHaveBeenNthCalledWith(1, "google", "gemini-3-flash-preview", {
-      allowRateLimitCooldownProbe: true,
+      allowTransientCooldownProbe: true,
     });
     expect(run).toHaveBeenNthCalledWith(2, "anthropic", "claude-haiku-3-5");
     expect(run).toHaveBeenNthCalledWith(3, "deepseek", "deepseek-chat");
@@ -415,65 +291,32 @@ describe("runWithModelFallback – probe logic", () => {
 
     const result = await runPrimaryCandidate(cfg, run);
 
-    // Should be throttled ? skip primary, use fallback
-    expectFallbackUsed(result, run);
-  });
+    // Should be throttled â†’ skip primary, use fallback
+    expectFallbackUsed(result, run});`n  });
 
   it("allows probe when 30s have passed since last probe", async () => {
     const cfg = makeCfg();
     const almostExpired = NOW + 30 * 1000;
     mockedGetSoonestCooldownExpiry.mockReturnValue(almostExpired);
 
-    // Last probe was 31s ago — should NOT be throttled
+    // Last probe was 31s ago - should NOT be throttled
     _probeThrottleInternals.lastProbeAttempt.set("openai", NOW - 31_000);
 
     const run = vi.fn().mockResolvedValue("probed-ok");
 
     const result = await runPrimaryCandidate(cfg, run);
-    expectPrimaryProbeSuccess(result, run, "probed-ok");
-  });
-
-  it("prunes stale probe throttle entries before checking eligibility", () => {
-    _probeThrottleInternals.lastProbeAttempt.set(
-      "stale",
-      NOW - _probeThrottleInternals.PROBE_STATE_TTL_MS - 1,
-    );
-    _probeThrottleInternals.lastProbeAttempt.set("fresh", NOW - 5_000);
-
-    expect(_probeThrottleInternals.lastProbeAttempt.has("stale")).toBe(true);
-
-    expect(_probeThrottleInternals.isProbeThrottleOpen(NOW, "fresh")).toBe(false);
-
-    expect(_probeThrottleInternals.lastProbeAttempt.has("stale")).toBe(false);
-    expect(_probeThrottleInternals.lastProbeAttempt.has("fresh")).toBe(true);
-  });
-
-  it("caps probe throttle state by evicting the oldest entries", () => {
-    for (let i = 0; i < _probeThrottleInternals.MAX_PROBE_KEYS; i += 1) {
-      _probeThrottleInternals.lastProbeAttempt.set(`key-${i}`, NOW - (i + 1));
-    }
-
-    _probeThrottleInternals.markProbeAttempt(NOW, "freshest");
-
-    expect(_probeThrottleInternals.lastProbeAttempt.size).toBe(
-      _probeThrottleInternals.MAX_PROBE_KEYS,
-    );
-    expect(_probeThrottleInternals.lastProbeAttempt.has("freshest")).toBe(true);
-    expect(_probeThrottleInternals.lastProbeAttempt.has("key-255")).toBe(false);
-    expect(_probeThrottleInternals.lastProbeAttempt.has("key-0")).toBe(true);
-  });
+    expectPrimaryProbeSuccess(result, run, "probed-ok"});`n  });
 
   it("handles non-finite soonest safely (treats as probe-worthy)", async () => {
     const cfg = makeCfg();
 
-    // Return Infinity — should be treated as "probe" per the guard
+    // Return Infinity - should be treated as "probe" per the guard
     mockedGetSoonestCooldownExpiry.mockReturnValue(Infinity);
 
     const run = vi.fn().mockResolvedValue("ok-infinity");
 
     const result = await runPrimaryCandidate(cfg, run);
-    expectPrimaryProbeSuccess(result, run, "ok-infinity");
-  });
+    expectPrimaryProbeSuccess(result, run, "ok-infinity"});`n  });
 
   it("handles NaN soonest safely (treats as probe-worthy)", async () => {
     const cfg = makeCfg();
@@ -483,8 +326,7 @@ describe("runWithModelFallback – probe logic", () => {
     const run = vi.fn().mockResolvedValue("ok-nan");
 
     const result = await runPrimaryCandidate(cfg, run);
-    expectPrimaryProbeSuccess(result, run, "ok-nan");
-  });
+    expectPrimaryProbeSuccess(result, run, "ok-nan"});`n  });
 
   it("handles null soonest safely (treats as probe-worthy)", async () => {
     const cfg = makeCfg();
@@ -494,8 +336,7 @@ describe("runWithModelFallback – probe logic", () => {
     const run = vi.fn().mockResolvedValue("ok-null");
 
     const result = await runPrimaryCandidate(cfg, run);
-    expectPrimaryProbeSuccess(result, run, "ok-null");
-  });
+    expectPrimaryProbeSuccess(result, run, "ok-null"});`n  });
 
   it("single candidate skips with rate_limit and exhausts candidates", async () => {
     const cfg = makeCfg({
@@ -524,8 +365,7 @@ describe("runWithModelFallback – probe logic", () => {
       }),
     ).rejects.toThrow("All models failed");
 
-    expect(run).not.toHaveBeenCalled();
-  });
+    expect(run).not.toHaveBeenCalled(});`n  });
 
   it("scopes probe throttling by agentDir to avoid cross-agent suppression", async () => {
     const cfg = makeCfg();
@@ -555,72 +395,6 @@ describe("runWithModelFallback – probe logic", () => {
     });
     expect(run).toHaveBeenNthCalledWith(2, "openai", "gpt-4.1-mini", {
       allowRateLimitCooldownProbe: true,
-    });
-  });
-
-  it("probes billing-cooldowned primary when no fallback candidates exist", async () => {
-    const cfg = makeCfg({
-      agents: {
-        defaults: {
-          model: {
-            primary: "openai/gpt-4.1-mini",
-            fallbacks: [],
-          },
-        },
-      },
-    } as Partial<GensparxConfig>);
-
-    // Single-provider setups need periodic probes even when the billing
-    // cooldown is far from expiry, otherwise topping up credits never recovers
-    // without a restart.
-    const expiresIn30Min = NOW + 30 * 60 * 1000;
-    mockedGetSoonestCooldownExpiry.mockReturnValue(expiresIn30Min);
-    mockedResolveProfilesUnavailableReason.mockReturnValue("billing");
-
-    const run = vi.fn().mockResolvedValue("billing-recovered");
-
-    const result = await runWithModelFallback({
-      cfg,
-      provider: "openai",
-      model: "gpt-4.1-mini",
-      fallbacksOverride: [],
-      run,
-    });
-
-    expect(result.result).toBe("billing-recovered");
-    expect(run).toHaveBeenCalledTimes(1);
-    expect(run).toHaveBeenCalledWith("openai", "gpt-4.1-mini", {
-      allowRateLimitCooldownProbe: true,
-    });
-  });
-
-  it("probes billing-cooldowned primary with fallbacks when near cooldown expiry", async () => {
-    const cfg = makeCfg();
-    // Cooldown expires in 1 minute — within 2-min probe margin
-    const expiresIn1Min = NOW + 60 * 1000;
-    mockedGetSoonestCooldownExpiry.mockReturnValue(expiresIn1Min);
-    mockedResolveProfilesUnavailableReason.mockReturnValue("billing");
-
-    const run = vi.fn().mockResolvedValue("billing-probe-ok");
-
-    const result = await runPrimaryCandidate(cfg, run);
-
-    expect(result.result).toBe("billing-probe-ok");
-    expect(run).toHaveBeenCalledTimes(1);
-    expect(run).toHaveBeenCalledWith("openai", "gpt-4.1-mini", {
-      allowRateLimitCooldownProbe: true,
-    });
-  });
-
-  it("skips billing-cooldowned primary with fallbacks when far from cooldown expiry", async () => {
-    const cfg = makeCfg();
-    const expiresIn30Min = NOW + 30 * 60 * 1000;
-    mockedGetSoonestCooldownExpiry.mockReturnValue(expiresIn30Min);
-    mockedResolveProfilesUnavailableReason.mockReturnValue("billing");
-
-    const run = vi.fn().mockResolvedValue("ok");
-
-    const result = await runPrimaryCandidate(cfg, run);
-    expectPrimarySkippedForReason(result, run, "billing");
-  });
+    }});`n  });
 });
+

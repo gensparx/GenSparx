@@ -106,7 +106,7 @@ export function mapFailoverReasonToProbeStatus(reason?: string | null): AuthProb
     // surface in the auth bucket instead of showing as unknown.
     return "auth";
   }
-  if (reason === "rate_limit" || reason === "overloaded") {
+  if (reason === "rate_limit") {
     return "rate_limit";
   }
   if (reason === "billing") {

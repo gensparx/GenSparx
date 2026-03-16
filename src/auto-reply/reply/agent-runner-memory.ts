@@ -487,7 +487,7 @@ export async function runMemoryFlushIfNeeded(params: {
           model,
           runId: flushRunId,
           authProfile,
-          allowTransientCooldownProbe: runOptions?.allowTransientCooldownProbe,
+          allowRateLimitCooldownProbe: runOptions?.allowRateLimitCooldownProbe,
         });
         const result = await runEmbeddedPiAgent({
           ...embeddedContext,

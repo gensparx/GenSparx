@@ -115,10 +115,10 @@ export type RunEmbeddedPiAgentParams = {
   enforceFinalTag?: boolean;
   /**
    * Allow a single run attempt even when all auth profiles are in cooldown,
-   * but only for inferred transient cooldowns like `rate_limit` or `overloaded`.
+   * but only for inferred `rate_limit` cooldowns.
    *
    * This is used by model fallback when trying sibling models on providers
-   * where transient service pressure is often model-scoped.
+   * where rate limits are often model-scoped.
    */
-  allowTransientCooldownProbe?: boolean;
+  allowRateLimitCooldownProbe?: boolean;
 };

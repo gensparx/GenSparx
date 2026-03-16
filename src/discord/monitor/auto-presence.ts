@@ -104,7 +104,6 @@ function isExhaustedUnavailableReason(reason: AuthProfileFailureReason | null): 
   }
   return (
     reason === "rate_limit" ||
-    reason === "overloaded" ||
     reason === "billing" ||
     reason === "auth" ||
     reason === "auth_permanent"

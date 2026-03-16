@@ -293,17 +293,13 @@ export function classifyFailoverReasonFromHttpStatus(
   if (status === 408) {
     return "timeout";
   }
-  if (status === 503) {
-    if (message && isOverloadedErrorMessage(message)) {
-      return "overloaded";
-    }
-    return "timeout";
-  }
-  if (status === 502 || status === 504) {
+  // Keep the status-only path conservative and behavior-preserving.
+  // Message-path HTTP heuristics are broader and should not leak in here.
+  if (status === 502 || status === 503 || status === 504) {
     return "timeout";
   }
   if (status === 529) {
-    return "overloaded";
+    return "rate_limit";
   }
   if (status === 400) {
     // Some providers return quota/balance errors under HTTP 400, so do not
@@ -858,6 +854,13 @@ export function classifyFailoverReason(raw: string): FailoverReason | null {
   if (isModelNotFoundErrorMessage(raw)) {
     return "model_not_found";
   }
+  if (isTransientHttpError(raw)) {
+    // Treat transient 5xx provider failures as retryable transport issues.
+    return "timeout";
+  }
+  if (isJsonApiInternalServerError(raw)) {
+    return "timeout";
+  }
   if (isPeriodicUsageLimitErrorMessage(raw)) {
     return isBillingErrorMessage(raw) ? "billing" : "rate_limit";
   }
@@ -865,19 +868,7 @@ export function classifyFailoverReason(raw: string): FailoverReason | null {
     return "rate_limit";
   }
   if (isOverloadedErrorMessage(raw)) {
-    return "overloaded";
-  }
-  if (isTransientHttpError(raw)) {
-    // 529 is always overloaded, even without explicit overload keywords in the body.
-    const status = extractLeadingHttpStatus(raw.trim());
-    if (status?.code === 529) {
-      return "overloaded";
-    }
-    // Treat remaining transient 5xx provider failures as retryable transport issues.
-    return "timeout";
-  }
-  if (isJsonApiInternalServerError(raw)) {
-    return "timeout";
+    return "rate_limit";
   }
   if (isCloudCodeAssistFormatError(raw)) {
     return "format";
