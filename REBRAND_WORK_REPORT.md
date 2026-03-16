@@ -326,3 +326,26 @@ Remaining matches:
   `invalid send params: ... forceDocument`. Requires killing the old gateway PID
   and reinstalling the service with `gensparx gateway install --force`, then
   re-running the send command.
+
+## Upstream Fixes Attempt + Release (2026-03-16)
+
+### What Was Completed
+
+- Attempted to pull in selected upstream fixes (agents failover + browser batch act).
+- Reverted the upstream agent failover and browser batch series due to missing local modules/types.
+- Kept only safe local changes:
+  - `Tests: use GensparxConfig in route reply test`
+  - `Chore: tidy dispatch import order`
+- Published `gensparx@1.0.12-gensparx` to npm `latest` (user-confirmed).
+- Verified `npm view gensparx@latest version` => `1.0.12-gensparx`.
+
+### Test Results
+
+- `pnpm test`: PASS
+  - `826 passed | 7 skipped` files
+  - `6786 passed | 93 skipped` tests
+- `pnpm format`: PASS (user-confirmed)
+
+### Notes
+
+- Any upstream feature drops must be re-reviewed for missing local dependencies before reapplying.
