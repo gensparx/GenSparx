@@ -26,12 +26,7 @@ import {
   resolveContextWindowInfo,
 } from "../context-window-guard.js";
 import { DEFAULT_CONTEXT_TOKENS, DEFAULT_MODEL, DEFAULT_PROVIDER } from "../defaults.js";
-import {
-  coerceToFailoverError,
-  describeFailoverError,
-  FailoverError,
-  resolveFailoverStatus,
-} from "../failover-error.js";
+import { FailoverError, resolveFailoverStatus } from "../failover-error.js";
 import {
   ensureAuthProfileStore,
   getApiKeyForModel,
@@ -1101,17 +1096,7 @@ export async function runEmbeddedPiAgent(
           }
 
           if (promptError && !aborted) {
-            // Normalize wrapped errors (e.g. abort-wrapped RESOURCE_EXHAUSTED) into
-            // FailoverError so rate-limit classification works even for nested shapes.
-            const normalizedPromptFailover = coerceToFailoverError(promptError, {
-              provider: activeErrorContext.provider,
-              model: activeErrorContext.model,
-              profileId: lastProfileId,
-            });
-            const promptErrorDetails = normalizedPromptFailover
-              ? describeFailoverError(normalizedPromptFailover)
-              : describeFailoverError(promptError);
-            const errorText = promptErrorDetails.message || describeUnknownError(promptError);
+            const errorText = describeUnknownError(promptError);
             if (await maybeRefreshCopilotForAuthError(errorText, copilotAuthRetry)) {
               authRetryPending = true;
               continue;
@@ -1175,29 +1160,10 @@ export async function runEmbeddedPiAgent(
                 },
               };
             }
-            const promptFailoverReason =
-              promptErrorDetails.reason ?? classifyFailoverReason(errorText);
-            const promptProfileFailureReason =
-              resolveAuthProfileFailureReason(promptFailoverReason);
+            const promptFailoverReason = classifyFailoverReason(errorText);
             await maybeMarkAuthProfileFailure({
               profileId: lastProfileId,
-              reason: promptProfileFailureReason,
-            });
-            const promptFailoverFailure =
-              promptFailoverReason !== null || isFailoverErrorMessage(errorText);
-            // Capture the failing profile before auth-profile rotation mutates `lastProfileId`.
-            const failedPromptProfileId = lastProfileId;
-            const logPromptFailoverDecision = createFailoverDecisionLogger({
-              stage: "prompt",
-              runId: params.runId,
-              rawError: errorText,
-              failoverReason: promptFailoverReason,
-              profileFailureReason: promptProfileFailureReason,
-              provider,
-              model: modelId,
-              profileId: failedPromptProfileId,
-              fallbackConfigured,
-              aborted,
+              reason: promptFailoverReason,
             });
             if (
               isFailoverErrorMessage(errorText) &&
@@ -1217,23 +1183,16 @@ export async function runEmbeddedPiAgent(
               thinkLevel = fallbackThinking;
               continue;
             }
-            // Throw FailoverError for prompt-side failover reasons when fallbacks
-            // are configured so outer model fallback can continue on overload,
-            // rate-limit, auth, or billing failures.
-            if (fallbackConfigured && promptFailoverFailure) {
-              const status = resolveFailoverStatus(promptFailoverReason ?? "unknown");
-              logPromptFailoverDecision("fallback_model", { status });
-              await maybeBackoffBeforeOverloadFailover(promptFailoverReason);
-              throw (
-                normalizedPromptFailover ??
-                new FailoverError(errorText, {
-                  reason: promptFailoverReason ?? "unknown",
-                  provider,
-                  model: modelId,
-                  profileId: lastProfileId,
-                  status: resolveFailoverStatus(promptFailoverReason ?? "unknown"),
-                })
-              );
+            // FIX: Throw FailoverError for prompt errors when fallbacks configured
+            // This enables model fallback for quota/rate limit errors during prompt submission
+            if (fallbackConfigured && isFailoverErrorMessage(errorText)) {
+              throw new FailoverError(errorText, {
+                reason: promptFailoverReason ?? "unknown",
+                provider,
+                model: modelId,
+                profileId: lastProfileId,
+                status: resolveFailoverStatus(promptFailoverReason ?? "unknown"),
+              });
             }
             throw promptError;
           }
