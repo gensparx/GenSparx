@@ -245,8 +245,5 @@ function shouldPinDns(params: GuardedFetchOptions): boolean {
   if (typeof params.pinDns === "boolean") {
     return params.pinDns;
   }
-  if (process.env.VITEST || process.env.NODE_ENV === "test") {
-    return false;
-  }
   return true;
 }
