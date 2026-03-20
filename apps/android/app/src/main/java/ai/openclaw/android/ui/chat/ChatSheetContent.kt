@@ -1,8 +1,5 @@
 package ai.gensparx.android.ui.chat
 
-import android.content.ContentResolver
-import android.net.Uri
-import android.util.Base64
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -48,7 +45,6 @@ import ai.gensparx.android.ui.mobileText
 import ai.gensparx.android.ui.mobileTextSecondary
 import ai.gensparx.android.ui.mobileWarning
 import ai.gensparx.android.ui.mobileWarningSoft
-import java.io.ByteArrayOutputStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -84,7 +80,7 @@ fun ChatSheetContent(viewModel: MainViewModel) {
         val next =
           uris.take(8).mapNotNull { uri ->
             try {
-              loadImageAttachment(resolver, uri)
+              loadSizedImageAttachment(resolver, uri)
             } catch (_: Throwable) {
               null
             }
@@ -262,24 +258,3 @@ data class PendingImageAttachment(
   val mimeType: String,
   val base64: String,
 )
-
-private suspend fun loadImageAttachment(resolver: ContentResolver, uri: Uri): PendingImageAttachment {
-  val mimeType = resolver.getType(uri) ?: "image/*"
-  val fileName = (uri.lastPathSegment ?: "image").substringAfterLast('/')
-  val bytes =
-    withContext(Dispatchers.IO) {
-      resolver.openInputStream(uri)?.use { input ->
-        val out = ByteArrayOutputStream()
-        input.copyTo(out)
-        out.toByteArray()
-      } ?: ByteArray(0)
-    }
-  if (bytes.isEmpty()) throw IllegalStateException("empty attachment")
-  val base64 = Base64.encodeToString(bytes, Base64.NO_WRAP)
-  return PendingImageAttachment(
-    id = uri.toString() + "#" + System.currentTimeMillis().toString(),
-    fileName = fileName,
-    mimeType = mimeType,
-    base64 = base64,
-  )
-}
