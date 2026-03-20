@@ -19,17 +19,14 @@ class MainActivity : ComponentActivity() {
   private val viewModel: MainViewModel by viewModels()
   private lateinit var permissionRequester: PermissionRequester
   private lateinit var screenCaptureRequester: ScreenCaptureRequester
+  private var didAttachRuntimeUi = false
+  private var didStartNodeService = false
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     WindowCompat.setDecorFitsSystemWindows(window, false)
     permissionRequester = PermissionRequester(this)
     screenCaptureRequester = ScreenCaptureRequester(this)
-    viewModel.camera.attachLifecycleOwner(this)
-    viewModel.camera.attachPermissionRequester(permissionRequester)
-    viewModel.sms.attachPermissionRequester(permissionRequester)
-    viewModel.screenRecorder.attachScreenCaptureRequester(screenCaptureRequester)
-    viewModel.screenRecorder.attachPermissionRequester(permissionRequester)
 
     lifecycleScope.launch {
       repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -43,6 +40,24 @@ class MainActivity : ComponentActivity() {
       }
     }
 
+    lifecycleScope.launch {
+      repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewModel.runtimeInitialized.collect { ready ->
+          if (!ready || didAttachRuntimeUi) return@collect
+          viewModel.attachRuntimeUi(
+            owner = this@MainActivity,
+            permissionRequester = permissionRequester,
+            screenCaptureRequester = screenCaptureRequester,
+          )
+          didAttachRuntimeUi = true
+          if (!didStartNodeService) {
+            NodeForegroundService.start(this@MainActivity)
+            didStartNodeService = true
+          }
+        }
+      }
+    }
+
     setContent {
       GensparxTheme {
         Surface(modifier = Modifier) {
@@ -50,9 +65,6 @@ class MainActivity : ComponentActivity() {
         }
       }
     }
-
-    // Keep startup path lean: start foreground service after first frame.
-    window.decorView.post { NodeForegroundService.start(this) }
   }
 
   override fun onStart() {

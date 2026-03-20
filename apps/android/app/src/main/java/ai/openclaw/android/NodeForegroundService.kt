@@ -32,7 +32,11 @@ class NodeForegroundService : Service() {
     val initial = buildNotification(title = "gensparx Node", text = "Starting…")
     startForegroundWithTypes(notification = initial, requiresMic = false)
 
-    val runtime = (application as NodeApp).runtime
+    val runtime = (application as NodeApp).peekRuntime()
+    if (runtime == null) {
+      stopSelf()
+      return
+    }
     notificationJob =
       scope.launch {
         combine(
@@ -66,7 +70,7 @@ class NodeForegroundService : Service() {
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
     when (intent?.action) {
       ACTION_STOP -> {
-        (application as NodeApp).runtime.disconnect()
+        (application as NodeApp).peekRuntime()?.disconnect()
         stopSelf()
         return START_NOT_STICKY
       }
