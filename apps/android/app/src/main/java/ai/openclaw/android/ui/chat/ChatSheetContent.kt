@@ -163,7 +163,10 @@ private fun ChatThreadSelector(
   healthOk: Boolean,
   onSelectSession: (String) -> Unit,
 ) {
-  val sessionOptions = resolveSessionChoices(sessionKey, sessions, mainSessionKey = mainSessionKey)
+  val sessionOptions =
+    remember(sessionKey, sessions, mainSessionKey) {
+      resolveSessionChoices(sessionKey, sessions, mainSessionKey = mainSessionKey)
+    }
   val currentSessionLabel =
     friendlySessionName(sessionOptions.firstOrNull { it.key == sessionKey }?.displayName ?: sessionKey)
 
