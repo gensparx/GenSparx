@@ -265,7 +265,7 @@ class ChatController(
       }
 
       val historyJson = session.request("chat.history", """{"sessionKey":"$key"}""")
-      val history = parseHistory(historyJson, sessionKey = key)
+      val history = parseHistory(historyJson, sessionKey = key, previousMessages = _messages.value)
       _messages.value = history.messages
       _sessionId.value = history.sessionId
       history.thinkingLevel?.trim()?.takeIf { it.isNotEmpty() }?.let { _thinkingLevel.value = it }
@@ -336,7 +336,12 @@ class ChatController(
           try {
             val historyJson =
               session.request("chat.history", """{"sessionKey":"${_sessionKey.value}"}""")
-            val history = parseHistory(historyJson, sessionKey = _sessionKey.value)
+            val history =
+              parseHistory(
+                historyJson,
+                sessionKey = _sessionKey.value,
+                previousMessages = _messages.value,
+              )
             _messages.value = history.messages
             _sessionId.value = history.sessionId
             history.thinkingLevel?.trim()?.takeIf { it.isNotEmpty() }?.let { _thinkingLevel.value = it }
@@ -450,13 +455,19 @@ class ChatController(
     }
   }
 
-  private fun parseHistory(historyJson: String, sessionKey: String): ChatHistory {
-    val root = json.parseToJsonElement(historyJson).asObjectOrNull() ?: return ChatHistory(sessionKey, null, null, emptyList())
+  private fun parseHistory(
+    historyJson: String,
+    sessionKey: String,
+    previousMessages: List<ChatMessage>,
+  ): ChatHistory {
+    val root =
+      json.parseToJsonElement(historyJson).asObjectOrNull()
+        ?: return ChatHistory(sessionKey, null, null, emptyList())
     val sid = root["sessionId"].asStringOrNull()
     val thinkingLevel = root["thinkingLevel"].asStringOrNull()
     val array = root["messages"].asArrayOrNull() ?: JsonArray(emptyList())
 
-    val messages =
+    val rawMessages =
       array.mapNotNull { item ->
         val obj = item.asObjectOrNull() ?: return@mapNotNull null
         val role = obj["role"].asStringOrNull() ?: return@mapNotNull null
@@ -469,8 +480,32 @@ class ChatController(
           timestampMs = ts,
         )
       }
+    val messages = reconcileMessageIds(rawMessages, previousMessages)
 
     return ChatHistory(sessionKey = sessionKey, sessionId = sid, thinkingLevel = thinkingLevel, messages = messages)
+  }
+
+  private fun reconcileMessageIds(
+    latestMessages: List<ChatMessage>,
+    previousMessages: List<ChatMessage>,
+  ): List<ChatMessage> {
+    if (latestMessages.isEmpty() || previousMessages.isEmpty()) return latestMessages
+    val previousByKey =
+      previousMessages.associateBy { messageIdentityKey(it) }.toMutableMap()
+    return latestMessages.map { message ->
+      val key = messageIdentityKey(message)
+      val existing = previousByKey.remove(key)
+      if (existing == null) {
+        message
+      } else {
+        message.copy(id = existing.id)
+      }
+    }
+  }
+
+  private fun messageIdentityKey(message: ChatMessage): String {
+    val contentHash = message.content.joinToString("|") { entry -> "${entry.type}:${entry.text}:${entry.fileName}" }
+    return "${message.role}|${message.timestampMs}|$contentHash"
   }
 
   private fun parseMessageContent(el: JsonElement): ChatMessageContent? {
