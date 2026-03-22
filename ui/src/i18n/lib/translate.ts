@@ -27,7 +27,7 @@ class I18nManager {
       return null;
     }
     try {
-      return storage.getItem("openclaw.i18n.locale");
+      return storage.getItem("gensparx.i18n.locale");
     } catch {
       return null;
     }
@@ -39,7 +39,7 @@ class I18nManager {
       return;
     }
     try {
-      storage.setItem("openclaw.i18n.locale", locale);
+      storage.setItem("gensparx.i18n.locale", locale);
     } catch {
       // Ignore storage write failures in private/blocked contexts.
     }

@@ -1,6 +1,5 @@
-const KEY = "openclaw.control.settings.v1";
-const LEGACY_TOKEN_SESSION_KEY = "openclaw.control.token.v1";
-const TOKEN_SESSION_KEY_PREFIX = "openclaw.control.token.v1:";
+const KEY = "gensparx.control.settings.v1";
+const TOKEN_SESSION_KEY_PREFIX = "gensparx.control.token.v1:";
 
 type PersistedUiSettings = Omit<UiSettings, "token"> & { token?: never };
 
@@ -40,8 +39,8 @@ function deriveDefaultGatewayUrl(): { pageUrl: string; effectiveUrl: string } {
   const proto = location.protocol === "https:" ? "wss" : "ws";
   const configured =
     typeof window !== "undefined" &&
-    typeof window.__OPENCLAW_CONTROL_UI_BASE_PATH__ === "string" &&
-    window.__OPENCLAW_CONTROL_UI_BASE_PATH__.trim();
+    typeof window.__GENSPARX_CONTROL_UI_BASE_PATH__ === "string" &&
+    window.__GENSPARX_CONTROL_UI_BASE_PATH__.trim();
   const basePath = configured
     ? normalizeBasePath(configured)
     : inferBasePathFromPathname(location.pathname);
@@ -92,8 +91,8 @@ function loadSessionToken(gatewayUrl: string): string {
     if (!storage) {
       return "";
     }
-    storage.removeItem(LEGACY_TOKEN_SESSION_KEY);
-    const token = storage.getItem(tokenSessionKeyForGateway(gatewayUrl)) ?? "";
+    const key = tokenSessionKeyForGateway(gatewayUrl);
+    const token = storage.getItem(key) ?? "";
     return token.trim();
   } catch {
     return "";
@@ -106,7 +105,6 @@ function persistSessionToken(gatewayUrl: string, token: string) {
     if (!storage) {
       return;
     }
-    storage.removeItem(LEGACY_TOKEN_SESSION_KEY);
     const key = tokenSessionKeyForGateway(gatewayUrl);
     const normalized = token.trim();
     if (normalized) {

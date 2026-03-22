@@ -22,7 +22,7 @@ class MockWebSocket {
 
 export function mountApp(pathname: string) {
   window.history.replaceState({}, "", pathname);
-  const app = document.createElement("openclaw-app") as GenSparxApp;
+  const app = document.createElement("gensparx-app") as GenSparxApp;
   document.body.append(app);
   app.connected = true;
   app.requestUpdate();
@@ -31,7 +31,7 @@ export function mountApp(pathname: string) {
 
 export function registerAppMountHooks() {
   beforeEach(async () => {
-    window.__OPENCLAW_CONTROL_UI_BASE_PATH__ = undefined;
+    window.__GENSPARX_CONTROL_UI_BASE_PATH__ = undefined;
     localStorage.clear();
     sessionStorage.clear();
     document.body.innerHTML = "";
@@ -44,7 +44,7 @@ export function registerAppMountHooks() {
   });
 
   afterEach(async () => {
-    window.__OPENCLAW_CONTROL_UI_BASE_PATH__ = undefined;
+    window.__GENSPARX_CONTROL_UI_BASE_PATH__ = undefined;
     localStorage.clear();
     sessionStorage.clear();
     document.body.innerHTML = "";

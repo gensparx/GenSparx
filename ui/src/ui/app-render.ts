@@ -133,7 +133,7 @@ function lazyRender<M>(getter: () => M | null, render: (mod: M) => unknown) {
   return mod ? render(mod) : nothing;
 }
 
-const UPDATE_BANNER_DISMISS_KEY = "openclaw:control-ui:update-banner-dismissed:v1";
+const UPDATE_BANNER_DISMISS_KEY = "gensparx:control-ui:update-banner-dismissed:v1";
 const CRON_THINKING_SUGGESTIONS = ["off", "minimal", "low", "medium", "high"];
 const CRON_TIMEZONE_SUGGESTIONS = [
   "UTC",
