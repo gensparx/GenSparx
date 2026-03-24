@@ -24,6 +24,19 @@ export type SkillsInstallConfig = {
   nodeManager?: "npm" | "pnpm" | "yarn" | "bun";
 };
 
+export type SkillsRegistryConfig = {
+  /** Enable the remote skills registry catalog. */
+  enabled?: boolean;
+  /** Base URL for the skills registry API. */
+  baseUrl?: string;
+  /** Allowlisted hostnames for registry requests (supports *.example.com patterns). */
+  allowlist?: string[];
+  /** Timeout for registry requests (ms). */
+  timeoutMs?: number;
+  /** Allow installing skills directly from the registry. */
+  allowInstall?: boolean;
+};
+
 export type SkillsLimitsConfig = {
   /** Max number of immediate child directories to consider under a skills root before treating it as suspicious. */
   maxCandidatesPerRoot?: number;
@@ -42,6 +55,7 @@ export type SkillsConfig = {
   allowBundled?: string[];
   load?: SkillsLoadConfig;
   install?: SkillsInstallConfig;
+  registry?: SkillsRegistryConfig;
   limits?: SkillsLimitsConfig;
   entries?: Record<string, SkillConfig>;
 };

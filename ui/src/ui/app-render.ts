@@ -69,8 +69,10 @@ import { loadNodes } from "./controllers/nodes.ts";
 import { loadPresence } from "./controllers/presence.ts";
 import { deleteSessionAndRefresh, loadSessions, patchSession } from "./controllers/sessions.ts";
 import {
+  installCatalogSkill,
   installSkill,
   loadSkills,
+  loadSkillsCatalog,
   saveSkillApiKey,
   updateSkillEdit,
   updateSkillEnabled,
@@ -1228,8 +1230,26 @@ export function renderApp(state: AppViewState) {
                   edits: state.skillEdits,
                   messages: state.skillMessages,
                   busyKey: state.skillsBusyKey,
+                  catalogLoading: state.skillsCatalogLoading,
+                  catalogError: state.skillsCatalogError,
+                  catalogEntries: state.skillsCatalogEntries,
+                  catalogQuery: state.skillsCatalogQuery,
+                  catalogNextCursor: state.skillsCatalogNextCursor,
+                  catalogBaseUrl: state.skillsCatalogBaseUrl,
+                  catalogBusySlug: state.skillsCatalogBusySlug,
+                  catalogMessages: state.skillsCatalogMessages,
                   onFilterChange: (next) => (state.skillsFilter = next),
                   onRefresh: () => loadSkills(state, { clearMessages: true }),
+                  onCatalogQueryChange: (next) => (state.skillsCatalogQuery = next),
+                  onCatalogRefresh: () =>
+                    loadSkillsCatalog(state, { query: state.skillsCatalogQuery }),
+                  onCatalogLoadMore: () =>
+                    loadSkillsCatalog(state, {
+                      query: state.skillsCatalogQuery,
+                      cursor: state.skillsCatalogNextCursor ?? undefined,
+                      append: true,
+                    }),
+                  onCatalogInstall: (slug) => installCatalogSkill(state, slug),
                   onToggle: (key, enabled) => updateSkillEnabled(state, key, enabled),
                   onEdit: (key, value) => updateSkillEdit(state, key, value),
                   onSaveKey: (key) => saveSkillApiKey(state, key),

@@ -602,6 +602,18 @@ export const FIELD_HELP: Record<string, string> = {
     "Enable filesystem watching for skill-definition changes so updates can be applied without full process restart. Keep enabled in development workflows and disable in immutable production images.",
   "skills.load.watchDebounceMs":
     "Debounce window in milliseconds for coalescing rapid skill file changes before reload logic runs. Increase to reduce reload churn on frequent writes, or lower for faster edit feedback.",
+  "skills.registry":
+    "Remote skills registry settings for browsing the external skills catalog. Keep this configured when you want the dashboard to show a shared skills index.",
+  "skills.registry.enabled":
+    "Enables the remote skills catalog lookup (default: true). Disable if your environment must avoid outbound registry calls.",
+  "skills.registry.baseUrl":
+    "Base URL for the skills registry API, for example https://clawhub.ai/api/v1. Use an HTTPS endpoint you trust and keep it stable for consistent catalog lookups.",
+  "skills.registry.allowlist":
+    "Allowed registry hostnames for SSRF protection, including optional wildcard patterns like *.example.com. Keep this list narrow to trusted registry hosts only.",
+  "skills.registry.timeoutMs":
+    "Timeout in milliseconds for registry HTTP requests. Increase for slow networks and lower for faster failure in latency-sensitive setups.",
+  "skills.registry.allowInstall":
+    "Allows installing skills directly from the registry into your local skills folder (default: true). Disable if you want browse-only mode or if the registry is not trusted.",
   approvals:
     "Approval routing controls for forwarding exec approval requests to chat destinations outside the originating session. Keep this disabled unless operators need explicit out-of-band approval visibility.",
   "approvals.exec":

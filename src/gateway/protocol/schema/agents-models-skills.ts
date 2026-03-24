@@ -208,6 +208,56 @@ export const SkillsUpdateParamsSchema = Type.Object(
   { additionalProperties: false },
 );
 
+export const SkillCatalogEntrySchema = Type.Object(
+  {
+    slug: NonEmptyString,
+    name: NonEmptyString,
+    description: Type.Optional(Type.String()),
+    author: Type.Optional(Type.String()),
+    license: Type.Optional(Type.String()),
+    homepage: Type.Optional(Type.String()),
+    source: Type.Optional(NonEmptyString),
+    tags: Type.Optional(Type.Array(NonEmptyString)),
+    updatedAt: Type.Optional(NonEmptyString),
+  },
+  { additionalProperties: false },
+);
+
+export const SkillsCatalogParamsSchema = Type.Object(
+  {
+    query: Type.Optional(Type.String()),
+    limit: Type.Optional(Type.Integer({ minimum: 1, maximum: 200 })),
+    cursor: Type.Optional(Type.String()),
+  },
+  { additionalProperties: false },
+);
+
+export const SkillsCatalogResultSchema = Type.Object(
+  {
+    baseUrl: NonEmptyString,
+    entries: Type.Array(SkillCatalogEntrySchema),
+    nextCursor: Type.Optional(NonEmptyString),
+  },
+  { additionalProperties: false },
+);
+
+export const SkillsCatalogInstallParamsSchema = Type.Object(
+  {
+    slug: NonEmptyString,
+    agentId: Type.Optional(NonEmptyString),
+  },
+  { additionalProperties: false },
+);
+
+export const SkillsCatalogInstallResultSchema = Type.Object(
+  {
+    ok: Type.Literal(true),
+    slug: NonEmptyString,
+    path: NonEmptyString,
+  },
+  { additionalProperties: false },
+);
+
 export const ToolsCatalogParamsSchema = Type.Object(
   {
     agentId: Type.Optional(NonEmptyString),

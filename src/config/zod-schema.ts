@@ -801,6 +801,16 @@ export const GensparxSchema = z
           })
           .strict()
           .optional(),
+        registry: z
+          .object({
+            enabled: z.boolean().optional(),
+            baseUrl: z.string().optional(),
+            allowlist: z.array(z.string()).optional(),
+            timeoutMs: z.number().int().min(1000).optional(),
+            allowInstall: z.boolean().optional(),
+          })
+          .strict()
+          .optional(),
         limits: z
           .object({
             maxCandidatesPerRoot: z.number().int().min(1).optional(),

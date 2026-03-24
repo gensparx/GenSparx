@@ -269,6 +269,14 @@ export type AppViewState = {
     skillEdits: Record<string, string>;
     skillMessages: Record<string, SkillMessage>;
     skillsBusyKey: string | null;
+    skillsCatalogLoading: boolean;
+    skillsCatalogError: string | null;
+    skillsCatalogEntries: import("./types.js").SkillCatalogEntry[];
+    skillsCatalogQuery: string;
+    skillsCatalogNextCursor: string | null;
+    skillsCatalogBaseUrl: string | null;
+    skillsCatalogBusySlug: string | null;
+    skillsCatalogMessages: Record<string, SkillMessage>;
     healthLoading: boolean;
     healthResult: HealthSummary | null;
     healthError: string | null;

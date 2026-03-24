@@ -21,7 +21,7 @@ import { loadLogs } from "./controllers/logs.ts";
 import { loadNodes } from "./controllers/nodes.ts";
 import { loadPresence } from "./controllers/presence.ts";
 import { loadSessions } from "./controllers/sessions.ts";
-import { loadSkills } from "./controllers/skills.ts";
+import { loadSkills, loadSkillsCatalog } from "./controllers/skills.ts";
 import { loadUsage } from "./controllers/usage.ts";
 import {
   inferBasePathFromPathname,
@@ -215,6 +215,7 @@ export async function refreshActiveTab(host: SettingsHost) {
   }
   if (host.tab === "skills") {
     await loadSkills(host as unknown as GenSparxApp);
+    void loadSkillsCatalog(host as unknown as GenSparxApp);
   }
   if (host.tab === "agents") {
     await loadAgents(host as unknown as GenSparxApp);

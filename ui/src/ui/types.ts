@@ -640,6 +640,12 @@ export type ToolCatalogGroup =
   import("../../../src/gateway/protocol/schema/types.js").ToolCatalogGroup;
 export type ToolsCatalogResult =
   import("../../../src/gateway/protocol/schema/types.js").ToolsCatalogResult;
+export type SkillCatalogEntry =
+  import("../../../src/gateway/protocol/schema/types.js").SkillCatalogEntry;
+export type SkillsCatalogResult =
+  import("../../../src/gateway/protocol/schema/types.js").SkillsCatalogResult;
+export type SkillsCatalogInstallResult =
+  import("../../../src/gateway/protocol/schema/types.js").SkillsCatalogInstallResult;
 
 export type LogLevel = "trace" | "debug" | "info" | "warn" | "error" | "fatal";
 

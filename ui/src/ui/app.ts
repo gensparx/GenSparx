@@ -79,6 +79,7 @@ import type {
   PresenceEntry,
   ChannelsStatusSnapshot,
   SessionsListResult,
+  SkillCatalogEntry,
   SkillStatusReport,
   StatusSummary,
   NostrProfile,
@@ -400,6 +401,14 @@ export class GenSparxApp extends LitElement {
   @state() skillEdits: Record<string, string> = {};
   @state() skillsBusyKey: string | null = null;
   @state() skillMessages: Record<string, SkillMessage> = {};
+  @state() skillsCatalogLoading = false;
+  @state() skillsCatalogError: string | null = null;
+  @state() skillsCatalogEntries: SkillCatalogEntry[] = [];
+  @state() skillsCatalogQuery = "";
+  @state() skillsCatalogNextCursor: string | null = null;
+  @state() skillsCatalogBaseUrl: string | null = null;
+  @state() skillsCatalogBusySlug: string | null = null;
+  @state() skillsCatalogMessages: Record<string, SkillMessage> = {};
 
   @state() healthLoading = false;
   @state() healthResult: HealthSummary | null = null;
