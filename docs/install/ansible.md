@@ -7,7 +7,11 @@ read_when:
 title: "Ansible"
 ---
 
-# Ansible Installation
+# 
+
+<Warning>
+This install path is advanced and not part of the primary support path. Use Docker or Podman for a fully supported setup.
+</Warning>
 
 The recommended way to deploy gensparx to production servers is via **[gensparx-ansible](https://github.com/gensparx/gensparx-ansible)** — an automated installer with security-first architecture.
 
@@ -70,16 +74,32 @@ The post-install script will guide you through:
 ### Quick commands
 
 ```bash
-# Check service status
+# 
+
+<Warning>
+This install path is advanced and not part of the primary support path. Use Docker or Podman for a fully supported setup.
+</Warning>
 sudo systemctl status gensparx
 
-# View live logs
+# 
+
+<Warning>
+This install path is advanced and not part of the primary support path. Use Docker or Podman for a fully supported setup.
+</Warning>
 sudo journalctl -u gensparx -f
 
-# Restart gateway
+# 
+
+<Warning>
+This install path is advanced and not part of the primary support path. Use Docker or Podman for a fully supported setup.
+</Warning>
 sudo systemctl restart gensparx
 
-# Provider login (run as gensparx user)
+# 
+
+<Warning>
+This install path is advanced and not part of the primary support path. Use Docker or Podman for a fully supported setup.
+</Warning>
 sudo -i -u gensparx
 gensparx channels login
 ```
@@ -114,21 +134,45 @@ See [Multi-Agent Sandbox & Tools](/tools/multi-agent-sandbox-tools) for sandbox 
 If you prefer manual control over the automation:
 
 ```bash
-# 1. Install prerequisites
+# 
+
+<Warning>
+This install path is advanced and not part of the primary support path. Use Docker or Podman for a fully supported setup.
+</Warning>
 sudo apt update && sudo apt install -y ansible git
 
-# 2. Clone repository
+# 
+
+<Warning>
+This install path is advanced and not part of the primary support path. Use Docker or Podman for a fully supported setup.
+</Warning>
 git clone https://github.com/gensparx/gensparx-ansible.git
 cd gensparx-ansible
 
-# 3. Install Ansible collections
+# 
+
+<Warning>
+This install path is advanced and not part of the primary support path. Use Docker or Podman for a fully supported setup.
+</Warning>
 ansible-galaxy collection install -r requirements.yml
 
-# 4. Run playbook
+# 
+
+<Warning>
+This install path is advanced and not part of the primary support path. Use Docker or Podman for a fully supported setup.
+</Warning>
 ./run-playbook.sh
 
-# Or run directly (then manually execute /tmp/gensparx-setup.sh after)
-# ansible-playbook playbook.yml --ask-become-pass
+# 
+
+<Warning>
+This install path is advanced and not part of the primary support path. Use Docker or Podman for a fully supported setup.
+</Warning>
+# 
+
+<Warning>
+This install path is advanced and not part of the primary support path. Use Docker or Podman for a fully supported setup.
+</Warning>
 ```
 
 ## Updating Gensparx
@@ -157,13 +201,25 @@ If you're locked out:
 ### Service won't start
 
 ```bash
-# Check logs
+# 
+
+<Warning>
+This install path is advanced and not part of the primary support path. Use Docker or Podman for a fully supported setup.
+</Warning>
 sudo journalctl -u gensparx -n 100
 
-# Verify permissions
+# 
+
+<Warning>
+This install path is advanced and not part of the primary support path. Use Docker or Podman for a fully supported setup.
+</Warning>
 sudo ls -la /opt/gensparx
 
-# Test manual start
+# 
+
+<Warning>
+This install path is advanced and not part of the primary support path. Use Docker or Podman for a fully supported setup.
+</Warning>
 sudo -i -u gensparx
 cd ~/gensparx
 pnpm start
@@ -172,13 +228,25 @@ pnpm start
 ### Docker sandbox issues
 
 ```bash
-# Verify Docker is running
+# 
+
+<Warning>
+This install path is advanced and not part of the primary support path. Use Docker or Podman for a fully supported setup.
+</Warning>
 sudo systemctl status docker
 
-# Check sandbox image
+# 
+
+<Warning>
+This install path is advanced and not part of the primary support path. Use Docker or Podman for a fully supported setup.
+</Warning>
 sudo docker images | grep gensparx-sandbox
 
-# Build sandbox image if missing
+# 
+
+<Warning>
+This install path is advanced and not part of the primary support path. Use Docker or Podman for a fully supported setup.
+</Warning>
 cd /opt/gensparx/gensparx
 sudo -u gensparx ./scripts/sandbox-setup.sh
 ```
@@ -206,3 +274,4 @@ For detailed security architecture and troubleshooting:
 - [Docker](/install/docker) — containerized gateway setup
 - [Sandboxing](/gateway/sandboxing) — agent sandbox configuration
 - [Multi-Agent Sandbox & Tools](/tools/multi-agent-sandbox-tools) — per-agent isolation
+

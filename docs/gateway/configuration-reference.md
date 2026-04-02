@@ -2968,4 +2968,3 @@ Split config into multiple files:
 ---
 
 _Related: [Configuration](/gateway/configuration) · [Configuration Examples](/gateway/configuration-examples) · [Doctor](/gateway/doctor)_
-

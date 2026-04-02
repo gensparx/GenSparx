@@ -209,4 +209,3 @@ Examples:
 gensparx gateway discover --timeout 4000
 gensparx gateway discover --json | jq '.beacons[].wsUrl'
 ```
-

@@ -122,4 +122,3 @@ git commit -m "Add Gensparx workspace"
 - For browser-driven verification, use `gensparx browser` (tabs/status/screenshot) with the Gensparx-managed Chrome profile.
 - For DOM inspection, use `gensparx browser eval|query|dom|snapshot` (and `--json`/`--out` when you need machine output).
 - For interactions, use `gensparx browser click|type|hover|drag|select|upload|press|wait|navigate|back|evaluate|run` (click/type require snapshot refs; use `evaluate` for CSS selectors).
-

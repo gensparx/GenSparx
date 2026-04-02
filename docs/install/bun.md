@@ -6,7 +6,11 @@ read_when:
 title: "Bun (Experimental)"
 ---
 
-# Bun (experimental)
+# 
+
+<Warning>
+This install path is advanced and not part of the primary support path. Use Docker or Podman for a fully supported setup.
+</Warning>
 
 Goal: run this repo with **Bun** (optional, not recommended for WhatsApp/Telegram)
 without diverging from pnpm workflows.
@@ -57,3 +61,4 @@ bun pm trust @whiskeysockets/baileys protobufjs
 ## Caveats
 
 - Some scripts still hardcode pnpm (e.g. `docs:build`, `ui:*`, `protocol:check`). Run those via pnpm for now.
+

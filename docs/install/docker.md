@@ -1,14 +1,18 @@
 ---
-summary: "Optional Docker-based setup and onboarding for Gensparx"
+summary: "Docker-based setup and onboarding for Gensparx"
 read_when:
   - You want a containerized gateway instead of local installs
   - You are validating the Docker flow
 title: "Docker"
 ---
 
-# Docker (optional)
+# Docker
 
-Docker is **optional**. Use it only if you want a containerized gateway or to validate the Docker flow.
+Docker is a supported install path for containerized gateways and headless deployments.
+
+<Tip>
+Prefer rootless containers? See [Podman](/install/podman).
+</Tip>
 
 ## Is Docker right for me?
 
@@ -201,9 +205,9 @@ gateway start, token generation) works the same way.
 `docker-compose.yml` and helper files. `GENSPARX_IMAGE` skips local image build
 time; it does not replace the compose/setup workflow.
 
-### Shell Helpers (optional)
+### Docker helpers (optional)
 
-For easier day-to-day Docker management, install `ClawDock`:
+For easier day-to-day Docker management, install the Docker helper scripts:
 
 ```bash
 mkdir -p ~/.clawdock && curl -sL https://raw.githubusercontent.com/gensparx/gensparx/main/scripts/shell-helpers/clawdock-helpers.sh -o ~/.clawdock/clawdock-helpers.sh
@@ -217,7 +221,7 @@ echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
 
 Then use `clawdock-start`, `clawdock-stop`, `clawdock-dashboard`, etc. Run `clawdock-help` for all commands.
 
-See [`ClawDock` Helper README](https://github.com/gensparx/gensparx/blob/main/scripts/shell-helpers/README.md) for details.
+See the [Docker Helper README](https://github.com/gensparx/gensparx/blob/main/scripts/shell-helpers/README.md) for details.
 
 ### Manual flow (compose)
 
@@ -804,3 +808,4 @@ Example:
   sources `/etc/profile` and may reset PATH. Set `docker.env.PATH` to prepend your
   custom tool paths (e.g., `/custom/bin:/usr/local/share/npm-global/bin`), or add
   a script under `/etc/profile.d/` in your Dockerfile.
+

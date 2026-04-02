@@ -210,7 +210,3 @@ _"Intelligence without action is just noise."_
 — GenSparx founding principle
 
 ⚡ **GenSparx. The AI that actually does things.**
-
-
-
-

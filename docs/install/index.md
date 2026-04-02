@@ -1,5 +1,5 @@
 ---
-summary: "Install gensparx — installer script, npm/pnpm, from source, Docker, and more"
+summary: "Install gensparx: installer script, Docker, Podman, and advanced options"
 read_when:
   - You need an install method other than the Getting Started quickstart
   - You want to deploy to a cloud platform
@@ -142,6 +142,8 @@ For VPS/cloud hosts, avoid third-party "1-click" marketplace images when possibl
 
 ## Other install methods
 
+Docker and Podman are the recommended container options. Nix, Ansible, and Bun are advanced paths and may require extra validation.
+
 <CardGroup cols={2}>
   <Card title="Docker" href="/install/docker" icon="container">
     Containerized or headless deployments.
@@ -150,13 +152,13 @@ For VPS/cloud hosts, avoid third-party "1-click" marketplace images when possibl
     Rootless container: run `setup-podman.sh` once, then the launch script.
   </Card>
   <Card title="Nix" href="/install/nix" icon="snowflake">
-    Declarative install via Nix.
+    Advanced: declarative install via Nix.
   </Card>
   <Card title="Ansible" href="/install/ansible" icon="server">
-    Automated fleet provisioning.
+    Advanced: automated fleet provisioning.
   </Card>
   <Card title="Bun" href="/install/bun" icon="zap">
-    CLI-only usage via the Bun runtime.
+    Advanced: CLI-only usage via the Bun runtime.
   </Card>
 </CardGroup>
 
@@ -216,3 +218,4 @@ Then open a new terminal (or `rehash` in zsh / `hash -r` in bash).
     Remove gensparx completely.
   </Card>
 </CardGroup>
+
