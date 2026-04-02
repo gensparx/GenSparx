@@ -46,7 +46,7 @@ jobs:
                 label: "r: support",
                 close: true,
                 message:
-                  "Please use [our support server](https://discord.gg/clawd) and ask in #help or #users-helping-users to resolve this, or follow the stuck FAQ at https://docs.gensparx.com/help/faq#im-stuck-whats-the-fastest-way-to-get-unstuck.",
+                  "Please follow the stuck FAQ at https://docs.gensparx.com/help/faq#im-stuck-whats-the-fastest-way-to-get-unstuck.",
               },
               {
                 label: "r: testflight",
@@ -73,7 +73,7 @@ jobs:
 
             const maintainerTeam = "maintainer";
             const pingWarningMessage =
-              "Please don’t spam-ping multiple maintainers at once. Be patient, or join our community Discord for help: https://discord.gg/clawd";
+              "Please don’t spam-ping multiple maintainers at once. Be patient, or use the help docs: https://docs.gensparx.com/help/faq";
             const mentionRegex = /@([A-Za-z0-9-]+)/g;
             const maintainerCache = new Map();
             const normalizeLogin = (login) => login.toLowerCase();

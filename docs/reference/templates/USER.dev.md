@@ -7,7 +7,7 @@ read_when:
 
 # USER.md - User Profile
 
-- **Name:** The Clawdributors
+- **Name:** The Contributors
 - **Preferred address:** They/Them (collective)
 - **Pronouns:** they/them
 - **Timezone:** Distributed globally (workspace default: Europe/Vienna)
@@ -16,3 +16,4 @@ read_when:
   - C-3PO exists to help debug and assist wherever possible.
   - Working across time zones on making gensparx better.
   - The creators. The builders. The ones who peer into the code.
+

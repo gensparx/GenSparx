@@ -1,5 +1,5 @@
 ---
-summary: "Research notes: offline memory system for Clawd workspaces (Markdown source-of-truth + derived index)"
+summary: "Research notes: offline memory system for Gensparx workspaces (Markdown source-of-truth + derived index)"
 read_when:
   - Designing workspace memory (~/.gensparx/workspace) beyond daily Markdown logs
   - Deciding: standalone CLI vs deep gensparx integration
@@ -9,7 +9,7 @@ title: "Workspace Memory Research"
 
 # Workspace Memory v2 (offline): research notes
 
-Target: Clawd-style workspace (`agents.defaults.workspace`, default `~/.gensparx/workspace`) where “memory” is stored as one Markdown file per day (`memory/YYYY-MM-DD.md`) plus a small set of stable files (e.g. `memory.md`, `SOUL.md`).
+Target: Gensparx-style workspace (`agents.defaults.workspace`, default `~/.gensparx/workspace`) where “memory” is stored as one Markdown file per day (`memory/YYYY-MM-DD.md`) plus a small set of stable files (e.g. `memory.md`, `SOUL.md`).
 
 This doc proposes an **offline-first** memory architecture that keeps Markdown as the canonical, reviewable source of truth, but adds **structured recall** (search, entity summaries, confidence updates) via a derived index.
 
@@ -82,7 +82,7 @@ Notes:
 
 - **Daily log stays daily log**. No need to turn it into JSON.
 - The `bank/` files are **curated**, produced by reflection jobs, and can still be edited by hand.
-- `memory.md` remains “small + core-ish”: the things you want Clawd to see every session.
+- `memory.md` remains “small + core-ish”: the things you want Gensparx to see every session.
 
 ### Derived store (machine recall)
 
@@ -226,3 +226,4 @@ If you want a minimal, still-useful version:
 - Letta / MemGPT concepts: “core memory blocks” + “archival memory” + tool-driven self-editing memory.
 - Hindsight Technical Report: “retain / recall / reflect”, four-network memory, narrative fact extraction, opinion confidence evolution.
 - SuCo: arXiv 2411.14754 (2024): “Subspace Collision” approximate nearest neighbor retrieval.
+

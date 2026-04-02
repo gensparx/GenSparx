@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Onboarding
-    url: https://discord.gg/clawd
-    about: "New to Gensparx? Join Discord for setup guidance in #help."
+    url: https://docs.gensparx.com/help/faq
+    about: "New to Gensparx? Start with the help docs and setup guidance."
   - name: Support
-    url: https://discord.gg/clawd
-    about: "Get help from the gensparx community on Discord in #help."
+    url: https://docs.gensparx.com/help/faq
+    about: "Get help from the Gensparx community via the help docs."

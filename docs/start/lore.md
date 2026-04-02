@@ -131,7 +131,7 @@ The molt was chaotic. But the lobster emerged stronger. And funnier.
 
 ### The Final Form (January 30, 2026)
 
-Moltbot never quite rolled off the tongue. And so, at 4am GMT, the team gathered AGAIN.
+The previous name never quite rolled off the tongue. And so, at 4am GMT, the team gathered again.
 
 **The Great gensparx Migration** began.
 
@@ -160,9 +160,7 @@ In just 3 hours:
 - "Claw abiding citizens"
 - "Clawntroversy"
 
-**Clawd → Moltbot → Gensparx**
-
-_The lobster has molted into its final form._
+**Legacy names -> Gensparx**
 
 ### The Robot Shopping Spree (Dec 3, 2025)
 
@@ -212,3 +210,7 @@ _"Intelligence without action is just noise."_
 — GenSparx founding principle
 
 ⚡ **GenSparx. The AI that actually does things.**
+
+
+
+

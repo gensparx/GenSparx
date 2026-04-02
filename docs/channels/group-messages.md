@@ -7,7 +7,7 @@ title: "Group Messages"
 
 # Group messages (WhatsApp web channel)
 
-Goal: let Clawd sit in WhatsApp groups, wake up only when pinged, and keep that thread separate from the personal DM session.
+Goal: let Gensparx sit in WhatsApp groups, wake up only when pinged, and keep that thread separate from the personal DM session.
 
 Note: `agents.list[].groupChat.mentionPatterns` is now used by Telegram/Discord/Slack/iMessage as well; this doc focuses on WhatsApp-specific behavior. For multi-agent setups, set `agents.list[].groupChat.mentionPatterns` per agent (or use `messages.groupChat.mentionPatterns` as a global fallback).
 
@@ -82,3 +82,4 @@ Only the owner number (from `channels.whatsapp.allowFrom`, or the bot’s own E.
 - Echo suppression uses the combined batch string; if you send identical text twice without mentions, only the first will get a response.
 - Session store entries will appear as `agent:<agentId>:whatsapp:group:<jid>` in the session store (`~/.gensparx/agents/<agentId>/sessions/sessions.json` by default); a missing entry just means the group hasn’t triggered a run yet.
 - Typing indicators in groups follow `agents.defaults.typingMode` (default: `message` when unmentioned).
+

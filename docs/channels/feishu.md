@@ -542,14 +542,14 @@ Use `bindings` to route Feishu DMs or groups to different agents.
     list: [
       { id: "main" },
       {
-        id: "clawd-fan",
-        workspace: "/home/user/clawd-fan",
-        agentDir: "/home/user/.gensparx/agents/clawd-fan/agent",
+        id: "gensparx-fan",
+        workspace: "/home/user/gensparx-fan",
+        agentDir: "/home/user/.gensparx/agents/gensparx-fan/agent",
       },
       {
-        id: "clawd-xi",
-        workspace: "/home/user/clawd-xi",
-        agentDir: "/home/user/.gensparx/agents/clawd-xi/agent",
+        id: "gensparx-xi",
+        workspace: "/home/user/gensparx-xi",
+        agentDir: "/home/user/.gensparx/agents/gensparx-xi/agent",
       },
     ],
   },
@@ -562,14 +562,14 @@ Use `bindings` to route Feishu DMs or groups to different agents.
       },
     },
     {
-      agentId: "clawd-fan",
+      agentId: "gensparx-fan",
       match: {
         channel: "feishu",
         peer: { kind: "direct", id: "ou_yyy" },
       },
     },
     {
-      agentId: "clawd-xi",
+      agentId: "gensparx-xi",
       match: {
         channel: "feishu",
         peer: { kind: "group", id: "oc_zzz" },
@@ -651,3 +651,4 @@ Key options:
 - ✅ Files
 - ✅ Audio
 - ⚠️ Rich text (partial support)
+
