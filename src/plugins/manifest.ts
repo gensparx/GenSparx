@@ -171,9 +171,7 @@ export type PackageExtensionResolution =
   | { status: "missing"; entries: [] }
   | { status: "empty"; entries: [] };
 
-export type ManifestKey =
-  | typeof MANIFEST_KEY
-  | Exclude<(typeof LEGACY_MANIFEST_KEYS)[number], typeof MANIFEST_KEY>;
+export type ManifestKey = typeof MANIFEST_KEY;
 
 export type PackageManifest = {
   name?: string;

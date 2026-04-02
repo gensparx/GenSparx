@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { LEGACY_MANIFEST_KEYS, MANIFEST_KEY } from "../compat/legacy-names.js";
+import { MANIFEST_KEY } from "../compat/legacy-names.js";
 import { fileExists, readJsonFile, resolveArchiveKind } from "../infra/archive.js";
 import { resolveExistingInstallPath, withExtractedArchiveRoot } from "../infra/install-flow.js";
 import { installFromValidatedNpmSpecArchive } from "../infra/install-from-npm-spec.js";
@@ -31,16 +31,13 @@ export type HookInstallLogger = {
   warn?: (message: string) => void;
 };
 
+type HookManifestKey = typeof MANIFEST_KEY;
+
 type HookPackageManifest = {
   name?: string;
   version?: string;
   dependencies?: Record<string, string>;
-} & Partial<
-  Record<
-    typeof MANIFEST_KEY | Exclude<(typeof LEGACY_MANIFEST_KEYS)[number], typeof MANIFEST_KEY>,
-    { hooks?: string[] }
-  >
->;
+} & Partial<Record<HookManifestKey, { hooks?: string[] }>>;
 
 export type InstallHooksResult =
   | {
@@ -118,7 +115,7 @@ export function resolveHookInstallDir(hookId: string, hooksDir?: string): string
 }
 
 async function ensureGensparxHooks(manifest: HookPackageManifest) {
-  const metadata = ([MANIFEST_KEY, ...LEGACY_MANIFEST_KEYS] as const)
+  const metadata = [MANIFEST_KEY]
     .map((key) => manifest[key])
     .find((value) => value && typeof value === "object");
   const hooks = metadata?.hooks;
