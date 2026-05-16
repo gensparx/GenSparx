@@ -177,7 +177,7 @@ function buildDocsSection(params: { docsPath?: string; isMinimal: boolean; readT
     `gensparx docs: ${docsPath}`,
     "Mirror: https://docs.gensparx.com",
     "Source: https://github.com/gensparx/gensparx",
-    "Community: https://discord.com/invite/clawd",
+    "Community: https://docs.gensparx.com/help/faq",
     "Find new skills: https://clawhub.com",
     "For gensparx behavior, commands, config, or architecture: consult local docs first.",
     "When diagnosing issues, run `gensparx status` yourself when possible; only ask the user if you lack access (e.g., sandboxed).",
