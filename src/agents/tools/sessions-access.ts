@@ -49,6 +49,45 @@ export function resolveSandboxSessionToolsVisibility(cfg: GensparxConfig): "spaw
   return cfg.agents?.defaults?.sandbox?.sessionToolsVisibility ?? "spawned";
 }
 
+/**
+ * Linear-time case-insensitive glob matcher. Splits the pattern on `*` and
+ * checks that all segments appear in order inside `value` with the first
+ * anchored to the start and the last anchored to the end.
+ */
+function matchesWildcardCaseInsensitive(pattern: string, value: string): boolean {
+  const parts = pattern.toLowerCase().split("*");
+  const lower = value.toLowerCase();
+
+  const first = parts[0];
+  let pos = 0;
+  if (first) {
+    if (!lower.startsWith(first)) {
+      return false;
+    }
+    pos = first.length;
+  }
+
+  const last = parts[parts.length - 1];
+  const endBound = last ? lower.length - last.length : lower.length;
+  if (last && (!lower.endsWith(last) || endBound < pos)) {
+    return false;
+  }
+
+  for (let i = 1; i < parts.length - 1; i++) {
+    const part = parts[i];
+    if (!part) {
+      continue;
+    }
+    const idx = lower.indexOf(part, pos);
+    if (idx === -1 || idx + part.length > endBound) {
+      return false;
+    }
+    pos = idx + part.length;
+  }
+
+  return true;
+}
+
 export function resolveSandboxedSessionToolContext(params: {
   cfg: GensparxConfig;
   agentSessionKey?: string;
@@ -106,9 +145,7 @@ export function createAgentToAgentPolicy(cfg: GensparxConfig): AgentToAgentPolic
       if (!raw.includes("*")) {
         return raw === agentId;
       }
-      const escaped = raw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const re = new RegExp(`^${escaped.replaceAll("\\*", ".*")}$`, "i");
-      return re.test(agentId);
+      return matchesWildcardCaseInsensitive(raw, agentId);
     });
   };
   const isAllowed = (requesterAgentId: string, targetAgentId: string) => {
