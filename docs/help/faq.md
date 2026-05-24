@@ -2749,7 +2749,7 @@ Start the Gateway with `--verbose` to get more console detail. Then inspect the 
 
 ### My skill generated an imagePDF but nothing was sent
 
-Outbound attachments from the agent must include a `MEDIA:<path-or-url>` line (on its own line). See [gensparx assistant setup](/start/gensparx) and [Agent send](/tools/agent-send).
+Outbound attachments from the agent must include a `MEDIA:<path-or-url>` line (on its own line). See [personal assistant setup](/start/personal-assistant) and [Agent send](/tools/agent-send).
 
 CLI sending:
 

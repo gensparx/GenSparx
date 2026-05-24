@@ -45,23 +45,23 @@ curl -s "wttr.in/London?format=%l:+%c+%p"
 
 ### Output Formats
 
-| Format | Command |
-|--------|---------|
-| JSON | `curl "wttr.in/London?format=j1"` |
-| PNG image | `curl "wttr.in/London.png"` |
+| Format    | Command                                     |
+| --------- | ------------------------------------------- |
+| JSON      | `curl "wttr.in/London?format=j1"`           |
+| PNG image | `curl "wttr.in/London.png"`                 |
 | One-liner | `curl "wttr.in/London?format=%l:+%c+%t+%w"` |
 
 ### Format Codes
 
-| Code | Meaning |
-|------|---------|
+| Code | Meaning                 |
+| ---- | ----------------------- |
 | `%c` | Weather condition emoji |
-| `%t` | Temperature |
-| `%f` | Feels like |
-| `%w` | Wind |
-| `%h` | Humidity |
-| `%p` | Precipitation |
-| `%l` | Location |
+| `%t` | Temperature             |
+| `%f` | Feels like              |
+| `%w` | Wind                    |
+| `%h` | Humidity                |
+| `%p` | Precipitation           |
+| `%l` | Location                |
 
 ## Open-Meteo (Alternative)
 

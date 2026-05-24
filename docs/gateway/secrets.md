@@ -105,13 +105,13 @@ Validation:
 ### `source: "exec"`
 
 ```json5
-    { source: "exec", provider: "vault", id: "providers/openai/apiKey#value" }
+{ source: "exec", provider: "vault", id: "providers/openai/apiKey#value" }
 ```
 
 Validation:
 
 - `provider` must match `^[a-z][a-z0-9_-]{0,63}$`
-    - `id` must match `^[A-Za-z0-9][A-Za-z0-9._:/#-]{0,255}$` (supports selectors such as `secret#json_key`)
+  - `id` must match `^[A-Za-z0-9][A-Za-z0-9._:/#-]{0,255}$` (supports selectors such as `secret#json_key`)
 
 ## Provider config
 

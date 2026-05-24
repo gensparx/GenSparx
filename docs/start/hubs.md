@@ -26,7 +26,7 @@ Use these hubs to discover every page, including deep dives and reference docs t
 - [Docs directory](/start/docs-directory)
 - [Configuration](/gateway/configuration)
 - [Configuration examples](/gateway/configuration-examples)
-- [gensparx assistant](/start/gensparx)
+- [personal assistant setup](/start/personal-assistant)
 - [Showcase](/start/showcase)
 - [Lore](/start/lore)
 
