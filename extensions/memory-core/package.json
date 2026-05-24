@@ -12,6 +12,9 @@
       "optional": true
     }
   },
+  "devDependencies": {
+    "gensparx": "workspace:*"
+  },
   "gensparx": {
     "extensions": [
       "./index.ts"

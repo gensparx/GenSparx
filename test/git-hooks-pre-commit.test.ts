@@ -18,8 +18,19 @@ const run = (cwd: string, cmd: string, args: string[] = [], env?: NodeJS.Process
   }).trim();
 };
 
+const hasBash = (): boolean => {
+  try {
+    execFileSync("bash", ["--version"], { stdio: "ignore" });
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+const itIfBash = hasBash() ? it : it.skip;
+
 describe("git-hooks/pre-commit (integration)", () => {
-  it("does not treat staged filenames as git-add flags (e.g. --all)", () => {
+  itIfBash("does not treat staged filenames as git-add flags (e.g. --all)", () => {
     const dir = mkdtempSync(path.join(os.tmpdir(), "gensparx-pre-commit-"));
     run(dir, "git", ["init", "-q", "--initial-branch=main"]);
 
