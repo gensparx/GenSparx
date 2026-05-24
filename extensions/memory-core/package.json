@@ -4,6 +4,9 @@
   "private": true,
   "description": "gensparx core memory search plugin",
   "type": "module",
+  "devDependencies": {
+    "gensparx": "workspace:*"
+  },
   "peerDependencies": {
     "gensparx": ">=2026.3.2"
   },
@@ -11,9 +14,6 @@
     "gensparx": {
       "optional": true
     }
-  },
-  "devDependencies": {
-    "gensparx": "workspace:*"
   },
   "gensparx": {
     "extensions": [

@@ -7,6 +7,9 @@
   "dependencies": {
     "google-auth-library": "^10.6.1"
   },
+  "devDependencies": {
+    "gensparx": "workspace:*"
+  },
   "peerDependencies": {
     "gensparx": ">=2026.3.2"
   },
@@ -14,9 +17,6 @@
     "gensparx": {
       "optional": true
     }
-  },
-  "devDependencies": {
-    "gensparx": "workspace:*"
   },
   "gensparx": {
     "extensions": [
