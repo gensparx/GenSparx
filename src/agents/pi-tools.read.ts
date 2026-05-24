@@ -9,6 +9,7 @@ import {
   readFileWithinRoot,
   writeFileWithinRoot,
 } from "../infra/fs-safe.js";
+import { resolvePathViaExistingAncestorSync } from "../infra/boundary-path.js";
 import { detectMime } from "../media/mime.js";
 import { sniffMimeFromBase64 } from "../media/sniff-mime-from-base64.js";
 import type { ImageSanitizationLimits } from "./image-sanitization.js";
@@ -585,7 +586,7 @@ function createHostWriteOperations(root: string, options?: { workspaceOnly?: boo
       await fs.mkdir(resolved, { recursive: true });
     },
     writeFile: async (absolutePath: string, content: string) => {
-      const relative = toRelativeWorkspacePath(root, absolutePath);
+      const relative = toCanonicalRelativeWorkspacePath(root, absolutePath);
       await writeFileWithinRoot({
         rootDir: root,
         relativePath: relative,
@@ -625,7 +626,7 @@ function createHostEditOperations(root: string, options?: { workspaceOnly?: bool
       return safeRead.buffer;
     },
     writeFile: async (absolutePath: string, content: string) => {
-      const relative = toRelativeWorkspacePath(root, absolutePath);
+      const relative = toCanonicalRelativeWorkspacePath(root, absolutePath);
       await writeFileWithinRoot({
         rootDir: root,
         relativePath: relative,
@@ -664,6 +665,16 @@ function createHostEditOperations(root: string, options?: { workspaceOnly?: bool
       }
     },
   } as const;
+}
+
+function toCanonicalRelativeWorkspacePath(root: string, absolutePath: string): string {
+  const lexicalRelative = toRelativeWorkspacePath(root, absolutePath);
+  const lexicalPath = path.resolve(root, lexicalRelative);
+  const parentPath = path.dirname(lexicalPath);
+  const rootReal = resolvePathViaExistingAncestorSync(root);
+  const canonicalParentPath = resolvePathViaExistingAncestorSync(parentPath);
+  const canonicalPath = path.join(canonicalParentPath, path.basename(lexicalPath));
+  return toRelativeWorkspacePath(rootReal, canonicalPath);
 }
 
 function createFsAccessError(code: string, filePath: string): NodeJS.ErrnoException {

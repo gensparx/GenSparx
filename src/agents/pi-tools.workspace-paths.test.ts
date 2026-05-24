@@ -188,6 +188,211 @@ describe("workspace path resolution", () => {
       }
     });
   });
+  it.runIf(process.platform !== "win32")(
+    "writes through in-workspace symlink parents when workspaceOnly is enabled",
+    async () => {
+      await withTempDir("gensparx-ws-symlink-write-", async (workspaceDir) => {
+        const realDir = path.join(workspaceDir, "gs_system", "memory");
+        const aliasDir = path.join(workspaceDir, "memory");
+        await fs.mkdir(realDir, { recursive: true });
+        await fs.symlink(realDir, aliasDir);
+
+        const cfg: GensparxConfig = { tools: { fs: { workspaceOnly: true } } };
+        const tools = createGensparxCodingTools({ workspaceDir, config: cfg });
+        const { writeTool } = expectReadWriteEditTools(tools);
+
+        await writeTool.execute("ws-write-symlink-parent", {
+          path: "memory/2026-05-20.md",
+          content: "remember this\n",
+        });
+
+        await expect(fs.readFile(path.join(realDir, "2026-05-20.md"), "utf8")).resolves.toBe(
+          "remember this\n",
+        );
+      });
+    },
+  );
+
+  it.runIf(process.platform !== "win32")(
+    "edits through in-workspace symlink parents when workspaceOnly is enabled",
+    async () => {
+      await withTempDir("gensparx-ws-symlink-edit-", async (workspaceDir) => {
+        const realDir = path.join(workspaceDir, "gs_system", "memory");
+        const aliasDir = path.join(workspaceDir, "memory");
+        const targetPath = path.join(realDir, "2026-05-20.md");
+        await fs.mkdir(realDir, { recursive: true });
+        await fs.symlink(realDir, aliasDir);
+        await fs.writeFile(targetPath, "old memory\n", "utf8");
+
+        const cfg: GensparxConfig = { tools: { fs: { workspaceOnly: true } } };
+        const tools = createGensparxCodingTools({ workspaceDir, config: cfg });
+        const { editTool } = expectReadWriteEditTools(tools);
+
+        await editTool.execute("ws-edit-symlink-parent", {
+          path: "memory/2026-05-20.md",
+          edits: [{ oldText: "old", newText: "new" }],
+        });
+
+        await expect(fs.readFile(targetPath, "utf8")).resolves.toBe("new memory\n");
+      });
+    },
+  );
+
+  it.runIf(process.platform !== "win32")(
+    "rejects writes through symlink parents that resolve outside the workspace",
+    async () => {
+      await withTempDir("gensparx-ws-symlink-escape-", async (rootDir) => {
+        const workspaceDir = path.join(rootDir, "workspace");
+        const outsideDir = path.join(rootDir, "outside");
+        const aliasDir = path.join(workspaceDir, "memory");
+        await fs.mkdir(workspaceDir, { recursive: true });
+        await fs.mkdir(outsideDir, { recursive: true });
+        await fs.symlink(outsideDir, aliasDir);
+
+        const cfg: GensparxConfig = { tools: { fs: { workspaceOnly: true } } };
+        const tools = createGensparxCodingTools({ workspaceDir, config: cfg });
+        const { writeTool } = expectReadWriteEditTools(tools);
+
+        await expect(
+          writeTool.execute("ws-write-symlink-escape", {
+            path: "memory/secret.md",
+            content: "pwned\n",
+          }),
+        ).rejects.toThrow(/Path escapes workspace root|outside-workspace|sandbox/i);
+        await expect(fs.stat(path.join(outsideDir, "secret.md"))).rejects.toMatchObject({
+          code: "ENOENT",
+        });
+      });
+    },
+  );
+
+  it.runIf(process.platform !== "win32")(
+    "rejects writes to final symlinks when workspaceOnly is enabled",
+    async () => {
+      await withTempDir("gensparx-ws-symlink-leaf-", async (workspaceDir) => {
+        const targetPath = path.join(workspaceDir, "target.md");
+        const linkPath = path.join(workspaceDir, "memory.md");
+        await fs.writeFile(targetPath, "original\n", "utf8");
+        await fs.symlink(targetPath, linkPath);
+
+        const cfg: GensparxConfig = { tools: { fs: { workspaceOnly: true } } };
+        const tools = createGensparxCodingTools({ workspaceDir, config: cfg });
+        const { writeTool } = expectReadWriteEditTools(tools);
+
+        await expect(
+          writeTool.execute("ws-write-final-symlink", {
+            path: "memory.md",
+            content: "pwned\n",
+          }),
+        ).rejects.toThrow(/symlink|not-file|directory component/i);
+        await expect(fs.readFile(targetPath, "utf8")).resolves.toBe("original\n");
+      });
+    },
+  );
+  
+  it("allows workspaceOnly reads for resolved skill roots without allowing other filesystem access", async () => {
+    await withTempDir("gensparx-skill-read-", async (rootDir) => {
+      const workspaceDir = path.join(rootDir, "workspace");
+      const skillDir = path.join(rootDir, "global-skills", "demo");
+      const siblingDir = path.join(rootDir, "global-skills", "other");
+      await fs.mkdir(workspaceDir, { recursive: true });
+      await fs.mkdir(skillDir, { recursive: true });
+      await fs.mkdir(siblingDir, { recursive: true });
+      const skillFile = path.join(skillDir, "SKILL.md");
+      const guideFile = path.join(skillDir, "guide.md");
+      const siblingFile = path.join(siblingDir, "SKILL.md");
+      const outsideFile = path.join(rootDir, "outside.txt");
+      await fs.writeFile(skillFile, "# Demo skill\noriginal skill\n", "utf8");
+      await fs.writeFile(guideFile, "skill guide", "utf8");
+      await fs.writeFile(siblingFile, "sibling skill", "utf8");
+      await fs.writeFile(outsideFile, "outside secret", "utf8");
+
+      const cfg: GensparxConfig = { tools: { fs: { workspaceOnly: true } } };
+      const tools = createGensparxCodingTools({
+        workspaceDir,
+        config: cfg,
+        skillsSnapshot: {
+          prompt: "",
+          skills: [{ name: "demo" }],
+          resolvedSkills: [
+            createCanonicalFixtureSkill({
+              name: "demo",
+              description: "Demo skill",
+              filePath: skillFile,
+              baseDir: skillDir,
+              source: "test",
+            }),
+          ],
+        },
+      });
+      const { readTool, writeTool, editTool } = expectReadWriteEditTools(tools);
+
+      expect(getTextContent(await readTool.execute("read-skill", { path: skillFile }))).toContain(
+        "original skill",
+      );
+      expect(
+        getTextContent(await readTool.execute("read-skill-guide", { path: guideFile })),
+      ).toContain("skill guide");
+      await expect(readTool.execute("read-sibling", { path: siblingFile })).rejects.toThrow(
+        /Path escapes sandbox root/i,
+      );
+      await expect(readTool.execute("read-outside", { path: outsideFile })).rejects.toThrow(
+        /Path escapes sandbox root/i,
+      );
+      await expect(
+        writeTool.execute("write-skill", { path: skillFile, content: "overwritten" }),
+      ).rejects.toThrow(/Path escapes sandbox root|outside-workspace/i);
+      await expect(
+        editTool.execute("edit-skill", {
+          path: skillFile,
+          edits: [{ oldText: "original", newText: "edited" }],
+        }),
+      ).rejects.toThrow(/Path escapes sandbox root|outside-workspace/i);
+      expect(await fs.readFile(skillFile, "utf8")).toContain("original skill");
+    });
+  });
+
+  it("rejects symlink escapes inside resolved skill roots", async () => {
+    if (process.platform === "win32") {
+      return;
+    }
+    await withTempDir("gensparx-skill-read-symlink-", async (rootDir) => {
+      const workspaceDir = path.join(rootDir, "workspace");
+      const skillDir = path.join(rootDir, "global-skills", "demo");
+      await fs.mkdir(workspaceDir, { recursive: true });
+      await fs.mkdir(skillDir, { recursive: true });
+      const skillFile = path.join(skillDir, "SKILL.md");
+      const outsideFile = path.join(rootDir, "outside.txt");
+      const linkPath = path.join(skillDir, "outside-link.txt");
+      await fs.writeFile(skillFile, "# Demo skill\n", "utf8");
+      await fs.writeFile(outsideFile, "outside secret", "utf8");
+      await fs.symlink(outsideFile, linkPath);
+
+      const cfg: GensparxConfig = { tools: { fs: { workspaceOnly: true } } };
+      const tools = createGensparxCodingTools({
+        workspaceDir,
+        config: cfg,
+        skillsSnapshot: {
+          prompt: "",
+          skills: [{ name: "demo" }],
+          resolvedSkills: [
+            createCanonicalFixtureSkill({
+              name: "demo",
+              description: "Demo skill",
+              filePath: skillFile,
+              baseDir: skillDir,
+              source: "test",
+            }),
+          ],
+        },
+      });
+      const { readTool } = expectReadWriteEditTools(tools);
+
+      await expect(readTool.execute("read-skill-symlink", { path: linkPath })).rejects.toThrow(
+        /symlink|sandbox|outside|escape/i,
+      );
+    });
+  });
 });
 
 describe("sandboxed workspace paths", () => {
