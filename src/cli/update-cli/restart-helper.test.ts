@@ -309,14 +309,6 @@ describe("restart-helper", () => {
       expect(mockChild.unref).toHaveBeenCalledTimes(1);
     });
 
-      expect(spawn).toHaveBeenCalledWith("cmd.exe", ["/c", scriptPath], {
-        detached: true,
-        stdio: "ignore",
-        windowsHide: true,
-      });
-      expect(mockChild.unref).toHaveBeenCalled();
-    });
-
     it("does not throw when spawn fails synchronously", async () => {
       Object.defineProperty(process, "platform", { value: "linux" });
       vi.mocked(spawn).mockImplementation(() => {

@@ -125,7 +125,7 @@ export async function runGatewayLoop(params: {
             : typeof restartIntent?.waitMs === "number" && Number.isFinite(restartIntent.waitMs)
               ? restartIntent.waitMs > 0
                 ? Math.floor(restartIntent.waitMs)
-                : undefined
+                : DRAIN_TIMEOUT_MS
               : DRAIN_TIMEOUT_MS
           : null;
         // On restart, wait for in-flight agent turns to finish before
@@ -139,14 +139,14 @@ export async function runGatewayLoop(params: {
             if (restartIntent?.force) {
               gatewayLog.warn("forced restart requested; skipping active task drain");
             } else {
+              const drainTimeoutMs =
+                restartDrainTimeoutMs === null ? DRAIN_TIMEOUT_MS : restartDrainTimeoutMs;
               const drainLabel =
-                restartDrainTimeoutMs === undefined
-                  ? "without a timeout"
-                  : `timeout ${restartDrainTimeoutMs}ms`;
+                drainTimeoutMs === 0 ? "without a timeout" : `timeout ${drainTimeoutMs}ms`;
               gatewayLog.info(
                 `draining ${activeTasks} active task(s) before restart (${drainLabel})`,
               );
-              const { drained } = await waitForActiveTasks(restartDrainTimeoutMs);
+              const { drained } = await waitForActiveTasks(drainTimeoutMs);
               if (drained) {
                 gatewayLog.info("all active tasks drained");
               } else {

@@ -33,6 +33,12 @@ Prefer localhost, Tailscale Serve, or an SSH tunnel.
 - Re-open anytime: `gensparx dashboard` (copies link, opens browser if possible, shows SSH hint if headless).
 - If the UI prompts for auth, paste the token from `gateway.auth.token` (or `GENSPARX_GATEWAY_TOKEN`) into Control UI settings.
 
+What you should expect on first load:
+
+- A connect screen with the gateway URL, token, and optional password fields.
+- A short checklist for `gensparx gateway run` and `gensparx dashboard --no-open`.
+- Once connected, the overview page surfaces health, recent sessions, skills, automation, and logs in one place.
+
 ## Token basics (local vs remote)
 
 - **Localhost**: open `http://127.0.0.1:18789/`.
@@ -41,7 +47,7 @@ Prefer localhost, Tailscale Serve, or an SSH tunnel.
 - If `gateway.auth.token` is configured as a SecretRef and is unresolved in your current shell, `gensparx dashboard` still prints a non-tokenized URL plus actionable auth setup guidance.
 - **Not localhost**: use Tailscale Serve (tokenless for Control UI/WebSocket if `gateway.auth.allowTailscale: true`, assumes trusted gateway host; HTTP APIs still need token/password), tailnet bind with a token, or an SSH tunnel. See [Web surfaces](/web).
 
-## If you see “unauthorized” / 1008
+## If you see "unauthorized" / 1008
 
 - Ensure the gateway is reachable (local: `gensparx status`; remote: SSH tunnel `ssh -N -L 18789:127.0.0.1:18789 user@host` then open `http://127.0.0.1:18789/`).
 - Retrieve or supply the token from the gateway host:

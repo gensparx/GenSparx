@@ -22,35 +22,182 @@
 }
 
 .login-gate__card {
-  width: min(520px, 100%);
+  width: min(1120px, 100%);
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: 24px;
   padding: 32px;
+  box-shadow: var(--shadow-lg);
   animation: scale-in 0.25s var(--ease-out);
 }
 
+.login-gate__layout {
+  display: grid;
+  gap: 28px;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 420px);
+  align-items: start;
+}
+
+.login-gate__intro {
+  min-width: 0;
+}
+
 .login-gate__header {
-  text-align: center;
   margin-bottom: 24px;
 }
 
 .login-gate__logo {
-  width: 48px;
-  height: 48px;
-  margin-bottom: 12px;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 16px;
+}
+
+.login-gate__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--accent-subtle) 78%, transparent);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
 }
 
 .login-gate__title {
-  font-size: 22px;
-  font-weight: 700;
+  max-width: 11ch;
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 800;
   letter-spacing: -0.02em;
+  line-height: 1.02;
 }
 
 .login-gate__sub {
   color: var(--muted);
-  font-size: 14px;
-  margin-top: 4px;
+  font-size: 15px;
+  margin-top: 10px;
+  max-width: 62ch;
+}
+
+.login-gate__status {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.login-gate__status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid color-mix(in srgb, var(--warn) 20%, transparent);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--warn-subtle) 80%, transparent);
+  color: var(--text-strong);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.login-gate__status code,
+.ov-hero__meta-item code {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-strong);
+}
+
+.login-gate__highlights {
+  display: grid;
+  gap: 12px;
+}
+
+.login-gate__highlight {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 14px 16px;
+  border: 1px solid color-mix(in srgb, var(--border) 88%, transparent);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--accent-subtle) 42%, transparent),
+      transparent 55%
+    ),
+    color-mix(in srgb, var(--card-highlight) 60%, transparent);
+}
+
+.login-gate__highlight strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text-strong);
+  font-size: 13px;
+}
+
+.login-gate__highlight span:last-child {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.login-gate__highlight-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--accent-subtle) 90%, transparent);
+  color: var(--accent);
+}
+
+.login-gate__highlight-icon svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+
+.login-gate__connect-panel {
+  padding: 22px;
+  border: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
+  border-radius: 20px;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--bg-elevated) 94%, transparent),
+      color-mix(in srgb, var(--card) 96%, transparent)
+    ),
+    radial-gradient(
+      circle at top right,
+      color-mix(in srgb, var(--accent-subtle) 85%, transparent),
+      transparent 42%
+    );
+}
+
+.login-gate__panel-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-strong);
+}
+
+.login-gate__panel-sub {
+  margin-top: 6px;
+  margin-bottom: 18px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 .login-gate__form {
@@ -85,9 +232,11 @@
 }
 
 .login-gate__help {
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
+  margin-top: 22px;
+  padding: 18px;
+  border: 1px solid color-mix(in srgb, var(--border) 88%, transparent);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--bg-elevated) 72%, transparent);
 }
 
 .login-gate__help-title {
@@ -129,6 +278,91 @@
 .login-gate__docs {
   margin-top: 10px;
   font-size: 11px;
+}
+
+.ov-hero {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(0, 1.4fr) minmax(260px, 360px);
+  align-items: center;
+  background:
+    radial-gradient(
+      circle at top left,
+      color-mix(in srgb, var(--accent-subtle) 88%, transparent),
+      transparent 36%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--card-highlight) 65%, transparent),
+      color-mix(in srgb, var(--card) 98%, transparent)
+    );
+}
+
+.ov-hero__eyebrow {
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ov-hero__title {
+  margin-top: 10px;
+  font-size: clamp(24px, 3vw, 34px);
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--text-strong);
+}
+
+.ov-hero__sub {
+  margin-top: 10px;
+  max-width: 68ch;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.ov-hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.ov-hero__meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid color-mix(in srgb, var(--border) 88%, transparent);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--bg-elevated) 84%, transparent);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.ov-hero__meta-item strong {
+  color: var(--text-strong);
+  font-weight: 600;
+}
+
+.ov-hero__actions {
+  display: flex;
+  align-items: stretch;
+}
+
+.ov-quick-actions {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+}
+
+.ov-quick-action-btn {
+  justify-content: flex-start;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--bg-elevated) 86%, transparent);
 }
 
 /* ===========================================
@@ -380,6 +614,19 @@
   border-color: var(--danger-subtle);
   background: var(--danger-subtle);
   color: var(--danger);
+}
+
+.pill.warn {
+  border-color: var(--warn-subtle);
+  background: var(--warn-subtle);
+  color: var(--warn);
+}
+
+.pill.success,
+.pill.ok {
+  border-color: var(--ok-subtle);
+  background: var(--ok-subtle);
+  color: var(--ok);
 }
 
 /* ===========================================
@@ -3315,7 +3562,7 @@
 }
 
 .agent-skills-header::after {
-  content: "▸";
+  content: ">";
   font-size: 12px;
   color: var(--muted);
   transition: transform var(--duration-fast) ease;
@@ -3575,7 +3822,7 @@
   animation-delay: 150ms;
 }
 
-/* ── Attention items ── */
+/* Attention items */
 .ov-attention-list {
   display: flex;
   flex-direction: column;
@@ -3764,5 +4011,20 @@
   .ov-recent__row {
     grid-template-columns: 1fr;
     gap: 4px;
+  }
+}
+
+@media (max-width: 900px) {
+  .login-gate__card {
+    padding: 24px;
+  }
+
+  .login-gate__layout,
+  .ov-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .login-gate__title {
+    max-width: none;
   }
 }

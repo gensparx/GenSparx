@@ -33,7 +33,7 @@ Auth is supplied during the WebSocket handshake via:
 ## Device pairing (first connection)
 
 When you connect to the Control UI from a new browser or device, the Gateway
-requires a **one-time pairing approval** — even if you're on the same Tailnet
+requires a **one-time pairing approval** - even if you're on the same Tailnet
 with `gateway.auth.allowTailscale: true`. This is a security measure to prevent
 unauthorized access.
 
@@ -71,13 +71,14 @@ The Control UI can localize itself on first load based on your browser locale, a
 
 ## What it can do (today)
 
+- Overview: connection status, health snapshot, quick actions, recent sessions, attention items, and gateway log tail
 - Chat with the model via Gateway WS (`chat.history`, `chat.send`, `chat.abort`, `chat.inject`)
 - Stream tool calls + live tool output cards in Chat (agent events)
 - Channels: WhatsApp/Telegram/Discord/Slack + plugin channels (Mattermost, etc.) status + QR login + per-channel config (`channels.status`, `web.login.*`, `config.patch`)
 - Instances: presence list + refresh (`system-presence`)
 - Sessions: list + per-session thinking/verbose overrides (`sessions.list`, `sessions.patch`)
 - Cron jobs: list/add/edit/run/enable/disable + run history (`cron.*`)
-- Skills: status, enable/disable, install, API key updates (`skills.*`)
+- Skills: installed inventory, readiness summary, catalog search, install, enable/disable, API key updates (`skills.*`)
 - Nodes: list + caps (`node.list`)
 - Exec approvals: edit gateway or node allowlists + ask policy for `exec host=gateway/node` (`exec.approvals.*`)
 - Config: view/edit `~/.gensparx/gensparx.json` (`config.get`, `config.set`)
@@ -87,6 +88,12 @@ The Control UI can localize itself on first load based on your browser locale, a
 - Debug: status/health/models snapshots + event log + manual RPC calls (`status`, `health`, `models.list`)
 - Logs: live tail of gateway file logs with filter/export (`logs.tail`)
 - Update: run a package/git update + restart (`update.run`) with a restart report
+
+The intended first-run flow is:
+
+1. Open the dashboard URL.
+2. Enter the gateway URL plus token or password on the connect screen.
+3. Land on the overview page to confirm health, then move into sessions, skills, or config.
 
 Cron jobs panel notes:
 
@@ -133,7 +140,7 @@ By default, Control UI/WebSocket Serve requests can authenticate via Tailscale i
 (`tailscale-user-login`) when `gateway.auth.allowTailscale` is `true`. Gensparx
 verifies the identity by resolving the `x-forwarded-for` address with
 `tailscale whois` and matching it to the header, and only accepts these when the
-request hits loopback with Tailscale’s `x-forwarded-*` headers. Set
+request hits loopback with Tailscale's `x-forwarded-*` headers. Set
 `gateway.auth.allowTailscale: false` (or force `gateway.auth.mode: "password"`)
 if you want to require a token/password even for Serve traffic.
 Tokenless Serve auth assumes the gateway host is trusted. If untrusted local

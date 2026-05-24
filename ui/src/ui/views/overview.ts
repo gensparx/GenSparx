@@ -24,6 +24,7 @@ import {
   shouldShowPairingHint,
 } from "./overview-hints.ts";
 import { renderOverviewLogTail } from "./overview-log-tail.ts";
+import { renderOverviewQuickActions } from "./overview-quick-actions.ts";
 
 export type OverviewProps = {
   connected: boolean;
@@ -116,8 +117,8 @@ export function renderOverview(props: OverviewProps) {
         <div class="muted" style="margin-top: 8px">
           ${t("overview.auth.required")}
           <div style="margin-top: 6px">
-            <span class="mono">gensparx dashboard --no-open</span> → tokenized URL<br />
-            <span class="mono">gensparx doctor --generate-gateway-token</span> → set token
+            <span class="mono">gensparx dashboard --no-open</span> -> tokenized URL<br />
+            <span class="mono">gensparx doctor --generate-gateway-token</span> -> set token
           </div>
           <div style="margin-top: 6px">
             <a
@@ -175,7 +176,7 @@ export function renderOverview(props: OverviewProps) {
             title="Tailscale Serve docs (opens in new tab)"
             >Docs: Tailscale Serve</a
           >
-          <span class="muted"> · </span>
+          <span class="muted"> | </span>
           <a
             class="session-link"
             href="https://docs.gensparx.com/web/control-ui#insecure-http"
@@ -190,8 +191,42 @@ export function renderOverview(props: OverviewProps) {
   })();
 
   const currentLocale = i18n.getLocale();
+  const endpointLabel = props.settings.gatewayUrl.trim() || "ws://127.0.0.1:18789";
+  const sessionKeyLabel = props.settings.sessionKey.trim() || "main";
 
   return html`
+    <section class="card ov-hero">
+      <div class="ov-hero__copy">
+        <div class="ov-hero__eyebrow">Control surface</div>
+        <div class="ov-hero__title">
+          ${props.connected ? "Gateway connected and ready." : "Connect your gateway and finish setup."}
+        </div>
+        <div class="ov-hero__sub">
+          ${
+            props.connected
+              ? "Watch live health, jump into sessions, install skills, and adjust the gateway without leaving the dashboard."
+              : "The dashboard is ready. You only need the gateway URL and the token or password you generated from the CLI."
+          }
+        </div>
+        <div class="ov-hero__meta">
+          <span class="pill ${props.connected ? "success" : "warn"}">
+            <span class="statusDot ${props.connected ? "ok" : "warn"}"></span>
+            ${props.connected ? "Connected" : "Waiting for gateway"}
+          </span>
+          <span class="ov-hero__meta-item"><strong>Endpoint</strong><code>${endpointLabel}</code></span>
+          <span class="ov-hero__meta-item"><strong>Session</strong><code>${sessionKeyLabel}</code></span>
+        </div>
+      </div>
+      <div class="ov-hero__actions">
+        ${renderOverviewQuickActions({
+          onNavigate: props.onNavigate,
+          onRefresh: props.onRefresh,
+        })}
+      </div>
+    </section>
+
+    <div class="ov-section-divider"></div>
+
     <section class="grid">
       <div class="card">
         <div class="card-title">${t("overview.access.title")}</div>

@@ -16,6 +16,11 @@ The Gateway serves a small **browser Control UI** (Vite + Lit) from the same por
 Capabilities live in [Control UI](/web/control-ui).
 This page focuses on bind modes, security, and web-facing surfaces.
 
+For the first-run dashboard flow, expect:
+
+- a connect screen for the gateway URL, token, and optional password
+- an overview page with health, sessions, skills, automation, and logs
+
 ## Webhooks
 
 When `hooks.enabled=true`, the Gateway also exposes a small webhook endpoint on the same HTTP server.

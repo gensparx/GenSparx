@@ -135,7 +135,7 @@ export function emitGatewayRestart(
   const cycleToken = ++restartCycleToken;
   emittedRestartToken = cycleToken;
   emittedRestartIntent = {
-    ...(intent ?? {}),
+    ...intent,
     ...(reasonOverride ? { reason: reasonOverride } : {}),
   };
   authorizeGatewaySigusr1Restart();

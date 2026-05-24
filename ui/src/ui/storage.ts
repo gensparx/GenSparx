@@ -1,5 +1,6 @@
 const KEY = "gensparx.control.settings.v1";
 const TOKEN_SESSION_KEY_PREFIX = "gensparx.control.token.v1:";
+const LEGACY_TOKEN_SESSION_KEY = "gensparx.control.token.v1";
 
 type PersistedUiSettings = Omit<UiSettings, "token"> & { token?: never };
 
@@ -117,8 +118,18 @@ function persistSessionToken(gatewayUrl: string, token: string) {
   }
 }
 
+function scrubLegacySessionToken() {
+  try {
+    const storage = getSessionStorage();
+    storage?.removeItem(LEGACY_TOKEN_SESSION_KEY);
+  } catch {
+    // best-effort
+  }
+}
+
 export function loadSettings(): UiSettings {
   const { pageUrl: pageDerivedUrl, effectiveUrl: defaultUrl } = deriveDefaultGatewayUrl();
+  scrubLegacySessionToken();
 
   const defaults: UiSettings = {
     gatewayUrl: defaultUrl,

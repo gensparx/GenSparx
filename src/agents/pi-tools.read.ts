@@ -3,13 +3,13 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { AgentToolResult } from "@mariozechner/pi-agent-core";
 import { createEditTool, createReadTool, createWriteTool } from "@mariozechner/pi-coding-agent";
+import { resolvePathViaExistingAncestorSync } from "../infra/boundary-path.js";
 import {
   SafeOpenError,
   openFileWithinRoot,
   readFileWithinRoot,
   writeFileWithinRoot,
 } from "../infra/fs-safe.js";
-import { resolvePathViaExistingAncestorSync } from "../infra/boundary-path.js";
 import { detectMime } from "../media/mime.js";
 import { sniffMimeFromBase64 } from "../media/sniff-mime-from-base64.js";
 import type { ImageSanitizationLimits } from "./image-sanitization.js";
@@ -412,6 +412,7 @@ export function wrapToolWorkspaceRootGuardWithOptions(
   root: string,
   options?: {
     containerWorkdir?: string;
+    additionalRoots?: string[];
   },
 ): AnyAgentTool {
   return {
@@ -428,7 +429,28 @@ export function wrapToolWorkspaceRootGuardWithOptions(
           root,
           containerWorkdir: options?.containerWorkdir,
         });
-        await assertSandboxPath({ filePath: sandboxPath, cwd: root, root });
+        try {
+          await assertSandboxPath({ filePath: sandboxPath, cwd: root, root });
+        } catch (error) {
+          const extraRoots = options?.additionalRoots ?? [];
+          let allowedByExtraRoot = false;
+          for (const extraRoot of extraRoots) {
+            try {
+              await assertSandboxPath({
+                filePath: sandboxPath,
+                cwd: extraRoot,
+                root: extraRoot,
+              });
+              allowedByExtraRoot = true;
+              break;
+            } catch {
+              // Try the next allowed root.
+            }
+          }
+          if (!allowedByExtraRoot) {
+            throw error;
+          }
+        }
       }
       return tool.execute(toolCallId, normalized ?? args, signal, onUpdate);
     },

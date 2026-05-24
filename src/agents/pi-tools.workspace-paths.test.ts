@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import type { Skill } from "@mariozechner/pi-coding-agent";
 import { describe, expect, it, vi } from "vitest";
 import type { GensparxConfig } from "../config/config.js";
 import { createGensparxCodingTools } from "./pi-tools.js";
@@ -19,6 +20,19 @@ async function withTempDir<T>(prefix: string, fn: (dir: string) => Promise<T>) {
   } finally {
     await fs.rm(dir, { recursive: true, force: true });
   }
+}
+
+function createCanonicalFixtureSkill(params: {
+  name: string;
+  description: string;
+  filePath: string;
+  baseDir: string;
+  source: string;
+}): Skill {
+  return {
+    ...params,
+    disableModelInvocation: false,
+  };
 }
 
 function createExecTool(workspaceDir: string) {
@@ -289,7 +303,7 @@ describe("workspace path resolution", () => {
       });
     },
   );
-  
+
   it("allows workspaceOnly reads for resolved skill roots without allowing other filesystem access", async () => {
     await withTempDir("gensparx-skill-read-", async (rootDir) => {
       const workspaceDir = path.join(rootDir, "workspace");

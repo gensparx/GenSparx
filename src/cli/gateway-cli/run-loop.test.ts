@@ -5,7 +5,9 @@ import { pickBeaconHost, pickGatewayPort } from "./discover.js";
 const acquireGatewayLock = vi.fn(async (_opts?: { port?: number }) => ({
   release: vi.fn(async () => {}),
 }));
-const consumeGatewaySigusr1RestartIntent = vi.fn(() => null);
+const consumeGatewaySigusr1RestartIntent = vi.fn<() => { waitMs?: number; force?: boolean } | null>(
+  () => null,
+);
 const consumeGatewaySigusr1RestartAuthorization = vi.fn(() => true);
 const isGatewaySigusr1RestartExternallyAllowed = vi.fn(() => false);
 const markGatewaySigusr1RestartHandled = vi.fn();

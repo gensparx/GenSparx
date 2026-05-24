@@ -40,6 +40,7 @@ export type SkillsProps = {
 
 export function renderSkills(props: SkillsProps) {
   const skills = props.report?.skills ?? [];
+  const reportReady = Boolean(props.report);
   const filter = props.filter.trim().toLowerCase();
   const filtered = filter
     ? skills.filter((skill) =>
@@ -47,8 +48,35 @@ export function renderSkills(props: SkillsProps) {
       )
     : skills;
   const groups = groupSkills(filtered);
+  const readyCount = skills.filter((skill) => !computeSkillMissing(skill)).length;
+  const missingCount = skills.filter((skill) => computeSkillMissing(skill)).length;
+  const catalogShown = props.catalogEntries.length;
+  const summaryValue = (value: number) => (reportReady ? String(value) : "--");
 
   return html`
+    <section class="ov-cards">
+      <div class="ov-card" data-kind="skills-installed">
+        <span class="ov-card__label">Installed skills</span>
+        <span class="ov-card__value">${summaryValue(skills.length)}</span>
+        <span class="ov-card__hint">Everything currently available in this workspace and bundled runtime.</span>
+      </div>
+      <div class="ov-card" data-kind="skills-ready">
+        <span class="ov-card__label">Ready now</span>
+        <span class="ov-card__value">${summaryValue(readyCount)}</span>
+        <span class="ov-card__hint">Configured and ready to run without additional setup.</span>
+      </div>
+      <div class="ov-card" data-kind="skills-missing">
+        <span class="ov-card__label">Needs setup</span>
+        <span class="ov-card__value">${summaryValue(missingCount)}</span>
+        <span class="ov-card__hint">Missing binaries, keys, or other local requirements.</span>
+      </div>
+      <div class="ov-card" data-kind="skills-catalog">
+        <span class="ov-card__label">Catalog shown</span>
+        <span class="ov-card__value">${catalogShown}</span>
+        <span class="ov-card__hint">Remote skill listings currently loaded into the dashboard.</span>
+      </div>
+    </section>
+
     <section class="card">
       <div class="row" style="justify-content: space-between;">
         <div>
@@ -56,7 +84,7 @@ export function renderSkills(props: SkillsProps) {
           <div class="card-sub">Installed skills and their status.</div>
         </div>
         <button class="btn" ?disabled=${props.loading || !props.connected} @click=${props.onRefresh}>
-          ${props.loading ? "Loading…" : "Refresh"}
+          ${props.loading ? "Loading..." : "Refresh"}
         </button>
       </div>
 
@@ -132,7 +160,7 @@ export function renderSkills(props: SkillsProps) {
           ?disabled=${props.catalogLoading || !props.connected}
           @click=${props.onCatalogRefresh}
         >
-          ${props.catalogLoading ? "Loadingâ€¦" : "Refresh"}
+          ${props.catalogLoading ? "Loading..." : "Refresh"}
         </button>
       </div>
 
@@ -151,7 +179,7 @@ export function renderSkills(props: SkillsProps) {
           ?disabled=${props.catalogLoading || !props.connected}
           @click=${props.onCatalogRefresh}
         >
-          Search
+          Search catalog
         </button>
         <div class="muted">${props.catalogEntries.length} shown</div>
       </div>
@@ -252,7 +280,7 @@ function renderSkill(skill: SkillStatusEntry, props: SkillsProps) {
                 ?disabled=${busy}
                 @click=${() => props.onInstall(skill.skillKey, skill.name, skill.install[0].id)}
               >
-                ${busy ? "Installing…" : skill.install[0].label}
+                ${busy ? "Installing..." : skill.install[0].label}
               </button>`
               : nothing
           }
@@ -333,7 +361,7 @@ function renderCatalogEntry(entry: SkillCatalogEntry, baseUrl: string | null, pr
           ?disabled=${busy || !props.connected}
           @click=${() => props.onCatalogInstall(entry.slug)}
         >
-          ${busy ? "Installingâ€¦" : "Install"}
+          ${busy ? "Installing..." : "Install"}
         </button>
         ${
           message
