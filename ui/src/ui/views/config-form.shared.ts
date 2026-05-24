@@ -12,6 +12,8 @@ export type JsonSchema = {
   enum?: unknown[];
   const?: unknown;
   default?: unknown;
+  minLength?: number;
+  maxLength?: number;
   anyOf?: JsonSchema[];
   oneOf?: JsonSchema[];
   allOf?: JsonSchema[];

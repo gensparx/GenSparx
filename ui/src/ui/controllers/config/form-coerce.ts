@@ -115,6 +115,15 @@ export function coerceFormValues(value: unknown, schema: JsonSchema): unknown {
     return value;
   }
 
+  if (type === "string") {
+    // Required string fields often use `minLength: 1`. Treat an empty form
+    // value as unset so schema defaults can apply during config saves.
+    if (typeof value === "string" && value.length === 0 && schema.minLength) {
+      return undefined;
+    }
+    return value;
+  }
+
   if (type === "object") {
     if (typeof value !== "object" || Array.isArray(value)) {
       return value;
