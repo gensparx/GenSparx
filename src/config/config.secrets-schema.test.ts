@@ -121,6 +121,16 @@ describe("config secret refs schema", () => {
     expect(result.ok).toBe(true);
   });
 
+  it("accepts exec refs with hash selectors", () => {
+    const result = validateOpenAiApiKeyRef({
+      source: "exec",
+      provider: "vault",
+      id: "aws/secret#json_key",
+    });
+
+    expect(result.ok).toBe(true);
+  });
+
   it("rejects invalid secret ref id", () => {
     const result = validateOpenAiApiKeyRef({
       source: "env",
