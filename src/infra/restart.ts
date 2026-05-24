@@ -18,7 +18,8 @@ export type RestartAttempt = {
 const SPAWN_TIMEOUT_MS = 2000;
 const SIGUSR1_AUTH_GRACE_MS = 5000;
 const DEFAULT_DEFERRAL_POLL_MS = 500;
-const DEFAULT_DEFERRAL_MAX_WAIT_MS = 30_000;
+const DEFAULT_DEFERRAL_STILL_PENDING_WARN_MS = 30_000;
+export const DEFAULT_RESTART_DEFERRAL_TIMEOUT_MS = 30_000;
 const RESTART_COOLDOWN_MS = 30_000;
 
 const restartLog = createSubsystemLogger("restart");
@@ -32,10 +33,12 @@ let preRestartCheck: (() => number) | null = null;
 let restartCycleToken = 0;
 let emittedRestartToken = 0;
 let consumedRestartToken = 0;
+let emittedRestartIntent: GatewayRestartIntent | undefined;
 let lastRestartEmittedAt = 0;
 let pendingRestartTimer: ReturnType<typeof setTimeout> | null = null;
 let pendingRestartDueAt = 0;
 let pendingRestartReason: string | undefined;
+const activeDeferralPolls = new Set<ReturnType<typeof setInterval>>();
 
 function hasUnconsumedRestartSignal(): boolean {
   return emittedRestartToken > consumedRestartToken;
@@ -50,11 +53,24 @@ function clearPendingScheduledRestart(): void {
   pendingRestartReason = undefined;
 }
 
+function clearActiveDeferralPolls(): void {
+  for (const poll of activeDeferralPolls) {
+    clearInterval(poll);
+  }
+  activeDeferralPolls.clear();
+}
+
 export type RestartAuditInfo = {
   actor?: string;
   deviceId?: string;
   clientIp?: string;
   changedPaths?: string[];
+};
+
+export type GatewayRestartIntent = {
+  reason?: string;
+  force?: boolean;
+  waitMs?: number;
 };
 
 function summarizeChangedPaths(paths: string[] | undefined, maxPaths = 6): string | null {
@@ -105,14 +121,23 @@ export function setPreRestartDeferralCheck(fn: () => number): void {
  * Both scheduleGatewaySigusr1Restart and the config watcher should use this
  * to ensure only one restart fires.
  */
-export function emitGatewayRestart(): boolean {
+export function emitGatewayRestart(
+  reasonOverride?: string,
+  intent?: GatewayRestartIntent,
+): boolean {
   if (hasUnconsumedRestartSignal()) {
+    clearActiveDeferralPolls();
     clearPendingScheduledRestart();
     return false;
   }
+  clearActiveDeferralPolls();
   clearPendingScheduledRestart();
   const cycleToken = ++restartCycleToken;
   emittedRestartToken = cycleToken;
+  emittedRestartIntent = {
+    ...(intent ?? {}),
+    ...(reasonOverride ? { reason: reasonOverride } : {}),
+  };
   authorizeGatewaySigusr1Restart();
   try {
     if (process.listenerCount("SIGUSR1") > 0) {
@@ -123,6 +148,7 @@ export function emitGatewayRestart(): boolean {
   } catch {
     // Roll back the cycle marker so future restart requests can still proceed.
     emittedRestartToken = consumedRestartToken;
+    emittedRestartIntent = undefined;
     return false;
   }
   lastRestartEmittedAt = Date.now();
@@ -177,11 +203,22 @@ export function consumeGatewaySigusr1RestartAuthorization(): boolean {
 export function markGatewaySigusr1RestartHandled(): void {
   if (hasUnconsumedRestartSignal()) {
     consumedRestartToken = emittedRestartToken;
+    emittedRestartIntent = undefined;
   }
+}
+
+export function consumeGatewaySigusr1RestartIntent(): GatewayRestartIntent | null {
+  if (!hasUnconsumedRestartSignal()) {
+    return null;
+  }
+  const intent = emittedRestartIntent ?? null;
+  emittedRestartIntent = undefined;
+  return intent;
 }
 
 export type RestartDeferralHooks = {
   onDeferring?: (pending: number) => void;
+  onStillPending?: (pending: number, elapsedMs: number) => void;
   onReady?: () => void;
   onTimeout?: (pending: number, elapsedMs: number) => void;
   onCheckError?: (err: unknown) => void;
@@ -196,51 +233,64 @@ export function deferGatewayRestartUntilIdle(opts: {
   hooks?: RestartDeferralHooks;
   pollMs?: number;
   maxWaitMs?: number;
+  reason?: string;
+  timeoutIntent?: GatewayRestartIntent;
 }): void {
   const pollMsRaw = opts.pollMs ?? DEFAULT_DEFERRAL_POLL_MS;
   const pollMs = Math.max(10, Math.floor(pollMsRaw));
-  const maxWaitMsRaw = opts.maxWaitMs ?? DEFAULT_DEFERRAL_MAX_WAIT_MS;
-  const maxWaitMs = Math.max(pollMs, Math.floor(maxWaitMsRaw));
+  const maxWaitMs =
+    typeof opts.maxWaitMs === "number" && Number.isFinite(opts.maxWaitMs) && opts.maxWaitMs > 0
+      ? Math.max(pollMs, Math.floor(opts.maxWaitMs))
+      : undefined;
 
   let pending: number;
   try {
     pending = opts.getPendingCount();
   } catch (err) {
     opts.hooks?.onCheckError?.(err);
-    emitGatewayRestart();
+    void emitGatewayRestart(opts.reason);
     return;
   }
   if (pending <= 0) {
     opts.hooks?.onReady?.();
-    emitGatewayRestart();
+    void emitGatewayRestart(opts.reason);
     return;
   }
 
   opts.hooks?.onDeferring?.(pending);
   const startedAt = Date.now();
+  let nextStillPendingAt = startedAt + DEFAULT_DEFERRAL_STILL_PENDING_WARN_MS;
   const poll = setInterval(() => {
     let current: number;
     try {
       current = opts.getPendingCount();
     } catch (err) {
       clearInterval(poll);
+      activeDeferralPolls.delete(poll);
       opts.hooks?.onCheckError?.(err);
-      emitGatewayRestart();
+      void emitGatewayRestart(opts.reason);
       return;
     }
     if (current <= 0) {
       clearInterval(poll);
+      activeDeferralPolls.delete(poll);
       opts.hooks?.onReady?.();
-      emitGatewayRestart();
+      void emitGatewayRestart(opts.reason);
       return;
     }
     const elapsedMs = Date.now() - startedAt;
-    if (elapsedMs >= maxWaitMs) {
+    if (Date.now() >= nextStillPendingAt) {
+      opts.hooks?.onStillPending?.(current, elapsedMs);
+      nextStillPendingAt = Date.now() + DEFAULT_DEFERRAL_STILL_PENDING_WARN_MS;
+    }
+    if (maxWaitMs !== undefined && elapsedMs >= maxWaitMs) {
       clearInterval(poll);
+      activeDeferralPolls.delete(poll);
       opts.hooks?.onTimeout?.(current, elapsedMs);
-      emitGatewayRestart();
+      void emitGatewayRestart(opts.reason, opts.timeoutIntent);
     }
   }, pollMs);
+  activeDeferralPolls.add(poll);
 }
 
 function formatSpawnDetail(result: {
@@ -468,7 +518,13 @@ export function scheduleGatewaySigusr1Restart(opts?: {
         emitGatewayRestart();
         return;
       }
-      deferGatewayRestartUntilIdle({ getPendingCount: pendingCheck });
+      const scheduledReason = reason;
+      deferGatewayRestartUntilIdle({
+        getPendingCount: pendingCheck,
+        maxWaitMs: DEFAULT_RESTART_DEFERRAL_TIMEOUT_MS,
+        reason: scheduledReason,
+        timeoutIntent: { force: true, ...(scheduledReason ? { reason: scheduledReason } : {}) },
+      });
     },
     Math.max(0, requestedDueAt - nowMs),
   );
@@ -493,7 +549,9 @@ export const __testing = {
     restartCycleToken = 0;
     emittedRestartToken = 0;
     consumedRestartToken = 0;
+    emittedRestartIntent = undefined;
     lastRestartEmittedAt = 0;
+    clearActiveDeferralPolls();
     clearPendingScheduledRestart();
   },
 };

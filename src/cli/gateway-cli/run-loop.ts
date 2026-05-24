@@ -2,6 +2,7 @@ import type { startGatewayServer } from "../../gateway/server.js";
 import { acquireGatewayLock } from "../../infra/gateway-lock.js";
 import { restartGatewayProcessWithFreshPid } from "../../infra/process-respawn.js";
 import {
+  consumeGatewaySigusr1RestartIntent,
   consumeGatewaySigusr1RestartAuthorization,
   isGatewaySigusr1RestartExternallyAllowed,
   markGatewaySigusr1RestartHandled,
@@ -19,6 +20,11 @@ import type { defaultRuntime } from "../../runtime.js";
 const gatewayLog = createSubsystemLogger("gateway");
 
 type GatewayRunSignalAction = "stop" | "restart";
+type RestartIntentOptions = {
+  reason?: string;
+  force?: boolean;
+  waitMs?: number;
+};
 
 export async function runGatewayLoop(params: {
   start: () => Promise<Awaited<ReturnType<typeof startGatewayServer>>>;
@@ -91,7 +97,11 @@ export async function runGatewayLoop(params: {
   const DRAIN_TIMEOUT_MS = 30_000;
   const SHUTDOWN_TIMEOUT_MS = 5_000;
 
-  const request = (action: GatewayRunSignalAction, signal: string) => {
+  const request = (
+    action: GatewayRunSignalAction,
+    signal: string,
+    restartIntent?: RestartIntentOptions,
+  ) => {
     if (shuttingDown) {
       gatewayLog.info(`received ${signal} during shutdown; ignoring`);
       return;
@@ -109,6 +119,15 @@ export async function runGatewayLoop(params: {
 
     void (async () => {
       try {
+        const restartDrainTimeoutMs = isRestart
+          ? restartIntent?.force
+            ? 0
+            : typeof restartIntent?.waitMs === "number" && Number.isFinite(restartIntent.waitMs)
+              ? restartIntent.waitMs > 0
+                ? Math.floor(restartIntent.waitMs)
+                : undefined
+              : DRAIN_TIMEOUT_MS
+          : null;
         // On restart, wait for in-flight agent turns to finish before
         // tearing down the server so buffered messages are delivered.
         if (isRestart) {
@@ -117,14 +136,22 @@ export async function runGatewayLoop(params: {
           markGatewayDraining();
           const activeTasks = getActiveTaskCount();
           if (activeTasks > 0) {
-            gatewayLog.info(
-              `draining ${activeTasks} active task(s) before restart (timeout ${DRAIN_TIMEOUT_MS}ms)`,
-            );
-            const { drained } = await waitForActiveTasks(DRAIN_TIMEOUT_MS);
-            if (drained) {
-              gatewayLog.info("all active tasks drained");
+            if (restartIntent?.force) {
+              gatewayLog.warn("forced restart requested; skipping active task drain");
             } else {
-              gatewayLog.warn("drain timeout reached; proceeding with restart");
+              const drainLabel =
+                restartDrainTimeoutMs === undefined
+                  ? "without a timeout"
+                  : `timeout ${restartDrainTimeoutMs}ms`;
+              gatewayLog.info(
+                `draining ${activeTasks} active task(s) before restart (${drainLabel})`,
+              );
+              const { drained } = await waitForActiveTasks(restartDrainTimeoutMs);
+              if (drained) {
+                gatewayLog.info("all active tasks drained");
+              } else {
+                gatewayLog.warn("drain timeout reached; proceeding with restart");
+              }
             }
           }
         }
@@ -164,8 +191,9 @@ export async function runGatewayLoop(params: {
       );
       return;
     }
+    const restartIntent = consumeGatewaySigusr1RestartIntent() ?? undefined;
     markGatewaySigusr1RestartHandled();
-    request("restart", "SIGUSR1");
+    request("restart", "SIGUSR1", restartIntent);
   };
 
   process.on("SIGTERM", onSigterm);

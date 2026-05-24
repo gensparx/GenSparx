@@ -10,6 +10,7 @@ import { isTruthyEnvValue } from "../infra/env.js";
 import type { HeartbeatRunner } from "../infra/heartbeat-runner.js";
 import { resetDirectoryCache } from "../infra/outbound/target-resolver.js";
 import {
+  DEFAULT_RESTART_DEFERRAL_TIMEOUT_MS,
   deferGatewayRestartUntilIdle,
   emitGatewayRestart,
   setGatewaySigusr1RestartPolicy,
@@ -202,6 +203,7 @@ export function createGatewayReloadHandlers(params: {
 
       deferGatewayRestartUntilIdle({
         getPendingCount: () => getActiveCounts().totalActive,
+        maxWaitMs: DEFAULT_RESTART_DEFERRAL_TIMEOUT_MS,
         hooks: {
           onReady: () => {
             restartPending = false;
