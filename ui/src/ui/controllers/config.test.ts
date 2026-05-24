@@ -71,13 +71,17 @@ describe("applyConfigSnapshot", () => {
   it("updates config form when clean", () => {
     const state = createState();
     applyConfigSnapshot(state, {
-      config: { gateway: { mode: "local" } },
+      sourceConfig: { gateway: { mode: "local" } },
+      config: { gateway: { mode: "local", runtimeOnly: true } },
       valid: true,
       issues: [],
       raw: "{}",
     });
 
     expect(state.configForm).toEqual({ gateway: { mode: "local" } });
+    expect(state.configSnapshot?.config).toEqual({
+      gateway: { mode: "local", runtimeOnly: true },
+    });
   });
 
   it("sets configRawOriginal when clean for change detection", () => {
@@ -116,7 +120,11 @@ describe("updateConfigFormValue", () => {
   it("seeds from snapshot when form is null", () => {
     const state = createState();
     state.configSnapshot = {
-      config: { channels: { telegram: { botToken: "t" } }, gateway: { mode: "local" } },
+      sourceConfig: { channels: { telegram: { botToken: "t" } }, gateway: { mode: "local" } },
+      config: {
+        channels: { telegram: { botToken: "t" } },
+        gateway: { mode: "local", runtimeOnly: true },
+      },
       valid: true,
       issues: [],
       raw: "{}",
@@ -354,6 +362,55 @@ describe("saveConfig", () => {
     };
     expect(parsed.gateway.port).toBe("18789");
     expect(params.baseHash).toBe("hash-save-2");
+  });
+
+  it("submits source config instead of runtime-materialized provider defaults", async () => {
+    const request = createRequestWithConfigGet();
+    const state = createState();
+    state.connected = true;
+    state.client = { request } as unknown as ConfigState["client"];
+    state.configFormMode = "form";
+    applyConfigSnapshot(state, {
+      hash: "hash-source-provider",
+      sourceConfig: {
+        models: {
+          providers: {
+            openai: {
+              agentRuntime: { id: "openai" },
+            },
+          },
+        },
+        ui: { theme: "light" },
+      },
+      config: {
+        models: {
+          providers: {
+            openai: {
+              agentRuntime: { id: "openai" },
+              baseUrl: "",
+            },
+          },
+        },
+        ui: { theme: "light" },
+      },
+      valid: true,
+      issues: [],
+      raw: '{\n  "models": {\n    "providers": {\n      "openai": {\n        "agentRuntime": { "id": "openai" }\n      }\n    }\n  },\n  "ui": { "theme": "light" }\n}\n',
+    });
+
+    updateConfigFormValue(state, ["ui", "theme"], "dark");
+    await saveConfig(state);
+
+    expect(request.mock.calls[0]?.[0]).toBe("config.set");
+    const params = request.mock.calls[0]?.[1] as { raw: string; baseHash: string };
+    const parsed = JSON.parse(params.raw) as {
+      models: { providers: { openai: { agentRuntime: { id: string }; baseUrl?: string } } };
+      ui: { theme: string };
+    };
+    expect(parsed.models.providers.openai.agentRuntime.id).toBe("openai");
+    expect(parsed.models.providers.openai).not.toHaveProperty("baseUrl");
+    expect(parsed.ui.theme).toBe("dark");
+    expect(params.baseHash).toBe("hash-source-provider");
   });
 });
 

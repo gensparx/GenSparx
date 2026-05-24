@@ -76,13 +76,31 @@ export function applyConfigSchema(state: ConfigState, res: ConfigSchemaResponse)
   state.configSchemaVersion = res.version ?? null;
 }
 
+function asConfigRecord(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+  return value as Record<string, unknown>;
+}
+
+function resolveEditableSnapshotConfig(
+  snapshot: ConfigSnapshot | null | undefined,
+): Record<string, unknown> | null {
+  return (
+    asConfigRecord(snapshot?.sourceConfig) ??
+    asConfigRecord(snapshot?.resolved) ??
+    asConfigRecord(snapshot?.config)
+  );
+}
+
 export function applyConfigSnapshot(state: ConfigState, snapshot: ConfigSnapshot) {
   state.configSnapshot = snapshot;
+  const editableConfig = resolveEditableSnapshotConfig(snapshot);
   const rawFromSnapshot =
     typeof snapshot.raw === "string"
       ? snapshot.raw
-      : snapshot.config && typeof snapshot.config === "object"
-        ? serializeConfigForm(snapshot.config)
+      : editableConfig
+        ? serializeConfigForm(editableConfig)
         : state.configRaw;
   if (!state.configFormDirty || state.configFormMode === "raw") {
     state.configRaw = rawFromSnapshot;
@@ -95,8 +113,8 @@ export function applyConfigSnapshot(state: ConfigState, snapshot: ConfigSnapshot
   state.configIssues = Array.isArray(snapshot.issues) ? snapshot.issues : [];
 
   if (!state.configFormDirty) {
-    state.configForm = cloneConfigObject(snapshot.config ?? {});
-    state.configFormOriginal = cloneConfigObject(snapshot.config ?? {});
+    state.configForm = cloneConfigObject(editableConfig ?? {});
+    state.configFormOriginal = cloneConfigObject(editableConfig ?? {});
     state.configRawOriginal = rawFromSnapshot;
   }
 }
@@ -207,7 +225,9 @@ export function updateConfigFormValue(
   path: Array<string | number>,
   value: unknown,
 ) {
-  const base = cloneConfigObject(state.configForm ?? state.configSnapshot?.config ?? {});
+  const base = cloneConfigObject(
+    state.configForm ?? resolveEditableSnapshotConfig(state.configSnapshot) ?? {},
+  );
   setPathValue(base, path, value);
   state.configForm = base;
   state.configFormDirty = true;
@@ -217,7 +237,9 @@ export function updateConfigFormValue(
 }
 
 export function removeConfigFormValue(state: ConfigState, path: Array<string | number>) {
-  const base = cloneConfigObject(state.configForm ?? state.configSnapshot?.config ?? {});
+  const base = cloneConfigObject(
+    state.configForm ?? resolveEditableSnapshotConfig(state.configSnapshot) ?? {},
+  );
   removePathValue(base, path);
   state.configForm = base;
   state.configFormDirty = true;
@@ -252,8 +274,7 @@ export function ensureAgentConfigEntry(state: ConfigState, agentId: string): num
   if (!normalizedAgentId) {
     return -1;
   }
-  const source =
-    state.configForm ?? (state.configSnapshot?.config as Record<string, unknown> | null);
+  const source = state.configForm ?? resolveEditableSnapshotConfig(state.configSnapshot);
   const existingIndex = findAgentConfigEntryIndex(source, normalizedAgentId);
   if (existingIndex >= 0) {
     return existingIndex;
