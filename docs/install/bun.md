@@ -6,7 +6,7 @@ read_when:
 title: "Bun (Experimental)"
 ---
 
-# 
+#
 
 <Warning>
 This install path is advanced and not part of the primary support path. Use Docker or Podman for a fully supported setup.
@@ -61,4 +61,3 @@ bun pm trust @whiskeysockets/baileys protobufjs
 ## Caveats
 
 - Some scripts still hardcode pnpm (e.g. `docs:build`, `ui:*`, `protocol:check`). Run those via pnpm for now.
-

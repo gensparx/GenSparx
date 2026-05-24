@@ -218,4 +218,3 @@ Then open a new terminal (or `rehash` in zsh / `hash -r` in bash).
     Remove gensparx completely.
   </Card>
 </CardGroup>
-

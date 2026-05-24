@@ -586,7 +586,7 @@ describe("resetAcpSessionInPlace", () => {
         agent: "claude",
         mode: "persistent",
         backend: "acpx",
-        runtimeOptions: { cwd: "/home/bob/clawd" },
+        runtimeOptions: { cwd: "/home/bob/gensparx" },
       },
     });
     managerMocks.initializeSession.mockRejectedValueOnce(new Error("backend unavailable"));

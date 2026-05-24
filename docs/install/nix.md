@@ -7,7 +7,7 @@ read_when:
 title: "Nix"
 ---
 
-# 
+#
 
 <Warning>
 This install path is advanced and not part of the primary support path. Use Docker or Podman for a fully supported setup.
@@ -100,4 +100,3 @@ packaging and Nix builds (which do not rely on a full Xcode toolchain).
 - [nix-gensparx](https://github.com/gensparx/nix-gensparx) — full setup guide
 - [Wizard](/start/wizard) — non-Nix CLI setup
 - [Docker](/install/docker) — containerized setup
-

@@ -82,7 +82,7 @@ If empty, read from config:
 cat ~/.gensparx/gensparx.json | jq -r '.skills.entries["gh-issues"].apiKey // empty'
 ```
 
-If still empty, check `/data/.clawdbot/gensparx.json`:
+If still empty, check the legacy fallback config under `/data/.clawdbot/gensparx.json`:
 
 ```
 cat /data/.clawdbot/gensparx.json | jq -r '.skills.entries["gh-issues"].apiKey // empty'
@@ -252,9 +252,13 @@ Run these checks sequentially via exec:
    Read the claims file (create empty `{}` if missing):
 
    ```
-   CLAIMS_FILE="/data/.clawdbot/gh-issues-claims.json"
+   STATE_ROOT="${GENSPARX_STATE_DIR:-/data/.gensparx}"
+   CLAIMS_FILE="$STATE_ROOT/gh-issues-claims.json"
+   if [ ! -f "$CLAIMS_FILE" ] && [ -f /data/.clawdbot/gh-issues-claims.json ]; then
+     CLAIMS_FILE="/data/.clawdbot/gh-issues-claims.json"
+   fi
+   mkdir -p "$(dirname "$CLAIMS_FILE")"
    if [ ! -f "$CLAIMS_FILE" ]; then
-     mkdir -p /data/.clawdbot
      echo '{}' > "$CLAIMS_FILE"
    fi
    ```
@@ -287,7 +291,11 @@ Run these checks sequentially via exec:
 - **Sequential cursor tracking:** Use a cursor file to track which issue to process next:
 
   ```
-  CURSOR_FILE="/data/.clawdbot/gh-issues-cursor-{SOURCE_REPO_SLUG}.json"
+  STATE_ROOT="${GENSPARX_STATE_DIR:-/data/.gensparx}"
+  CURSOR_FILE="$STATE_ROOT/gh-issues-cursor-{SOURCE_REPO_SLUG}.json"
+  if [ ! -f "$CURSOR_FILE" ] && [ -f "/data/.clawdbot/gh-issues-cursor-{SOURCE_REPO_SLUG}.json" ]; then
+    CURSOR_FILE="/data/.clawdbot/gh-issues-cursor-{SOURCE_REPO_SLUG}.json"
+  fi
   # SOURCE_REPO_SLUG = owner-repo with slashes replaced by hyphens (e.g., gensparx-gensparx)
   ```
 
@@ -375,7 +383,7 @@ Follow these steps in order. If any step fails, report the failure and stop.
 0. SETUP — Ensure GH_TOKEN is available:
 ```
 
-export GH_TOKEN=$(node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('/data/.clawdbot/gensparx.json','utf8')); console.log(c.skills?.entries?.['gh-issues']?.apiKey || '')")
+export GH_TOKEN=$(node -e "const fs=require('fs'); const primary=process.env.GENSPARX_STATE_DIR || '/data/.gensparx'; const paths=[`${primary}/gensparx.json`,'/data/.clawdbot/gensparx.json']; for (const p of paths) { if (fs.existsSync(p)) { const c=JSON.parse(fs.readFileSync(p,'utf8')); const token=c.skills?.entries?.['gh-issues']?.apiKey; if (token) { console.log(token); process.exit(0); } } }")
 
 ```
 If that fails, also try:
@@ -745,7 +753,7 @@ Follow these steps in order:
 0. SETUP — Ensure GH_TOKEN is available:
 ```
 
-export GH_TOKEN=$(node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('/data/.clawdbot/gensparx.json','utf8')); console.log(c.skills?.entries?.['gh-issues']?.apiKey || '')")
+export GH_TOKEN=$(node -e "const fs=require('fs'); const primary=process.env.GENSPARX_STATE_DIR || '/data/.gensparx'; const paths=[`${primary}/gensparx.json`,'/data/.clawdbot/gensparx.json']; for (const p of paths) { if (fs.existsSync(p)) { const c=JSON.parse(fs.readFileSync(p,'utf8')); const token=c.skills?.entries?.['gh-issues']?.apiKey; if (token) { console.log(token); process.exit(0); } } }")
 
 ```
 Verify: echo "Token: ${GH_TOKEN:0:10}..."

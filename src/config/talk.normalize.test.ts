@@ -24,7 +24,7 @@ describe("talk normalization", () => {
   it("maps legacy ElevenLabs fields into provider/providers", () => {
     const normalized = normalizeTalkSection({
       voiceId: "voice-123",
-      voiceAliases: { Clawd: "EXAVITQu4vr4xnSDxMaL" },
+      voiceAliases: { Gensparx: "EXAVITQu4vr4xnSDxMaL" },
       modelId: "eleven_v3",
       outputFormat: "pcm_44100",
       apiKey: "secret-key",
@@ -36,14 +36,14 @@ describe("talk normalization", () => {
       providers: {
         elevenlabs: {
           voiceId: "voice-123",
-          voiceAliases: { Clawd: "EXAVITQu4vr4xnSDxMaL" },
+          voiceAliases: { Gensparx: "EXAVITQu4vr4xnSDxMaL" },
           modelId: "eleven_v3",
           outputFormat: "pcm_44100",
           apiKey: "secret-key",
         },
       },
       voiceId: "voice-123",
-      voiceAliases: { Clawd: "EXAVITQu4vr4xnSDxMaL" },
+      voiceAliases: { Gensparx: "EXAVITQu4vr4xnSDxMaL" },
       modelId: "eleven_v3",
       outputFormat: "pcm_44100",
       apiKey: "secret-key",

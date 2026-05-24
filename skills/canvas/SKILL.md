@@ -64,7 +64,7 @@ In `~/.gensparx/gensparx.json`:
   "canvasHost": {
     "enabled": true,
     "port": 18793,
-    "root": "/Users/you/clawd/canvas",
+    "root": "/Users/you/.gensparx/canvas",
     "liveReload": true
   },
   "gateway": {
@@ -87,10 +87,10 @@ Great for development!
 
 ### 1. Create HTML content
 
-Place files in the canvas root directory (default `~/clawd/canvas/`):
+Place files in the canvas root directory (default `~/.gensparx/canvas/`):
 
 ```bash
-cat > ~/clawd/canvas/my-game.html << 'HTML'
+cat > ~/.gensparx/canvas/my-game.html << 'HTML'
 <!DOCTYPE html>
 <html>
 <head><title>My Game</title></head>
@@ -183,8 +183,8 @@ If live reload isn't working:
 The canvas host serves from `/__gensparx__/canvas/` prefix:
 
 ```
-http://<host>:18793/__gensparx__/canvas/index.html  → ~/clawd/canvas/index.html
-http://<host>:18793/__gensparx__/canvas/games/snake.html → ~/clawd/canvas/games/snake.html
+http://<host>:18793/__gensparx__/canvas/index.html  → ~/.gensparx/canvas/index.html
+http://<host>:18793/__gensparx__/canvas/games/snake.html → ~/.gensparx/canvas/games/snake.html
 ```
 
 The `/__gensparx__/canvas/` prefix is defined by `CANVAS_HOST_PATH` constant.

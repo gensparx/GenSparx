@@ -1,4 +1,4 @@
-# ClawDock <!-- omit in toc -->
+# Gensparx Docker Helpers <!-- omit in toc -->
 
 Stop typing `docker-compose` commands. Just type `clawdock-start`.
 
@@ -38,7 +38,7 @@ echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
 clawdock-help
 ```
 
-On first command, ClawDock auto-detects your gensparx directory:
+On first command, the helper auto-detects your gensparx directory:
 
 - Checks common paths (`~/gensparx`, `~/workspace/gensparx`, etc.)
 - If found, asks you to confirm
