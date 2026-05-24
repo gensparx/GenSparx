@@ -67,9 +67,12 @@ describe("restartGatewayProcessWithFreshPid", () => {
     expect(spawnMock).not.toHaveBeenCalled();
   });
 
-  it("returns supervised when launchd/systemd hints are present", () => {
+  it("returns supervised when launchd hints are present on macOS", () => {
     clearSupervisorHints();
+    setPlatform("darwin");
     process.env.LAUNCH_JOB_LABEL = "ai.gensparx.gateway";
+    process.env.GENSPARX_LAUNCHD_LABEL = "ai.gensparx.gateway";
+    triggerGensparxRestartMock.mockReturnValue({ ok: true, method: "launchctl" });
     const result = restartGatewayProcessWithFreshPid();
     expect(result.mode).toBe("supervised");
     expect(spawnMock).not.toHaveBeenCalled();
@@ -107,6 +110,22 @@ describe("restartGatewayProcessWithFreshPid", () => {
     expect(spawnMock).not.toHaveBeenCalled();
   });
 
+  it("does not treat unrelated inherited XPC state as launchd supervision", () => {
+    clearSupervisorHints();
+    setPlatform("darwin");
+    process.env.XPC_SERVICE_NAME = "ai.gensparx.mac";
+    process.env.GENSPARX_PROFILE = "mac";
+    process.execArgv = ["--import", "tsx"];
+    process.argv = ["/usr/local/bin/node", "/repo/dist/index.js", "gateway", "run"];
+    spawnMock.mockReturnValue({ pid: 4242, unref: vi.fn() });
+
+    const result = restartGatewayProcessWithFreshPid();
+
+    expect(result).toEqual({ mode: "spawned", pid: 4242 });
+    expect(triggerGensparxRestartMock).not.toHaveBeenCalled();
+    expect(spawnMock).toHaveBeenCalledOnce();
+  });
+
   it("spawns detached child with current exec argv", () => {
     delete process.env.GENSPARX_NO_RESPAWN;
     clearSupervisorHints();
@@ -134,6 +153,7 @@ describe("restartGatewayProcessWithFreshPid", () => {
 
   it("returns supervised when GENSPARX_SYSTEMD_UNIT is set", () => {
     clearSupervisorHints();
+    setPlatform("linux");
     process.env.GENSPARX_SYSTEMD_UNIT = "gensparx-gateway.service";
     const result = restartGatewayProcessWithFreshPid();
     expect(result.mode).toBe("supervised");
