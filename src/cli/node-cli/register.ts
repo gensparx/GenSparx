@@ -50,11 +50,15 @@ export function registerNodeCli(program: Command) {
       const host =
         (opts.host as string | undefined)?.trim() || existing?.gateway?.host || "127.0.0.1";
       const port = parsePortWithFallback(opts.port, existing?.gateway?.port ?? 18789);
+      const retargetedGateway = opts.host !== undefined || opts.port !== undefined;
+      const tlsFingerprint =
+        opts.tlsFingerprint ?? (retargetedGateway ? undefined : existing?.gateway?.tlsFingerprint);
+      const inheritedTls = retargetedGateway ? undefined : existing?.gateway?.tls;
       await runNodeHost({
         gatewayHost: host,
         gatewayPort: port,
-        gatewayTls: Boolean(opts.tls) || Boolean(opts.tlsFingerprint),
-        gatewayTlsFingerprint: opts.tlsFingerprint,
+        gatewayTls: Boolean(opts.tls) || Boolean(tlsFingerprint) || inheritedTls,
+        gatewayTlsFingerprint: tlsFingerprint,
         nodeId: opts.nodeId,
         displayName: opts.displayName,
       });
