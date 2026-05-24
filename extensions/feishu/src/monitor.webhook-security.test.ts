@@ -1,6 +1,6 @@
 import { createServer } from "node:http";
 import type { AddressInfo } from "node:net";
-import type { ClawdbotConfig } from "gensparx/plugin-sdk/feishu";
+import type { GensparxConfig } from "gensparx/plugin-sdk/feishu";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 const probeFeishuMock = vi.hoisted(() => vi.fn());
@@ -79,7 +79,7 @@ function buildConfig(params: {
   path: string;
   port: number;
   verificationToken?: string;
-}): ClawdbotConfig {
+}): GensparxConfig {
   return {
     channels: {
       feishu: {
@@ -98,7 +98,7 @@ function buildConfig(params: {
         },
       },
     },
-  } as ClawdbotConfig;
+  } as GensparxConfig;
 }
 
 async function withRunningWebhookMonitor(

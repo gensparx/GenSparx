@@ -1,4 +1,4 @@
-import type { ClawdbotConfig, RuntimeEnv } from "gensparx/plugin-sdk/feishu";
+import type { GensparxConfig, RuntimeEnv } from "gensparx/plugin-sdk/feishu";
 import { resolveFeishuAccount } from "./accounts.js";
 import { handleFeishuMessage, type FeishuMessageEvent } from "./bot.js";
 
@@ -21,7 +21,7 @@ export type FeishuCardActionEvent = {
 };
 
 export async function handleFeishuCardAction(params: {
-  cfg: ClawdbotConfig;
+  cfg: GensparxConfig;
   event: FeishuCardActionEvent;
   botOpenId?: string;
   runtime?: RuntimeEnv;

@@ -1,4 +1,4 @@
-import type { ClawdbotConfig, RuntimeEnv } from "gensparx/plugin-sdk/feishu";
+import type { GensparxConfig, RuntimeEnv } from "gensparx/plugin-sdk/feishu";
 import { listEnabledFeishuAccounts, resolveFeishuAccount } from "./accounts.js";
 import {
   monitorSingleAccount,
@@ -14,7 +14,7 @@ import {
 } from "./monitor.state.js";
 
 export type MonitorFeishuOpts = {
-  config?: ClawdbotConfig;
+  config?: GensparxConfig;
   runtime?: RuntimeEnv;
   abortSignal?: AbortSignal;
   accountId?: string;

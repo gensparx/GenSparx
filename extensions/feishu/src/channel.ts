@@ -1,4 +1,4 @@
-import type { ChannelMeta, ChannelPlugin, ClawdbotConfig } from "gensparx/plugin-sdk/feishu";
+import type { ChannelMeta, ChannelPlugin, GensparxConfig } from "gensparx/plugin-sdk/feishu";
 import {
   buildBaseChannelStatusSummary,
   createDefaultChannelRuntimeState,
@@ -201,7 +201,7 @@ export const feishuPlugin: ChannelPlugin<ResolvedFeishuAccount> = {
 
       if (isDefault) {
         // Delete entire feishu config
-        const next = { ...cfg } as ClawdbotConfig;
+        const next = { ...cfg } as GensparxConfig;
         const nextChannels = { ...cfg.channels };
         delete (nextChannels as Record<string, unknown>).feishu;
         if (Object.keys(nextChannels).length > 0) {

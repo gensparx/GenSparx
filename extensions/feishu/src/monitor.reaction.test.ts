@@ -1,4 +1,4 @@
-import type { ClawdbotConfig, RuntimeEnv } from "gensparx/plugin-sdk/feishu";
+import type { GensparxConfig, RuntimeEnv } from "gensparx/plugin-sdk/feishu";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { hasControlCommand } from "../../../src/auto-reply/command-detection.js";
 import {
@@ -37,7 +37,7 @@ vi.mock("./monitor.transport.js", () => ({
   monitorWebhook: monitorWebhookMock,
 }));
 
-const cfg = {} as ClawdbotConfig;
+const cfg = {} as GensparxConfig;
 
 function makeReactionEvent(
   overrides: Partial<FeishuReactionCreatedEvent> = {},
@@ -53,7 +53,7 @@ function makeReactionEvent(
 
 type FeishuMention = NonNullable<FeishuMessageEvent["message"]["mentions"]>[number];
 
-function buildDebounceConfig(): ClawdbotConfig {
+function buildDebounceConfig(): GensparxConfig {
   return {
     messages: {
       inbound: {
@@ -68,7 +68,7 @@ function buildDebounceConfig(): ClawdbotConfig {
         enabled: true,
       },
     },
-  } as ClawdbotConfig;
+  } as GensparxConfig;
 }
 
 function buildDebounceAccount(): ResolvedFeishuAccount {
@@ -194,7 +194,7 @@ describe("resolveReactionSyntheticEvent", () => {
             reactionNotifications: "off",
           },
         },
-      } as ClawdbotConfig,
+      } as GensparxConfig,
       accountId: "default",
       event,
       botOpenId: "ou_bot",
@@ -238,7 +238,7 @@ describe("resolveReactionSyntheticEvent", () => {
             reactionNotifications: "all",
           },
         },
-      } as ClawdbotConfig,
+      } as GensparxConfig,
       accountId: "default",
       event,
       botOpenId: "ou_bot",

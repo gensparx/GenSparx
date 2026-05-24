@@ -1,4 +1,4 @@
-import type { ClawdbotConfig } from "gensparx/plugin-sdk/feishu";
+import type { GensparxConfig } from "gensparx/plugin-sdk/feishu";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { monitorFeishuProvider, stopFeishuMonitor } from "./monitor.js";
 
@@ -30,7 +30,7 @@ vi.mock("./runtime.js", () => ({
   }),
 }));
 
-function buildMultiAccountWebsocketConfig(accountIds: string[]): ClawdbotConfig {
+function buildMultiAccountWebsocketConfig(accountIds: string[]): GensparxConfig {
   return {
     channels: {
       feishu: {
@@ -48,7 +48,7 @@ function buildMultiAccountWebsocketConfig(accountIds: string[]): ClawdbotConfig 
         ),
       },
     },
-  } as ClawdbotConfig;
+  } as GensparxConfig;
 }
 
 afterEach(() => {

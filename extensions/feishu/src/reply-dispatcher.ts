@@ -2,7 +2,7 @@ import {
   createReplyPrefixContext,
   createTypingCallbacks,
   logTypingFailure,
-  type ClawdbotConfig,
+  type GensparxConfig,
   type ReplyPayload,
   type RuntimeEnv,
 } from "gensparx/plugin-sdk/feishu";
@@ -37,7 +37,7 @@ function normalizeEpochMs(timestamp: number | undefined): number | undefined {
 }
 
 export type CreateFeishuReplyDispatcherParams = {
-  cfg: ClawdbotConfig;
+  cfg: GensparxConfig;
   agentId: string;
   runtime: RuntimeEnv;
   chatId: string;

@@ -1,10 +1,10 @@
-import type { ClawdbotConfig } from "gensparx/plugin-sdk/feishu";
+import type { GensparxConfig } from "gensparx/plugin-sdk/feishu";
 import { resolveFeishuAccount } from "./accounts.js";
 import { createFeishuClient } from "./client.js";
 import { resolveReceiveIdType, normalizeFeishuTarget } from "./targets.js";
 
 export function resolveFeishuSendTarget(params: {
-  cfg: ClawdbotConfig;
+  cfg: GensparxConfig;
   to: string;
   accountId?: string;
 }) {

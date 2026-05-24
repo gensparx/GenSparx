@@ -1,7 +1,7 @@
 import type {
   ChannelOnboardingAdapter,
   ChannelOnboardingDmPolicy,
-  ClawdbotConfig,
+  GensparxConfig,
   DmPolicy,
   SecretInput,
   WizardPrompter,
@@ -27,7 +27,7 @@ function normalizeString(value: unknown): string | undefined {
   return trimmed || undefined;
 }
 
-function setFeishuDmPolicy(cfg: ClawdbotConfig, dmPolicy: DmPolicy): ClawdbotConfig {
+function setFeishuDmPolicy(cfg: GensparxConfig, dmPolicy: DmPolicy): GensparxConfig {
   const allowFrom =
     dmPolicy === "open"
       ? addWildcardAllowFrom(cfg.channels?.feishu?.allowFrom)?.map((entry) => String(entry))
@@ -45,7 +45,7 @@ function setFeishuDmPolicy(cfg: ClawdbotConfig, dmPolicy: DmPolicy): ClawdbotCon
   };
 }
 
-function setFeishuAllowFrom(cfg: ClawdbotConfig, allowFrom: string[]): ClawdbotConfig {
+function setFeishuAllowFrom(cfg: GensparxConfig, allowFrom: string[]): GensparxConfig {
   return {
     ...cfg,
     channels: {
@@ -66,9 +66,9 @@ function parseAllowFromInput(raw: string): string[] {
 }
 
 async function promptFeishuAllowFrom(params: {
-  cfg: ClawdbotConfig;
+  cfg: GensparxConfig;
   prompter: WizardPrompter;
-}): Promise<ClawdbotConfig> {
+}): Promise<GensparxConfig> {
   const existing = params.cfg.channels?.feishu?.allowFrom ?? [];
   await params.prompter.note(
     [
@@ -134,9 +134,9 @@ async function promptFeishuAppId(params: {
 }
 
 function setFeishuGroupPolicy(
-  cfg: ClawdbotConfig,
+  cfg: GensparxConfig,
   groupPolicy: "open" | "allowlist" | "disabled",
-): ClawdbotConfig {
+): GensparxConfig {
   return {
     ...cfg,
     channels: {
@@ -150,7 +150,7 @@ function setFeishuGroupPolicy(
   };
 }
 
-function setFeishuGroupAllowFrom(cfg: ClawdbotConfig, groupAllowFrom: string[]): ClawdbotConfig {
+function setFeishuGroupAllowFrom(cfg: GensparxConfig, groupAllowFrom: string[]): GensparxConfig {
   return {
     ...cfg,
     channels: {

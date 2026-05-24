@@ -1,5 +1,5 @@
 import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "gensparx/plugin-sdk/account-id";
-import type { ClawdbotConfig } from "gensparx/plugin-sdk/feishu";
+import type { GensparxConfig } from "gensparx/plugin-sdk/feishu";
 import { normalizeResolvedSecretInputString, normalizeSecretInputString } from "./secret-input.js";
 import type {
   FeishuConfig,
@@ -12,7 +12,7 @@ import type {
 /**
  * List all configured account IDs from the accounts field.
  */
-function listConfiguredAccountIds(cfg: ClawdbotConfig): string[] {
+function listConfiguredAccountIds(cfg: GensparxConfig): string[] {
   const accounts = (cfg.channels?.feishu as FeishuConfig)?.accounts;
   if (!accounts || typeof accounts !== "object") {
     return [];
@@ -24,7 +24,7 @@ function listConfiguredAccountIds(cfg: ClawdbotConfig): string[] {
  * List all Feishu account IDs.
  * If no accounts are configured, returns [DEFAULT_ACCOUNT_ID] for backward compatibility.
  */
-export function listFeishuAccountIds(cfg: ClawdbotConfig): string[] {
+export function listFeishuAccountIds(cfg: GensparxConfig): string[] {
   const ids = listConfiguredAccountIds(cfg);
   if (ids.length === 0) {
     // Backward compatibility: no accounts configured, use default
@@ -36,7 +36,7 @@ export function listFeishuAccountIds(cfg: ClawdbotConfig): string[] {
 /**
  * Resolve the default account selection and its source.
  */
-export function resolveDefaultFeishuAccountSelection(cfg: ClawdbotConfig): {
+export function resolveDefaultFeishuAccountSelection(cfg: GensparxConfig): {
   accountId: string;
   source: FeishuDefaultAccountSelectionSource;
 } {
@@ -64,7 +64,7 @@ export function resolveDefaultFeishuAccountSelection(cfg: ClawdbotConfig): {
 /**
  * Resolve the default account ID.
  */
-export function resolveDefaultFeishuAccountId(cfg: ClawdbotConfig): string {
+export function resolveDefaultFeishuAccountId(cfg: GensparxConfig): string {
   return resolveDefaultFeishuAccountSelection(cfg).accountId;
 }
 
@@ -72,7 +72,7 @@ export function resolveDefaultFeishuAccountId(cfg: ClawdbotConfig): string {
  * Get the raw account-specific config.
  */
 function resolveAccountConfig(
-  cfg: ClawdbotConfig,
+  cfg: GensparxConfig,
   accountId: string,
 ): FeishuAccountConfig | undefined {
   const accounts = (cfg.channels?.feishu as FeishuConfig)?.accounts;
@@ -86,7 +86,7 @@ function resolveAccountConfig(
  * Merge top-level config with account-specific config.
  * Account-specific fields override top-level fields.
  */
-function mergeFeishuAccountConfig(cfg: ClawdbotConfig, accountId: string): FeishuConfig {
+function mergeFeishuAccountConfig(cfg: GensparxConfig, accountId: string): FeishuConfig {
   const feishuCfg = cfg.channels?.feishu as FeishuConfig | undefined;
 
   // Extract base config (exclude accounts field to avoid recursion)
@@ -185,7 +185,7 @@ export function resolveFeishuCredentials(
  * Resolve a complete Feishu account with merged config.
  */
 export function resolveFeishuAccount(params: {
-  cfg: ClawdbotConfig;
+  cfg: GensparxConfig;
   accountId?: string | null;
 }): ResolvedFeishuAccount {
   const hasExplicitAccountId =
@@ -233,7 +233,7 @@ export function resolveFeishuAccount(params: {
 /**
  * List all enabled and configured accounts.
  */
-export function listEnabledFeishuAccounts(cfg: ClawdbotConfig): ResolvedFeishuAccount[] {
+export function listEnabledFeishuAccounts(cfg: GensparxConfig): ResolvedFeishuAccount[] {
   return listFeishuAccountIds(cfg)
     .map((accountId) => resolveFeishuAccount({ cfg, accountId }))
     .filter((account) => account.enabled && account.configured);
