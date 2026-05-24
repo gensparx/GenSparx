@@ -23,6 +23,8 @@ const LEGACY_MAP: Record<string, ThemeSelection> = {
   light: { theme: "claw", mode: "light" },
   openknot: { theme: "knot", mode: "dark" },
   fieldmanual: { theme: "dash", mode: "dark" },
+  gensparxdash: { theme: "dash", mode: "light" },
+  // Keep the old alias for existing bookmarked URLs and saved settings.
   clawdash: { theme: "dash", mode: "light" },
   system: { theme: "claw", mode: "system" },
 };

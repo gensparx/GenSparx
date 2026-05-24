@@ -210,16 +210,21 @@ time; it does not replace the compose/setup workflow.
 For easier day-to-day Docker management, install the Docker helper scripts:
 
 ```bash
-mkdir -p ~/.clawdock && curl -sL https://raw.githubusercontent.com/gensparx/gensparx/main/scripts/shell-helpers/clawdock-helpers.sh -o ~/.clawdock/clawdock-helpers.sh
+mkdir -p ~/.gensparx/docker && curl -sL https://raw.githubusercontent.com/gensparx/gensparx/main/scripts/shell-helpers/clawdock-helpers.sh -o ~/.gensparx/docker/clawdock-helpers.sh
 ```
 
 **Add to your shell config (zsh):**
 
 ```bash
-echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
+echo 'source ~/.gensparx/docker/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
 ```
 
 Then use `clawdock-start`, `clawdock-stop`, `clawdock-dashboard`, etc. Run `clawdock-help` for all commands.
+
+<Note>
+The helper command names still use the legacy `clawdock-*` prefix for compatibility, but the
+recommended install location is under `~/.gensparx`.
+</Note>
 
 See the [Docker Helper README](https://github.com/gensparx/gensparx/blob/main/scripts/shell-helpers/README.md) for details.
 
