@@ -278,7 +278,7 @@ describe("restart-helper", () => {
     it("spawns the script as a detached process on Linux", async () => {
       Object.defineProperty(process, "platform", { value: "linux" });
       const scriptPath = "/tmp/fake-script.sh";
-      const mockChild = { unref: vi.fn() };
+      const mockChild = { on: vi.fn(), unref: vi.fn() };
       vi.mocked(spawn).mockReturnValue(mockChild as unknown as ChildProcess);
 
       await runRestartScript(scriptPath);
@@ -286,14 +286,16 @@ describe("restart-helper", () => {
       expect(spawn).toHaveBeenCalledWith("/bin/sh", [scriptPath], {
         detached: true,
         stdio: "ignore",
+        windowsHide: true,
       });
-      expect(mockChild.unref).toHaveBeenCalled();
+      expect(mockChild.on).toHaveBeenCalledWith("error", expect.any(Function));
+      expect(mockChild.unref).toHaveBeenCalledTimes(1);
     });
 
     it("uses cmd.exe on Windows", async () => {
       Object.defineProperty(process, "platform", { value: "win32" });
       const scriptPath = "C:\\Temp\\fake-script.bat";
-      const mockChild = { unref: vi.fn() };
+      const mockChild = { on: vi.fn(), unref: vi.fn() };
       vi.mocked(spawn).mockReturnValue(mockChild as unknown as ChildProcess);
 
       await runRestartScript(scriptPath);
@@ -301,8 +303,46 @@ describe("restart-helper", () => {
       expect(spawn).toHaveBeenCalledWith("cmd.exe", ["/c", scriptPath], {
         detached: true,
         stdio: "ignore",
+        windowsHide: true,
+      });
+      expect(mockChild.on).toHaveBeenCalledWith("error", expect.any(Function));
+      expect(mockChild.unref).toHaveBeenCalledTimes(1);
+    });
+
+      expect(spawn).toHaveBeenCalledWith("cmd.exe", ["/c", scriptPath], {
+        detached: true,
+        stdio: "ignore",
+        windowsHide: true,
       });
       expect(mockChild.unref).toHaveBeenCalled();
+    });
+
+    it("does not throw when spawn fails synchronously", async () => {
+      Object.defineProperty(process, "platform", { value: "linux" });
+      vi.mocked(spawn).mockImplementation(() => {
+        throw Object.assign(new Error("spawn /bin/sh ENOENT"), { code: "ENOENT" });
+      });
+
+      await expect(runRestartScript("/tmp/fake-script.sh")).resolves.toBeUndefined();
+    });
+
+    it("handles child process spawn errors after the detached handoff", async () => {
+      Object.defineProperty(process, "platform", { value: "linux" });
+      let errorHandler: ((error: Error) => void) | undefined;
+      const mockChild = {
+        on: vi.fn((event: string, handler: (error: Error) => void) => {
+          if (event === "error") {
+            errorHandler = handler;
+          }
+          return mockChild;
+        }),
+        unref: vi.fn(),
+      };
+      vi.mocked(spawn).mockReturnValue(mockChild as unknown as ChildProcess);
+
+      await runRestartScript("/tmp/fake-script.sh");
+      expect(errorHandler).toBeDefined();
+      expect(() => errorHandler?.(new Error("spawn /bin/sh ENOENT"))).not.toThrow();
     });
   });
 });
