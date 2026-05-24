@@ -3,13 +3,13 @@
     <channel>
         <title>Gensparx</title>
         <item>
-            <title>2026.3.2</title>
-            <pubDate>Tue, 03 Mar 2026 04:30:29 +0000</pubDate>
+            <title>2026.5.25</title>
+            <pubDate>Mon, 25 May 2026 12:00:00 +0000</pubDate>
             <link>https://raw.githubusercontent.com/gensparx/gensparx/main/appcast.xml</link>
-            <sparkle:version>2026030290</sparkle:version>
-            <sparkle:shortVersionString>2026.3.2</sparkle:shortVersionString>
+            <sparkle:version>2026052590</sparkle:version>
+            <sparkle:shortVersionString>2026.5.25</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <description><![CDATA[<h2>gensparx 2026.3.2</h2>
+            <description><![CDATA[<h2>gensparx 2026.5.25</h2>
 <h3>Changes</h3>
 <ul>
 <li>Secrets/SecretRef coverage: expand SecretRef support across the full supported user-supplied credential surface (64 targets total), including runtime collectors, <code>gensparx secrets</code> planning/apply/audit flows, onboarding SecretInput UX, and related docs; unresolved refs now fail fast on active surfaces while inactive surfaces report non-blocking diagnostics. (#29580) Thanks @joshavant.</li>
@@ -219,7 +219,7 @@
 </ul>
 <p><a href="https://github.com/gensparx/gensparx/blob/main/CHANGELOG.md">View full changelog</a></p>
 ]]></description>
-            <enclosure url="https://github.com/gensparx/gensparx/releases/download/v2026.3.2/Gensparx-2026.3.2.zip" length="23181513" type="application/octet-stream" sparkle:edSignature="THMgkcoMgz2vv5zse3Po3K7l3Or2RhBKurXZIi8iYVXN76yJy1YXAY6kXi6ovD+dbYn68JKYDIKA1Ya78bO7BQ=="/>
+            <enclosure url="https://github.com/gensparx/gensparx/releases/download/v2026.5.25/Gensparx-2026.5.25.zip" length="23181513" type="application/octet-stream" sparkle:edSignature="THMgkcoMgz2vv5zse3Po3K7l3Or2RhBKurXZIi8iYVXN76yJy1YXAY6kXi6ovD+dbYn68JKYDIKA1Ya78bO7BQ=="/>
         </item>
         <item>
             <title>2026.3.1</title>
